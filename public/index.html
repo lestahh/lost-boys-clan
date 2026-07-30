@@ -33,7 +33,7 @@
   button{font-family:inherit; cursor:pointer;}
   input, select{font-family:'JetBrains Mono',monospace; background:var(--bg); color:var(--text); border:1px solid var(--border-dim); border-radius:4px; padding:5px 7px;}
   input:focus, select:focus{outline:1px solid var(--gold);}
- 
+
   /* ---- top bar ---- */
   .topbar{display:flex; align-items:center; justify-content:space-between; padding:14px 26px; border-bottom:1px solid var(--border-dim); background:linear-gradient(180deg, rgba(0,0,0,.25), transparent);}
   .brand{display:flex; align-items:center; gap:12px; cursor:pointer;}
@@ -43,18 +43,18 @@
   .nav-links{display:flex; gap:4px; flex-wrap:wrap;}
   .nav-links button{background:transparent; border:1px solid transparent; color:var(--text-dim); padding:7px 12px; border-radius:5px; font-size:.82rem; letter-spacing:.04em;}
   .nav-links button.active, .nav-links button:hover{color:var(--gold); border-color:var(--border-dim); background:rgba(215,173,63,.06);}
- 
+
   main{max-width:1180px; margin:0 auto; padding:28px 22px 80px;}
   .page{display:none;}
   .page.active{display:block; animation:fade .25s ease;}
   @keyframes fade{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;}}
- 
+
   /* ---- home ---- */
   .hero{text-align:center; padding:36px 10px 30px; border-bottom:1px solid var(--border-dim); margin-bottom:34px;}
   .hero .eyebrow{color:var(--ember); text-transform:uppercase; letter-spacing:.3em; font-size:.72rem; margin:6px 0 16px;}
   .hero h1{font-size:2.6rem; margin:0 0 4px; color:var(--gold); text-shadow:0 2px 0 rgba(0,0,0,.5);}
   .hero p{color:var(--text-dim); max-width:520px; margin:0 auto;}
- 
+
   .gim-rank-badge{display:inline-flex; align-items:center; gap:10px; background:var(--bg-panel); border:1px solid var(--border-dim); border-radius:20px; padding:8px 18px; margin-bottom:20px; font-size:.8rem; color:var(--text-dim);}
   .gim-rank-badge .rank-value{color:var(--gold); font-family:'JetBrains Mono',monospace; font-weight:700; font-size:.9rem;}
   .gim-rank-badge button{background:none; border:none; color:var(--text-dim); cursor:pointer; font-size:.85rem; padding:2px;}
@@ -62,7 +62,7 @@
   .rank-trend{font-size:.8rem; font-weight:700;}
   .rank-trend.improved{color:var(--good);}
   .rank-trend.worse{color:var(--bad);}
- 
+
   .tiles{display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:18px;}
   .tile{position:relative; background:linear-gradient(180deg, var(--bg-panel-2), var(--bg-panel)); border:1px solid var(--border); border-radius:8px; padding:22px 20px; text-align:left; box-shadow:var(--shadow); transition:transform .15s ease, border-color .15s ease;}
   .tile:hover{transform:translateY(-3px); border-color:var(--gold); cursor:pointer;}
@@ -70,56 +70,56 @@
   .tile h3{margin:0 0 6px; font-size:1.05rem; color:var(--gold);}
   .tile p{margin:0; color:var(--text-dim); font-size:.85rem; line-height:1.4;}
   .tile .go{position:absolute; top:18px; right:18px; color:var(--border); font-size:1.1rem;}
- 
+
   /* ---- shared bits ---- */
   .page-head{display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:22px; padding-bottom:14px; border-bottom:1px solid var(--border-dim);}
   .page-head h2{margin:0; color:var(--gold); font-size:1.5rem;}
   .page-head .back{color:var(--text-dim); font-size:.8rem; background:none; border:1px solid var(--border-dim); padding:5px 10px; border-radius:5px;}
   .page-head .back:hover{color:var(--gold); border-color:var(--gold);}
- 
+
   .card{background:var(--bg-panel); border:1px solid var(--border-dim); border-radius:8px; padding:18px 20px; margin-bottom:18px;}
   .card h4{margin:0 0 12px; color:var(--gold); font-size:.95rem; text-transform:uppercase; letter-spacing:.08em;}
- 
+
   table{width:100%; border-collapse:collapse; font-size:.85rem;}
   th, td{padding:7px 8px; text-align:left; border-bottom:1px solid var(--border-dim);}
   th{color:var(--text-dim); font-weight:600; text-transform:uppercase; font-size:.68rem; letter-spacing:.06em;}
   td input[type=number], td input[type=text]{width:100%; min-width:60px;}
   tr:hover td{background:rgba(215,173,63,.04);}
- 
+
   .player-tabs{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:18px;}
   .player-tabs button{background:var(--bg-panel); border:1px solid var(--border-dim); color:var(--text-dim); padding:8px 14px; border-radius:6px; font-size:.82rem;}
   .player-tabs button.active{color:var(--bg); background:var(--gold); border-color:var(--gold); font-weight:600;}
   .player-tabs .tz{font-size:.65rem; opacity:.7; display:block;}
- 
+
   .stat-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:20px;}
   .stat{background:var(--bg-panel); border:1px solid var(--border-dim); border-radius:8px; padding:14px 16px;}
   .stat .label{font-size:.68rem; text-transform:uppercase; letter-spacing:.08em; color:var(--text-dim); margin-bottom:4px;}
   .stat .value{font-size:1.35rem; color:var(--gold); font-family:'JetBrains Mono',monospace;}
   .stat .value small{font-size:.6rem; color:var(--text-dim); display:block; font-family:'Spectral',serif; margin-top:2px;}
- 
+
   .skill-row td.name{color:var(--text);}
   .bar{height:5px; background:var(--border-dim); border-radius:3px; overflow:hidden; margin-top:3px;}
   .bar > div{height:100%; background:var(--ember);}
- 
+
   .btn{background:var(--gold); color:#1a1305; border:none; padding:8px 16px; border-radius:6px; font-weight:600; font-size:.82rem;}
   .btn:hover{background:#e8c25a;}
   .btn.ghost{background:transparent; color:var(--gold); border:1px solid var(--border);}
   .btn.ghost:hover{border-color:var(--gold);}
   .btn.small{padding:5px 10px; font-size:.75rem;}
   .row{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
- 
+
   .diary-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:6px;}
   .diary-cell{display:flex; flex-direction:column; align-items:center; gap:4px; padding:8px 4px; border:1px solid var(--border-dim); border-radius:6px; background:var(--bg);}
   .diary-cell.done{border-color:var(--good); background:rgba(122,155,82,.12);}
   .diary-cell span{font-size:.62rem; color:var(--text-dim); text-transform:uppercase;}
   .region-block{margin-bottom:14px;}
   .region-block .region-name{font-size:.85rem; color:var(--text); margin-bottom:6px; font-weight:600;}
- 
+
   .quest-list{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:8px;}
   .quest-item{display:flex; align-items:center; gap:8px; padding:8px 10px; border:1px solid var(--border-dim); border-radius:6px; font-size:.85rem;}
   .quest-item.done{border-color:var(--good); background:rgba(122,155,82,.1);}
   .quest-item input{width:auto;}
- 
+
   .cal-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:6px; margin-bottom:22px;}
   .cal-day-label{text-align:center; font-size:.65rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:.06em; padding-bottom:4px;}
   .cal-cell{min-height:78px; border:1px solid var(--border-dim); border-radius:6px; padding:6px; background:var(--bg-panel); font-size:.72rem; cursor:pointer;}
@@ -130,13 +130,13 @@
   .cal-cell .evt{margin-top:4px; background:var(--ember); color:#1a1305; border-radius:3px; padding:2px 4px; font-size:.65rem; margin-bottom:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
   .cal-nav{display:flex; align-items:center; gap:14px; margin-bottom:14px;}
   .cal-nav h3{margin:0; color:var(--gold); min-width:170px; text-align:center;}
- 
+
   .upcoming-evt{display:flex; justify-content:space-between; align-items:center; padding:10px 12px; border:1px solid var(--border-dim); border-radius:6px; margin-bottom:8px;}
   .upcoming-evt .when{color:var(--ember); font-family:'JetBrains Mono',monospace; font-size:.78rem;}
   .upcoming-evt .title{font-weight:600;}
   .upcoming-evt .tz-note{color:var(--text-dim); font-size:.7rem;}
   .del-btn{background:none; border:none; color:var(--bad); font-size:1rem;}
- 
+
   .modal-bg{position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; align-items:center; justify-content:center; z-index:50;}
   .modal-bg.show{display:flex;}
   .modal{background:var(--bg-panel-2); border:1px solid var(--border); border-radius:10px; padding:24px; width:90%; max-width:420px; box-shadow:var(--shadow);}
@@ -148,14 +148,17 @@
   .checks{display:flex; gap:10px; flex-wrap:wrap; margin-top:4px;}
   .checks label{display:flex; align-items:center; gap:5px; font-size:.78rem; color:var(--text); text-transform:none;}
   .checks input{width:auto;}
- 
+
   .filter-tabs{display:flex; gap:6px; flex-wrap:wrap;}
   .filter-tabs button{background:var(--bg-panel); border:1px solid var(--border-dim); color:var(--text-dim); padding:7px 14px; border-radius:6px; font-size:.8rem;}
   .filter-tabs button.active{color:var(--bg); background:var(--ember); border-color:var(--ember); font-weight:600;}
- 
+
   .gear-tiles{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:12px;}
-  .gear-tile{background:var(--bg-panel); border:1px solid var(--border-dim); border-radius:8px; padding:14px 15px; transition:border-color .15s ease;}
+  .gear-tile{position:relative; background:var(--bg-panel); border:1px solid var(--border-dim); border-radius:8px; padding:14px 15px; transition:border-color .15s ease, background .15s ease;}
   .gear-tile:hover{border-color:var(--border);}
+  .gear-tile.complete{border-color:var(--good); background:linear-gradient(160deg, rgba(90,168,138,.16), var(--bg-panel));}
+  .gear-tile.complete .count-badge{color:var(--good);}
+  .complete-badge{position:absolute; top:-9px; right:-9px; width:24px; height:24px; border-radius:50%; background:var(--good); color:#0d1a12; font-weight:800; font-size:.82rem; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,.45); border:2px solid var(--bg);}
   .gear-tile .tile-top{display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:10px;}
   .gear-tile .item-name{font-size:.88rem; font-weight:600; color:var(--text); line-height:1.25;}
   .gear-tile .cat-badge{font-size:.6rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:.05em; display:block; margin-top:2px;}
@@ -166,12 +169,12 @@
   .chip{width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.62rem; font-weight:700; border:1px solid var(--border-dim); color:var(--text-dim); cursor:pointer; background:var(--bg); transition:all .12s ease;}
   .chip:hover{border-color:var(--gold);}
   .chip.owned{background:var(--good); border-color:var(--good); color:#132008;}
- 
+
   .team-art{display:flex; justify-content:center; gap:14px; margin-bottom:20px;}
   .team-art svg{width:56px; height:78px; image-rendering:pixelated;}
   .team-art .char-wrap{display:flex; flex-direction:column; align-items:center; gap:6px;}
   .team-art .char-name{font-size:.6rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:.06em;}
- 
+
   .item-icon-wrap{width:34px; height:34px; flex:none; border:1px solid var(--border-dim); border-radius:6px; background:var(--bg); display:flex; align-items:center; justify-content:center; overflow:hidden;}
   .item-icon-wrap img.item-icon{width:26px; height:26px; object-fit:contain; image-rendering:pixelated;}
   .item-icon-fallback{display:none; width:100%; height:100%; align-items:center; justify-content:center; color:var(--ember);}
@@ -180,15 +183,15 @@
   .item-icon-wrap.icon-fallback .item-icon{display:none;}
   .item-icon-wrap.icon-fallback .item-icon-fallback{display:flex;}
   .tile-top .name-row{display:flex; gap:10px; align-items:flex-start;}
- 
+
   .total-col{background:rgba(125,216,255,.12); font-weight:700; color:var(--gold); text-align:center;}
   th.total-col{color:var(--gold); background:rgba(125,216,255,.08);}
- 
+
   .stat.spotlight{border-color:var(--ember); background:linear-gradient(160deg, var(--bg-panel-2), var(--bg-panel));}
   .stat.spotlight .label{display:flex; align-items:center; gap:5px;}
   .stat.spotlight .label svg{width:12px; height:12px; color:var(--ember);}
   #mvpSpotlightValue{transition:opacity .3s ease;}
- 
+
   .goals-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px;}
   .goal-card{background:var(--bg-panel); border:1px solid var(--border-dim); border-radius:8px; padding:18px 20px;}
   .goal-card h4{margin:0 0 4px; color:var(--gold); font-size:1rem; font-family:'Cinzel',serif;}
@@ -197,7 +200,7 @@
   .goal-item{display:flex; gap:10px; align-items:flex-start; font-size:.85rem; line-height:1.4; color:var(--text);}
   .goal-item .g-icon{width:18px; height:18px; flex:none; margin-top:2px; color:var(--ember);}
   .goal-item.empty{color:var(--text-dim); font-style:italic;}
- 
+
   .save-note{font-size:.72rem; color:var(--text-dim); text-align:center; margin-top:30px;}
   .empty-slot{opacity:.55; font-style:italic;}
   ::placeholder{color:#6b5c40;}
@@ -205,7 +208,7 @@
 </style>
 </head>
 <body>
- 
+
 <div class="topbar">
   <div class="brand" onclick="go('home')">
     <svg class="crest" viewBox="0 0 48 48" fill="none"><path d="M24 3 L42 12 V24 C42 35 34 43 24 45 C14 43 6 35 6 24 V12 Z" stroke="#4db8f0" stroke-width="2.5" fill="#153044"/><path d="M24 14 L28 22 H24 L26 30 L18 20 H22 L20 14 Z" fill="#7dd8ff"/></svg>
@@ -216,9 +219,9 @@
   </div>
   <div class="nav-links" id="navLinks"></div>
 </div>
- 
+
 <main>
- 
+
   <!-- HOME -->
   <section class="page active" id="page-home">
     <div class="hero">
@@ -230,31 +233,31 @@
     </div>
     <div class="tiles" id="homeTiles"></div>
   </section>
- 
+
   <!-- GEAR -->
   <section class="page" id="page-gear">
     <div class="page-head"><h2>Gear Progression</h2><button class="back" onclick="go('home')">← Home</button></div>
- 
+
     <div class="stat-grid" id="gearPlayerStats"></div>
- 
+
     <div class="row" style="justify-content:space-between; margin-bottom:16px;">
       <div class="filter-tabs" id="gearFilterTabs"></div>
     </div>
- 
+
     <div class="row" style="margin-bottom:18px;">
       <input id="newItemName" type="text" placeholder="Add an item or grind...">
       <select id="newItemCategory"></select>
       <button class="btn small" onclick="addGearItem()">Add</button>
     </div>
- 
+
     <div class="gear-tiles" id="gearItemGrid"></div>
- 
+
     <div class="card" style="margin-top:24px;">
       <h4>Team Notes &amp; Goals</h4>
       <textarea id="gearNotes" style="width:100%; min-height:80px; font-family:'Spectral',serif;" placeholder="e.g. Saving for a group ToB attempt, need everyone at fire cape first..." onchange="saveGearNotes()"></textarea>
     </div>
   </section>
- 
+
   <!-- BOSSES -->
   <section class="page" id="page-bosses">
     <div class="page-head"><h2>Boss KC Tracking</h2><button class="back" onclick="go('home')">← Home</button></div>
@@ -272,7 +275,7 @@
       </table>
     </div>
   </section>
- 
+
   <!-- CALENDAR -->
   <section class="page" id="page-calendar">
     <div class="page-head"><h2>Group Calendar</h2><button class="back" onclick="go('home')">← Home</button></div>
@@ -289,7 +292,7 @@
       <div id="upcomingList"></div>
     </div>
   </section>
- 
+
   <!-- QUESTS -->
   <section class="page" id="page-quests">
     <div class="page-head"><h2>Quests &amp; Diaries</h2><button class="back" onclick="go('home')">← Home</button></div>
@@ -303,7 +306,7 @@
       <div id="diaryContainer"></div>
     </div>
   </section>
- 
+
   <!-- SKILLS -->
   <section class="page" id="page-skills">
     <div class="page-head"><h2>Skill Levels &amp; Stats</h2><button class="back" onclick="go('home')">← Home</button></div>
@@ -319,18 +322,18 @@
       </table>
     </div>
   </section>
- 
+
   <!-- SMART GOALS -->
   <section class="page" id="page-goals">
     <div class="page-head"><h2>Smart Goals</h2><button class="back" onclick="go('home')">← Home</button></div>
     <p style="color:var(--text-dim); font-size:.8rem; margin-top:-14px; margin-bottom:22px;">Generated from each player's skills, boss KCs, gear ownership, and quest/diary progress — updates automatically as data changes.</p>
     <div class="goals-grid" id="goalsGrid"></div>
   </section>
- 
+
 </main>
- 
+
 <div class="save-note">Data is shared and editable by anyone with this link — it saves automatically for the whole clan.</div>
- 
+
 <!-- Event Modal -->
 <div class="modal-bg" id="eventModal">
   <div class="modal">
@@ -351,7 +354,7 @@
     </div>
   </div>
 </div>
- 
+
 <script>
 /* ---------------- DATA MODEL ---------------- */
 const PAGES = [
@@ -362,7 +365,7 @@ const PAGES = [
   {id:'skills', label:'Skill Levels', desc:'Current levels, XP, and who\'s closest to levelling up.', icon:'star'},
   {id:'goals', label:'Smart Goals', desc:'Personalised suggestions based on everyone\'s live data.', icon:'target'},
 ];
- 
+
 const ICONS = {
   sword:'<path d="M6 42 L28 20 M24 8 L40 24 L34 30 L18 14 Z" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 44 L9 39" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>',
   skull:'<path d="M24 6 C14 6 7 13 7 22 C7 28 10 32 13 35 V40 H35 V35 C38 32 41 28 41 22 C41 13 34 6 24 6 Z" stroke="currentColor" stroke-width="2.2" fill="none"/><circle cx="17" cy="21" r="3.4" fill="currentColor"/><circle cx="31" cy="21" r="3.4" fill="currentColor"/><path d="M20 40 L20 45 M28 40 L28 45" stroke="currentColor" stroke-width="2.2"/>',
@@ -371,7 +374,7 @@ const ICONS = {
   star:'<path d="M24 4 L29.5 18 L44 19.5 L33 29.5 L36.5 44 L24 36 L11.5 44 L15 29.5 L4 19.5 L18.5 18 Z" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linejoin="round"/>',
   target:'<circle cx="24" cy="24" r="18" stroke="currentColor" stroke-width="2.2" fill="none"/><circle cx="24" cy="24" r="10.5" stroke="currentColor" stroke-width="2.2" fill="none"/><circle cx="24" cy="24" r="3.5" fill="currentColor"/>'
 };
- 
+
 /* ---- pixel-art team header (original chibi sprites, not game assets) ---- */
 const PIXEL_GRID = [
   '  HHHH    ',
@@ -419,7 +422,7 @@ function renderTeamArt(){
   if(!el) return;
   const players = activePlayers();
   const roster = (players.length ? players : state.players).slice(0,4);
- 
+
   // reserve fixed colours for known names, then fill remaining players with unused palettes
   const usedIdx = new Set();
   const assigned = roster.map(p=>{
@@ -435,13 +438,13 @@ function renderTeamArt(){
       usedIdx.add(a.idx);
     }
   });
- 
+
   el.innerHTML = assigned.map(a=>{
     const palette = PIXEL_PALETTES[a.idx];
     return `<div class="char-wrap">${pixelCharSVG(palette)}<span class="char-name">${(a.p.rsn||'Open Slot').replace(/^GIM\s*/i,'')}</span></div>`;
   }).join('');
 }
- 
+
 /* ---- wiki item icons (best-effort live lookup, falls back to initials) ---- */
 const ICON_OVERRIDES = {
   'ancestral-robes-set': 'Ancestral robe top',
@@ -468,12 +471,12 @@ const CATEGORY_GLYPH = {
   'Skilling Gear': '<path d="M6 26 L18 14 M15 6 C19 6 23 10 23 14 C19 14 15 10 15 6 Z" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
   'Misc / QoL': '<path d="M9 12 H21 L23 24 C23 26.2 21 27.5 19 27.5 H11 C9 27.5 7 26.2 7 24 Z M12 12 C12 8.5 14 6 15 6 C16 6 18 8.5 18 12" stroke="currentColor" stroke-width="2.1" fill="none" stroke-linejoin="round"/>'
 };
- 
+
 const GEAR_CATEGORIES = ['PVM Gear','Skilling Gear','Misc / QoL'];
- 
+
 function slugify(name){ return name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,''); }
 function makeItems(list, category){ return list.map(name=>({id:slugify(name), name, category})); }
- 
+
 const DEFAULT_GEAR_ITEMS = [
   ...makeItems(['Fire Cape','Infernal Cape','Dragon Defender','Avernic Defender','Barrows Gloves',
     'Berserker Ring (i)','Ring of Suffering (i)','Amulet of Torture','Necklace of Anguish','Occult Necklace',
@@ -487,26 +490,26 @@ const DEFAULT_GEAR_ITEMS = [
     'Skills Necklace','Explorer\'s Ring 4','Bonecrusher','Herb Sack','Seed Box','Looting Bag','Coal Bag',
     'Gem Bag','Log Basket','Ring of Wealth','Quest Point Cape','Music Cape','Achievement Diary Cape'], 'Misc / QoL')
 ];
- 
+
 const DEFAULT_BOSSES = ['Vorkath','Zulrah','General Graardor','Kree\'Arra','K\'ril Tsutsaroth','Commander Zilyana',
   'Kraken','Cerberus','Thermonuclear Smoke Devil','Alchemical Hydra','Chambers of Xeric','Theatre of Blood',
   'Tombs of Amascut','Nex','Nightmare','The Whisperer','Duke Sucellus','The Leviathan','Vardorvis','Yama',
   'Corporeal Beast','King Black Dragon','Giant Mole','Barrows Chests','Wintertodt','Tempoross','Zalcano'];
- 
+
 const SKILLS = ['Attack','Defence','Strength','Hitpoints','Ranged','Prayer','Magic','Cooking','Woodcutting',
   'Fletching','Fishing','Firemaking','Crafting','Smithing','Mining','Herblore','Agility','Thieving','Slayer',
   'Farming','Runecraft','Hunter','Construction'];
- 
+
 const QUESTS = ['Dragon Slayer I','Dragon Slayer II','Monkey Madness I','Monkey Madness II','Song of the Elves',
   'Desert Treasure I','Desert Treasure II','A Night at the Theatre','Sins of the Father','Client of Kourend',
   'Priest in Peril','Recipe for Disaster','Legends\' Quest','While Guthix Sleeps','Barbarian Training',
   'Waterfall Quest','Heroes\' Quest','Lost City','Mourning\'s End Part II','Regicide','Roving Elves',
   'Underground Pass','Watchtower','Fairytale II','Contact!','Perilous Moons','Children of the Sun'];
- 
+
 const DIARY_REGIONS = ['Ardougne','Desert','Falador','Fremennik','Kandarin','Karamja','Kourend & Kebos',
   'Lumbridge & Draynor','Morytania','Varrock','Western Provinces','Wilderness'];
 const DIARY_TIERS = ['Easy','Medium','Hard','Elite'];
- 
+
 function defaultState(){
   return {
     players: [
@@ -524,13 +527,13 @@ function defaultState(){
     gimRank: null, gimRankManual: '', gimRankTrend: null
   };
 }
- 
+
 let state = defaultState();
 let events = [];
 let activePlayer = {quests:'p1', skills:'p1'};
 let gearFilter = 'All';
 let calCursor = new Date();
- 
+
 /* ---------------- STORAGE (backed by Cloudflare Pages Function + KV) ---------------- */
 async function apiGet(key){
   try{
@@ -560,7 +563,7 @@ function saveState(){
   saveTimer = setTimeout(()=> apiSet('clan-data', state), 250);
 }
 async function saveEvents(){ await apiSet('clan-events', events); }
- 
+
 /* ---------------- NAV ---------------- */
 function buildNav(){
   const nav = document.getElementById('navLinks');
@@ -578,7 +581,7 @@ function go(pageId){
   if(pageId==='goals') renderGoals();
   window.scrollTo({top:0, behavior:'smooth'});
 }
- 
+
 function buildHomeTiles(){
   document.getElementById('homeTiles').innerHTML = PAGES.map(p=>`
     <div class="tile" onclick="go('${p.id}')">
@@ -589,10 +592,10 @@ function buildHomeTiles(){
     </div>`).join('');
   renderTeamArt();
 }
- 
+
 function activePlayers(){ return state.players.filter(p=>p.rsn.trim()!==''); }
 function allSlots(){ return state.players; } // includes empty 5th slot for editing
- 
+
 /* ---------------- PLAYER TABS (shared helper) ---------------- */
 function renderPlayerTabs(containerId, key, onSelect){
   const el = document.getElementById(containerId);
@@ -613,32 +616,32 @@ function selectPlayer(key, id){
   if(key==='quests') renderQuests();
   if(key==='skills') renderSkills();
 }
- 
+
 /* ---------------- GEAR ---------------- */
 function initials(rsn){ return rsn.replace(/^GIM\s*/i,'').trim().slice(0,2).toUpperCase(); }
- 
+
 function itemsForFilter(){
   return gearFilter==='All' ? state.items : state.items.filter(it=>it.category===gearFilter);
 }
- 
+
 function playerCompletion(pid){
   const items = itemsForFilter();
   if(items.length===0) return 0;
   const owned = items.filter(it=> state.ownership[it.id] && state.ownership[it.id][pid]).length;
   return Math.round((owned/items.length)*100);
 }
- 
+
 function renderGear(){
   const players = activePlayers();
- 
+
   // filter tabs
   document.getElementById('gearFilterTabs').innerHTML = ['All', ...GEAR_CATEGORIES].map(cat=>
     `<button class="${gearFilter===cat?'active':''}" onclick="setGearFilter('${cat}')">${cat}</button>`).join('');
- 
+
   // category select for adding new items
   const sel = document.getElementById('newItemCategory');
   sel.innerHTML = GEAR_CATEGORIES.map(c=>`<option value="${c}">${c}</option>`).join('');
- 
+
   // per-player completion stats (respects current filter)
   document.getElementById('gearPlayerStats').innerHTML = players.map(p=>{
     const pct = playerCompletion(p.id);
@@ -648,7 +651,7 @@ function renderGear(){
       <div class="bar"><div style="width:${pct}%"></div></div>
     </div>`;
   }).join('') || '<p style="color:var(--text-dim); font-size:.85rem;">Add team members to see completion stats.</p>';
- 
+
   // item tiles
   const items = itemsForFilter();
   document.getElementById('gearItemGrid').innerHTML = items.map(it=>{
@@ -657,7 +660,9 @@ function renderGear(){
       const owned = !!(state.ownership[it.id] && state.ownership[it.id][p.id]);
       return `<div class="chip ${owned?'owned':''}" title="${p.rsn}" onclick="toggleOwnership('${it.id}','${p.id}')">${initials(p.rsn)}</div>`;
     }).join('');
-    return `<div class="gear-tile">
+    const isComplete = players.length>0 && ownedCount===players.length;
+    return `<div class="gear-tile${isComplete?' complete':''}">
+      ${isComplete?'<div class="complete-badge" title="Everyone on the team has this!">✓</div>':''}
       <div class="tile-top">
         <div class="name-row">
           <div class="item-icon-wrap">
@@ -677,7 +682,7 @@ function renderGear(){
       <div class="chip-row">${chips || '<span style="color:var(--text-dim); font-size:.75rem;">Add team members first</span>'}</div>
     </div>`;
   }).join('') || '<p style="color:var(--text-dim);">No items in this category yet — add one above.</p>';
- 
+
   document.getElementById('gearNotes').value = state.gearNotes || '';
 }
 function setGearFilter(cat){ gearFilter = cat; renderGear(); }
@@ -705,7 +710,7 @@ function saveGearNotes(){
   state.gearNotes = document.getElementById('gearNotes').value;
   saveState();
 }
- 
+
 /* ---------------- BOSSES ---------------- */
 function renderBosses(){
   const players = activePlayers();
@@ -727,7 +732,7 @@ function renderBosses(){
   }).join('');
   renderBossStats();
 }
- 
+
 let mvpTimer = null;
 function renderBossStats(){
   const players = activePlayers();
@@ -735,7 +740,7 @@ function renderBossStats(){
   if(!el) return;
   clearInterval(mvpTimer);
   if(players.length===0){ el.innerHTML=''; return; }
- 
+
   let grandTotal = 0;
   const bossTotals = {};
   state.bosses.forEach(boss=>{
@@ -744,10 +749,10 @@ function renderBossStats(){
     bossTotals[boss] = sum;
     grandTotal += sum;
   });
- 
+
   let topBoss = null, topVal = -1;
   Object.entries(bossTotals).forEach(([boss,val])=>{ if(val>topVal){ topVal=val; topBoss=boss; } });
- 
+
   // "solo carry" — the boss with the biggest single-player share of the team total
   let carryBoss = null, carryPlayer = null, carryShare = -1;
   state.bosses.forEach(boss=>{
@@ -759,7 +764,7 @@ function renderBossStats(){
       if(share > carryShare){ carryShare = share; carryBoss = boss; carryPlayer = p; }
     });
   });
- 
+
   el.innerHTML = `
     <div class="stat">
       <div class="label">Team Total KC</div>
@@ -815,7 +820,7 @@ function addBoss(){
   if(name && !state.bosses.includes(name)){ state.bosses.push(name); input.value=''; saveState(); renderBosses(); }
 }
 function removeBoss(i){ state.bosses.splice(i,1); saveState(); renderBosses(); }
- 
+
 /* ---------------- CALENDAR ---------------- */
 function renderCalendar(){
   const y = calCursor.getFullYear(), m = calCursor.getMonth();
@@ -839,7 +844,7 @@ function renderCalendar(){
     </div>`;
   }
   grid.innerHTML = labels + cells;
- 
+
   const upcoming = events.filter(e=> new Date(e.date+'T'+(e.time||'00:00')) >= new Date(new Date().toDateString()))
     .sort((a,b)=> (a.date+a.time).localeCompare(b.date+b.time));
   document.getElementById('upcomingList').innerHTML = upcoming.length ? upcoming.map(e=>{
@@ -868,7 +873,7 @@ function bstToEst(date, time){
   const suffix = dayShift ? ' (prev day)' : '';
   return `${String(est).padStart(2,'0')}:${String(mi).padStart(2,'0')}${suffix}`;
 }
- 
+
 let modalDate = null;
 function openEventModal(iso){
   modalDate = iso || new Date().toISOString().slice(0,10);
@@ -898,21 +903,21 @@ function saveEvent(){
   renderCalendar();
 }
 function deleteEvent(id){ events = events.filter(e=>e.id!==id); saveEvents(); renderCalendar(); }
- 
+
 /* ---------------- QUESTS / DIARIES ---------------- */
 function renderQuests(){
   renderPlayerTabs('questPlayerTabs','quests');
   const pid = activePlayer.quests;
   if(!state.quests[pid]) state.quests[pid] = {};
   if(!state.diaries[pid]) state.diaries[pid] = {};
- 
+
   document.getElementById('questList').innerHTML = QUESTS.map(q=>{
     const done = !!state.quests[pid][q];
     return `<label class="quest-item ${done?'done':''}">
       <input type="checkbox" ${done?'checked':''} onchange="toggleQuest('${pid}','${q.replace(/'/g,"\\'")}',this.checked)"> ${q}
     </label>`;
   }).join('');
- 
+
   document.getElementById('diaryContainer').innerHTML = DIARY_REGIONS.map(region=>`
     <div class="region-block">
       <div class="region-name">${region}</div>
@@ -929,7 +934,7 @@ function renderQuests(){
 }
 function toggleQuest(pid,q,val){ state.quests[pid][q]=val; saveState(); renderQuests(); }
 function toggleDiary(pid,key){ state.diaries[pid][key] = !state.diaries[pid][key]; saveState(); renderQuests(); }
- 
+
 /* ---------------- SKILLS ---------------- */
 function xpForLevel(level){
   let xp=0;
@@ -941,7 +946,7 @@ function levelForXp(xp){
   for(let l=1;l<=99;l++){ if(xpForLevel(l)<=xp) lvl=l; else break; }
   return lvl;
 }
- 
+
 const HISCORE_ACTIVITY_ORDER = [
   'Grid Points','League Points','Deadman Points','Bounty Hunter - Hunter','Bounty Hunter - Rogue',
   'Bounty Hunter (Legacy) - Hunter','Bounty Hunter (Legacy) - Rogue','Clue Scrolls (all)','Clue Scrolls (beginner)',
@@ -992,7 +997,7 @@ async function syncBossesForPlayer(pid, btn){
     btn.disabled = false; btn.textContent = originalText;
   }
 }
- 
+
 function parseHiscoreSkills(raw){
   const lines = raw.trim().split('\n');
   const skillLines = lines.slice(1, 1+SKILLS.length); // line 0 is "Overall"
@@ -1029,7 +1034,7 @@ function renderSkills(){
   const pid = activePlayer.skills;
   if(!state.skills[pid]) state.skills[pid] = {};
   SKILLS.forEach(s=>{ if(!state.skills[pid][s]) state.skills[pid][s] = {level: s==='Hitpoints'?10:1, xp:0}; });
- 
+
   const body = document.getElementById('skillsTableBody');
   body.innerHTML = SKILLS.map(s=>{
     const d = state.skills[pid][s];
@@ -1048,7 +1053,7 @@ function renderSkills(){
       </td>
     </tr>`;
   }).join('');
- 
+
   // stats
   const totalLevel = SKILLS.reduce((a,s)=>a+state.skills[pid][s].level,0);
   const totalXp = SKILLS.reduce((a,s)=>a+(state.skills[pid][s].xp||0),0);
@@ -1082,7 +1087,7 @@ function updateSkill(pid, skill, field, val){
   if(field==='xp') d.xp = Math.max(0, parseInt(val)||0);
   saveState(); renderSkills();
 }
- 
+
 /* ---------------- SMART GOALS ---------------- */
 const GOAL_ICONS = {
   skill: '<path d="M6 26 L18 14 M15 6 C19 6 23 10 23 14 C19 14 15 10 15 6 Z" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
@@ -1091,20 +1096,20 @@ const GOAL_ICONS = {
   quest: '<path d="M6 5 H21 V21 H10 C7.5 21 6 22.5 6 25 C6 22.5 7.5 21 10 21 M6 5 C6 5 6 7.5 8.5 7.5 M21 21 C21 23.5 22.5 25 25 25 C22.5 25 21 23.5 21 21 V5" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linejoin="round"/>',
   default: '<circle cx="15" cy="15" r="9" stroke="currentColor" stroke-width="1.8" fill="none"/><circle cx="15" cy="15" r="2.5" fill="currentColor"/>'
 };
- 
+
 function generateSmartGoals(pid, allPlayers){
   const goals = [];
   const otherPids = allPlayers.filter(p=>p.id!==pid).map(p=>p.id);
   const hasAnyData = state.skills[pid] || state.bossKc[pid] ||
     (state.ownership && Object.values(state.ownership).some(o=>o[pid])) || state.quests[pid];
- 
+
   // Skills: lowest-level trainable skills
   const skills = state.skills[pid] || {};
   const skillEntries = SKILLS.map(s=>({name:s, level:(skills[s]&&skills[s].level)||1}));
   skillEntries.filter(s=>s.level<99).sort((a,b)=>a.level-b.level).slice(0,2).forEach(s=>{
     goals.push({icon:'skill', text:`Level up ${s.name} — currently level ${s.level}, your lowest trainable skill.`});
   });
- 
+
   // Skills: close to next level
   Object.keys(skills).forEach(name=>{
     const d = skills[name];
@@ -1114,7 +1119,7 @@ function generateSmartGoals(pid, allPlayers){
       goals.push({icon:'skill', text:`Almost level ${d.level+1} ${name} — only ${remaining.toLocaleString()} XP away.`});
     }
   });
- 
+
   // Gear: items teammates already own that this player doesn't
   const gaps = state.items.map(it=>{
     const ownedByOthers = otherPids.filter(op=> state.ownership[it.id] && state.ownership[it.id][op]).length;
@@ -1124,7 +1129,7 @@ function generateSmartGoals(pid, allPlayers){
   gaps.slice(0,2).forEach(g=>{
     goals.push({icon:'gear', text:`Work toward ${g.item.name} — ${g.ownedByOthers}/${otherPids.length} teammates already have it.`});
   });
- 
+
   // Bosses: notably behind the team average
   const bossGaps = [];
   state.bosses.forEach(boss=>{
@@ -1136,11 +1141,11 @@ function generateSmartGoals(pid, allPlayers){
   bossGaps.sort((a,b)=>b.gap-a.gap).slice(0,2).forEach(g=>{
     goals.push({icon:'boss', text:`Get some ${g.boss} kills — teammates average ${Math.round(g.avgOthers)} KC, you're at ${g.myKc}.`});
   });
- 
+
   // Quests: next unfinished
   const nextQuest = QUESTS.find(q=> !(state.quests[pid] && state.quests[pid][q]));
   if(nextQuest) goals.push({icon:'quest', text:`Complete ${nextQuest} — next quest on your list.`});
- 
+
   // Diaries: the region you're closest to finishing
   let bestDiary = null, bestDone = -1;
   DIARY_REGIONS.forEach(region=>{
@@ -1152,7 +1157,7 @@ function generateSmartGoals(pid, allPlayers){
     if(nextTier && done>bestDone){ bestDone=done; bestDiary={region, tier:nextTier}; }
   });
   if(bestDiary) goals.push({icon:'quest', text:`Finish the ${bestDiary.region} ${bestDiary.tier} diary — you're closest to completing this one.`});
- 
+
   if(goals.length===0 && !hasAnyData){
     goals.push({icon:'default', text:'No data logged yet — sync skills/bosses or fill in gear and quests to see personalised goals here.'});
   } else if(goals.length===0){
@@ -1160,7 +1165,7 @@ function generateSmartGoals(pid, allPlayers){
   }
   return goals.slice(0,7);
 }
- 
+
 function renderGoals(){
   const players = activePlayers();
   const el = document.getElementById('goalsGrid');
@@ -1177,7 +1182,7 @@ function renderGoals(){
     </div>`;
   }).join('');
 }
- 
+
 /* ---------------- GROUP IRONMAN RANK ---------------- */
 function renderGimRank(){
   const el = document.getElementById('gimRankBadge');
@@ -1224,7 +1229,7 @@ async function syncGimRank(btn){
     renderGimRank();
   }
 }
- 
+
 /* ---------------- INIT ---------------- */
 async function init(){
   buildNav();
@@ -1238,6 +1243,3 @@ init();
 </script>
 </body>
 </html>
- 
-
-
