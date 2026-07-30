@@ -871,9 +871,8 @@ async function syncBossesForPlayer(pid, btn){
     alert('Could not sync ' + player.rsn + ': ' + e.message);
   }finally{
     btn.disabled = false; btn.textContent = originalText;
+    }
   }
-}
-}
 function parseHiscoreSkills(raw){
   const lines = raw.trim().split('\n');
   const skillLines = lines.slice(1, 1+SKILLS.length); // line 0 is "Overall"
