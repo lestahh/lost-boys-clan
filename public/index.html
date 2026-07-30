@@ -1,3 +1,200 @@
+
+Claude finished the response
+
+Verified boss list indexing discrepancies and confirmed missing entries
+Verified boss list indexing discrepancies and confirmed missing entries
+Nailed it — thank you for those two numbers, they let me actually solve this instead of guessing again.
+
+Here's what happened: I was wrongly treating the boss numbers already showing in the app (Zulrah 559, General Graardor 729, etc.) as "known-good" reference points, but those came from the same buggy mapping — so they weren't reliable ground truth either. Your two directly-confirmed numbers (Vet'ion 709, Vardorvis 16) let me trace the actual raw feed properly.
+
+The math lines up exactly with your hunch: there are 2 real categories missing from my list, sitting between Lunar Chests and Mimic — inserting 2 entries there shifts everything after it by exactly +2, which perfectly explains why Vardorvis/Venenatis/Vet'ion were each 2 slots off. (Side effect: this also means the Zulrah/General Graardor/etc. numbers you saw earlier were probably wrong too — once this is fixed and you re-sync, expect some of those to change.)
+
+The fix — find this line in HISCORE_ACTIVITY_ORDER:
+
+javascript
+  'Grotesque Guardians','Hespori','Kalphite Queen','King Black Dragon','Kraken',"Kree'Arra","K'ril Tsutsaroth",
+  'Lunar Chests','Mimic','Nex','Nightmare',"Phosani's Nightmare",'Obor','Phantom Muspah','Sarachnis','Scorpia',
+Replace it with:
+
+javascript
+  'Grotesque Guardians','Hespori','Kalphite Queen','King Black Dragon','Kraken',"Kree'Arra","K'ril Tsutsaroth",
+  'Lunar Chests','Mad Angel','Maggot King','Mimic','Nex','Nightmare',"Phosani's Nightmare",'Obor','Phantom Muspah','Sarachnis','Scorpia',
+(just inserting 'Mad Angel','Maggot King', between 'Lunar Chests' and 'Mimic')
+
+Commit that, wait for redeploy, then re-click sync for all 4 players on the Boss KC page — this will correct not just Vardorvis/Venenatis/Vet'ion/Vorkath but potentially Wintertodt/Yama/Zalcano/Zulrah too, since they were all downstream of the same gap.
+
+Once you've re-synced, spot-check Briistol's Vardorvis/Venenatis/Vet'ion against the numbers you gave me — if those three land right, everything after them should now be correctly aligned too.
+
+can you add a combined total of everyone as an extra collumn which stands out on the boss KC page?
+Also can you add interactive tiles above showing "top combined kill bosses" and other things like MVPs on a boss which randomly changes and other suggestions just make it look clean
+
+
+Architected interactive stat tiles and totals column with rotating MVP spotlight
+Architected interactive stat tiles and totals column with rotating MVP spotlight
+Now let's add the stat tiles container to the Boss KC page HTML:
+
+
+Add a stat tiles container to the boss page for the new insight tiles
+Add a stat tiles container to the boss page for the new insight tiles
+Now add CSS for the total column and MVP spotlight tile:
+
+
+Add CSS for the standout total column and the MVP spotlight tile
+Add CSS for the standout total column and the MVP spotlight tile
+Now update renderBosses() to add the Total column and call the new stats function:
+
+
+Verified interval cleanup mechanism handles automatic element removal
+Verified interval cleanup mechanism handles automatic element removal
+Clean. Here's the full updated file:
+
+
+Ran a command, read a file
+Ran a command, read a file
+Same routine as before: open that file, select all, copy, paste over public/index.html in GitHub, commit.
+
+This build includes both fixes bundled together — the Mad Angel/Maggot King insertion from before (so definitely re-sync everyone's bosses after this deploys) plus the new stuff you asked for:
+
+Total column — highlighted in blue/gold on the right of the boss table, sums all 4 players per boss.
+Team Total KC tile — grand total across everyone and every boss.
+Most-Killed Boss tile — whichever boss has the highest combined team KC.
+Solo Carry tile — whoever's doing the heaviest lifting on a single boss (e.g. "Briistol — 73% of Zulrah").
+MVP Spotlight — the standout tile, glowing border, picks a random boss with logged KCs every ~4.5s and shows who's leading it, with a soft crossfade between picks.
+Once deployed, re-sync all 4 players on the Boss KC page so the totals reflect the corrected numbers.
+
+
+Index
+Code · HTML 
+on home page please remove "EST. This Account" instead put Lost Boys Clan above and then "group ironman" below.
+Also on home page add a tab for smart goals. In here (seperate page) I want to see all 4 members listed with bullet points/smart goals that it thinks would be good for each user I.E level up crafting, or try get these boss items cos everyone else has it etc. i want it to be smart about the goals based off the data stored on the site / synced from highscores
+
+I'd also like on the home page for it to pull current group ironman rank which can be seen on this page 
+https://secure.runescape.com/m=hiscore_oldschool_ironman/group-ironman/?groupName=lostboysclan
+
+
+Architected multi-feature update: hero restructure, Smart Goals page, GIM rank scraping
+Architected multi-feature update: hero restructure, Smart Goals page, GIM rank scraping
+Good set of asks — let me tackle these one at a time. Quick honest flag on the last one: I tried fetching that exact URL myself just now and Jagex's bot protection blocked it outright, so the group rank auto-fetch is genuinely uncertain to work even server-side. I'll build it as a best-effort auto-sync with a manual fallback field, so the feature is useful either way.
+
+
+Edited 2 files
+Edited 2 files
+Now let's add CSS for the Smart Goals page:
+
+
+Add CSS for the Smart Goals cards
+Add CSS for the Smart Goals cards
+Now add the Smart Goals page HTML section (after the Skills section, before </main>):
+
+
+Architected multi-feature integration for homepage and smart goals page
+Architected multi-feature integration for homepage and smart goals page
+Now add the nav entry, icon, and page routing:
+
+
+Add Smart Goals to the PAGES list and give it a target icon
+Add Smart Goals to the PAGES list and give it a target icon
+Now wire up routing in go(), and add gimRank/gimRankManual to default state:
+
+
+Edited 2 files
+Edited 2 files
+Now let's add the Smart Goals generator logic and GIM rank functions. I'll insert them right before the /* ---------------- INIT ---------------- */ section:
+
+
+Add Smart Goals generation logic and GIM rank sync functions
+Add Smart Goals generation logic and GIM rank sync functions
+Now hook renderGimRank() into init:
+
+
+Call renderGimRank during init so the badge shows on load
+Call renderGimRank during init so the badge shows on load
+Let's verify syntax:
+
+
+Verifying syntax after all the new additions
+Verifying syntax after all the new additions
+Clean. Now let's create the updated worker.js with the new GIM rank endpoint:
+
+
+Created 2 files, ran a command
+Created 2 files, ran a command
+Now let's finalize the index.html and present both files:
+
+
+Diagnosing regex validation limitations and reconsidering verification methodology
+Diagnosing regex validation limitations and reconsidering verification methodology
+Both files check out cleanly.
+
+
+Presented 2 files
+Presented 2 files
+Same routine — replace both files in GitHub (public/index.html and worker.js at repo root), select-all-and-paste both, commit. Here's what's in this update:
+
+Hero: "Lost Boys Clan" is now the big heading, "Group Ironman" sits below it as the subtitle, "Est. this account" is gone.
+
+Smart Goals page (new home tile) — for each of the 4 players it generates personalized bullet points by cross-referencing their own data against the team's:
+
+Lowest-level skills to train, and any skill close to leveling
+Gear items teammates already have that they don't
+Bosses where they're notably behind the team average KC
+Their next unfinished quest
+The achievement diary region they're closest to completing
+It's all computed live from what's already stored on the site — no external calls, so it's fully reliable and updates instantly as data changes.
+
+Group rank badge — sits under the subtitle on the home page with a ⟳ sync button. Being upfront: I tested fetching that leaderboard page myself and Jagex's bot protection blocked it outright, so this is genuinely a coin flip whether the Worker (different IP/headers) fares better. If auto-sync fails, it'll prompt you to paste in the rank manually instead, so the badge is never just broken — worst case it's a manual number you update occasionally.
+
+Try the rank sync first and let me know what happens — if it fails, tell me what error it shows and I'll either debug it like we did with the boss list, or we just lean on the manual fallback permanently.
+
+
+Index
+Code · HTML 
+
+Worker
+JS 
+So under Lost Boys Clan it should say 
+Current Team Rank: RANK GOES HERE
+You can then click refresh on it, to update if the rank goes down, if we go down a little green arrow indicator will go on and if it goes up it will be a red indicator
+
+
+Architecting rank display with directional indicators and refresh functionality
+Architecting rank display with directional indicators and refresh functionality
+Now let's add CSS for the trend arrow, then update the render/sync logic:
+
+
+Add CSS for the rank trend arrow indicator
+Add CSS for the rank trend arrow indicator
+Now update the render/sync logic:
+
+
+Identified display formatting issue with null rank values
+Identified display formatting issue with null rank values
+Let's verify and ship:
+
+
+Ran a command, read a file
+Ran a command, read a file
+Only index.html needed this change — worker.js from last time is unaffected, no need to re-paste that one. Just replace public/index.html again with this version.
+
+What changed:
+
+Label now reads "Current Team Rank: #1,234"
+Clicking ⟳ compares the new rank against the last one it saw. Since a lower rank number means a better placement, a green ▼ shows when the rank improves (goes down numerically) and a red ▲ shows when it drops (goes up numerically) — matches exactly what you described.
+The trend persists on the badge until the next sync, so it's still visible if someone reloads the page later.
+Manual fallback entries also feed into the trend comparison, so it stays consistent whether the number came from auto-sync or was typed in.
+
+Index
+Code · HTML 
+
+
+
+
+
+
+Claude is AI and can make mistakes. Please double-check responses.
+
+
+Index · HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,7 +230,7 @@
   button{font-family:inherit; cursor:pointer;}
   input, select{font-family:'JetBrains Mono',monospace; background:var(--bg); color:var(--text); border:1px solid var(--border-dim); border-radius:4px; padding:5px 7px;}
   input:focus, select:focus{outline:1px solid var(--gold);}
-
+ 
   /* ---- top bar ---- */
   .topbar{display:flex; align-items:center; justify-content:space-between; padding:14px 26px; border-bottom:1px solid var(--border-dim); background:linear-gradient(180deg, rgba(0,0,0,.25), transparent);}
   .brand{display:flex; align-items:center; gap:12px; cursor:pointer;}
@@ -43,18 +240,26 @@
   .nav-links{display:flex; gap:4px; flex-wrap:wrap;}
   .nav-links button{background:transparent; border:1px solid transparent; color:var(--text-dim); padding:7px 12px; border-radius:5px; font-size:.82rem; letter-spacing:.04em;}
   .nav-links button.active, .nav-links button:hover{color:var(--gold); border-color:var(--border-dim); background:rgba(215,173,63,.06);}
-
+ 
   main{max-width:1180px; margin:0 auto; padding:28px 22px 80px;}
   .page{display:none;}
   .page.active{display:block; animation:fade .25s ease;}
   @keyframes fade{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;}}
-
+ 
   /* ---- home ---- */
   .hero{text-align:center; padding:36px 10px 30px; border-bottom:1px solid var(--border-dim); margin-bottom:34px;}
-  .hero .eyebrow{color:var(--ember); text-transform:uppercase; letter-spacing:.3em; font-size:.72rem; margin-bottom:10px;}
-  .hero h1{font-size:2.6rem; margin:0 0 8px; color:var(--gold); text-shadow:0 2px 0 rgba(0,0,0,.5);}
+  .hero .eyebrow{color:var(--ember); text-transform:uppercase; letter-spacing:.3em; font-size:.72rem; margin:6px 0 16px;}
+  .hero h1{font-size:2.6rem; margin:0 0 4px; color:var(--gold); text-shadow:0 2px 0 rgba(0,0,0,.5);}
   .hero p{color:var(--text-dim); max-width:520px; margin:0 auto;}
-
+ 
+  .gim-rank-badge{display:inline-flex; align-items:center; gap:10px; background:var(--bg-panel); border:1px solid var(--border-dim); border-radius:20px; padding:8px 18px; margin-bottom:20px; font-size:.8rem; color:var(--text-dim);}
+  .gim-rank-badge .rank-value{color:var(--gold); font-family:'JetBrains Mono',monospace; font-weight:700; font-size:.9rem;}
+  .gim-rank-badge button{background:none; border:none; color:var(--text-dim); cursor:pointer; font-size:.85rem; padding:2px;}
+  .gim-rank-badge button:hover{color:var(--gold);}
+  .rank-trend{font-size:.8rem; font-weight:700;}
+  .rank-trend.improved{color:var(--good);}
+  .rank-trend.worse{color:var(--bad);}
+ 
   .tiles{display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:18px;}
   .tile{position:relative; background:linear-gradient(180deg, var(--bg-panel-2), var(--bg-panel)); border:1px solid var(--border); border-radius:8px; padding:22px 20px; text-align:left; box-shadow:var(--shadow); transition:transform .15s ease, border-color .15s ease;}
   .tile:hover{transform:translateY(-3px); border-color:var(--gold); cursor:pointer;}
@@ -62,56 +267,56 @@
   .tile h3{margin:0 0 6px; font-size:1.05rem; color:var(--gold);}
   .tile p{margin:0; color:var(--text-dim); font-size:.85rem; line-height:1.4;}
   .tile .go{position:absolute; top:18px; right:18px; color:var(--border); font-size:1.1rem;}
-
+ 
   /* ---- shared bits ---- */
   .page-head{display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:22px; padding-bottom:14px; border-bottom:1px solid var(--border-dim);}
   .page-head h2{margin:0; color:var(--gold); font-size:1.5rem;}
   .page-head .back{color:var(--text-dim); font-size:.8rem; background:none; border:1px solid var(--border-dim); padding:5px 10px; border-radius:5px;}
   .page-head .back:hover{color:var(--gold); border-color:var(--gold);}
-
+ 
   .card{background:var(--bg-panel); border:1px solid var(--border-dim); border-radius:8px; padding:18px 20px; margin-bottom:18px;}
   .card h4{margin:0 0 12px; color:var(--gold); font-size:.95rem; text-transform:uppercase; letter-spacing:.08em;}
-
+ 
   table{width:100%; border-collapse:collapse; font-size:.85rem;}
   th, td{padding:7px 8px; text-align:left; border-bottom:1px solid var(--border-dim);}
   th{color:var(--text-dim); font-weight:600; text-transform:uppercase; font-size:.68rem; letter-spacing:.06em;}
   td input[type=number], td input[type=text]{width:100%; min-width:60px;}
   tr:hover td{background:rgba(215,173,63,.04);}
-
+ 
   .player-tabs{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:18px;}
   .player-tabs button{background:var(--bg-panel); border:1px solid var(--border-dim); color:var(--text-dim); padding:8px 14px; border-radius:6px; font-size:.82rem;}
   .player-tabs button.active{color:var(--bg); background:var(--gold); border-color:var(--gold); font-weight:600;}
   .player-tabs .tz{font-size:.65rem; opacity:.7; display:block;}
-
+ 
   .stat-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:20px;}
   .stat{background:var(--bg-panel); border:1px solid var(--border-dim); border-radius:8px; padding:14px 16px;}
   .stat .label{font-size:.68rem; text-transform:uppercase; letter-spacing:.08em; color:var(--text-dim); margin-bottom:4px;}
   .stat .value{font-size:1.35rem; color:var(--gold); font-family:'JetBrains Mono',monospace;}
   .stat .value small{font-size:.6rem; color:var(--text-dim); display:block; font-family:'Spectral',serif; margin-top:2px;}
-
+ 
   .skill-row td.name{color:var(--text);}
   .bar{height:5px; background:var(--border-dim); border-radius:3px; overflow:hidden; margin-top:3px;}
   .bar > div{height:100%; background:var(--ember);}
-
+ 
   .btn{background:var(--gold); color:#1a1305; border:none; padding:8px 16px; border-radius:6px; font-weight:600; font-size:.82rem;}
   .btn:hover{background:#e8c25a;}
   .btn.ghost{background:transparent; color:var(--gold); border:1px solid var(--border);}
   .btn.ghost:hover{border-color:var(--gold);}
   .btn.small{padding:5px 10px; font-size:.75rem;}
   .row{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
-
+ 
   .diary-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:6px;}
   .diary-cell{display:flex; flex-direction:column; align-items:center; gap:4px; padding:8px 4px; border:1px solid var(--border-dim); border-radius:6px; background:var(--bg);}
   .diary-cell.done{border-color:var(--good); background:rgba(122,155,82,.12);}
   .diary-cell span{font-size:.62rem; color:var(--text-dim); text-transform:uppercase;}
   .region-block{margin-bottom:14px;}
   .region-block .region-name{font-size:.85rem; color:var(--text); margin-bottom:6px; font-weight:600;}
-
+ 
   .quest-list{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:8px;}
   .quest-item{display:flex; align-items:center; gap:8px; padding:8px 10px; border:1px solid var(--border-dim); border-radius:6px; font-size:.85rem;}
   .quest-item.done{border-color:var(--good); background:rgba(122,155,82,.1);}
   .quest-item input{width:auto;}
-
+ 
   .cal-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:6px; margin-bottom:22px;}
   .cal-day-label{text-align:center; font-size:.65rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:.06em; padding-bottom:4px;}
   .cal-cell{min-height:78px; border:1px solid var(--border-dim); border-radius:6px; padding:6px; background:var(--bg-panel); font-size:.72rem; cursor:pointer;}
@@ -122,13 +327,13 @@
   .cal-cell .evt{margin-top:4px; background:var(--ember); color:#1a1305; border-radius:3px; padding:2px 4px; font-size:.65rem; margin-bottom:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
   .cal-nav{display:flex; align-items:center; gap:14px; margin-bottom:14px;}
   .cal-nav h3{margin:0; color:var(--gold); min-width:170px; text-align:center;}
-
+ 
   .upcoming-evt{display:flex; justify-content:space-between; align-items:center; padding:10px 12px; border:1px solid var(--border-dim); border-radius:6px; margin-bottom:8px;}
   .upcoming-evt .when{color:var(--ember); font-family:'JetBrains Mono',monospace; font-size:.78rem;}
   .upcoming-evt .title{font-weight:600;}
   .upcoming-evt .tz-note{color:var(--text-dim); font-size:.7rem;}
   .del-btn{background:none; border:none; color:var(--bad); font-size:1rem;}
-
+ 
   .modal-bg{position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; align-items:center; justify-content:center; z-index:50;}
   .modal-bg.show{display:flex;}
   .modal{background:var(--bg-panel-2); border:1px solid var(--border); border-radius:10px; padding:24px; width:90%; max-width:420px; box-shadow:var(--shadow);}
@@ -140,11 +345,11 @@
   .checks{display:flex; gap:10px; flex-wrap:wrap; margin-top:4px;}
   .checks label{display:flex; align-items:center; gap:5px; font-size:.78rem; color:var(--text); text-transform:none;}
   .checks input{width:auto;}
-
+ 
   .filter-tabs{display:flex; gap:6px; flex-wrap:wrap;}
   .filter-tabs button{background:var(--bg-panel); border:1px solid var(--border-dim); color:var(--text-dim); padding:7px 14px; border-radius:6px; font-size:.8rem;}
   .filter-tabs button.active{color:var(--bg); background:var(--ember); border-color:var(--ember); font-weight:600;}
-
+ 
   .gear-tiles{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:12px;}
   .gear-tile{background:var(--bg-panel); border:1px solid var(--border-dim); border-radius:8px; padding:14px 15px; transition:border-color .15s ease;}
   .gear-tile:hover{border-color:var(--border);}
@@ -158,12 +363,12 @@
   .chip{width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.62rem; font-weight:700; border:1px solid var(--border-dim); color:var(--text-dim); cursor:pointer; background:var(--bg); transition:all .12s ease;}
   .chip:hover{border-color:var(--gold);}
   .chip.owned{background:var(--good); border-color:var(--good); color:#132008;}
-
+ 
   .team-art{display:flex; justify-content:center; gap:14px; margin-bottom:20px;}
   .team-art svg{width:56px; height:78px; image-rendering:pixelated;}
   .team-art .char-wrap{display:flex; flex-direction:column; align-items:center; gap:6px;}
   .team-art .char-name{font-size:.6rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:.06em;}
-
+ 
   .item-icon-wrap{width:34px; height:34px; flex:none; border:1px solid var(--border-dim); border-radius:6px; background:var(--bg); display:flex; align-items:center; justify-content:center; overflow:hidden;}
   .item-icon-wrap img.item-icon{width:26px; height:26px; object-fit:contain; image-rendering:pixelated;}
   .item-icon-fallback{display:none; width:100%; height:100%; align-items:center; justify-content:center; color:var(--ember);}
@@ -172,7 +377,24 @@
   .item-icon-wrap.icon-fallback .item-icon{display:none;}
   .item-icon-wrap.icon-fallback .item-icon-fallback{display:flex;}
   .tile-top .name-row{display:flex; gap:10px; align-items:flex-start;}
-
+ 
+  .total-col{background:rgba(125,216,255,.12); font-weight:700; color:var(--gold); text-align:center;}
+  th.total-col{color:var(--gold); background:rgba(125,216,255,.08);}
+ 
+  .stat.spotlight{border-color:var(--ember); background:linear-gradient(160deg, var(--bg-panel-2), var(--bg-panel));}
+  .stat.spotlight .label{display:flex; align-items:center; gap:5px;}
+  .stat.spotlight .label svg{width:12px; height:12px; color:var(--ember);}
+  #mvpSpotlightValue{transition:opacity .3s ease;}
+ 
+  .goals-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px;}
+  .goal-card{background:var(--bg-panel); border:1px solid var(--border-dim); border-radius:8px; padding:18px 20px;}
+  .goal-card h4{margin:0 0 4px; color:var(--gold); font-size:1rem; font-family:'Cinzel',serif;}
+  .goal-card .sub{font-size:.68rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:.06em; margin-bottom:14px;}
+  .goal-list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:11px;}
+  .goal-item{display:flex; gap:10px; align-items:flex-start; font-size:.85rem; line-height:1.4; color:var(--text);}
+  .goal-item .g-icon{width:18px; height:18px; flex:none; margin-top:2px; color:var(--ember);}
+  .goal-item.empty{color:var(--text-dim); font-style:italic;}
+ 
   .save-note{font-size:.72rem; color:var(--text-dim); text-align:center; margin-top:30px;}
   .empty-slot{opacity:.55; font-style:italic;}
   ::placeholder{color:#6b5c40;}
@@ -180,7 +402,7 @@
 </style>
 </head>
 <body>
-
+ 
 <div class="topbar">
   <div class="brand" onclick="go('home')">
     <svg class="crest" viewBox="0 0 48 48" fill="none"><path d="M24 3 L42 12 V24 C42 35 34 43 24 45 C14 43 6 35 6 24 V12 Z" stroke="#4db8f0" stroke-width="2.5" fill="#153044"/><path d="M24 14 L28 22 H24 L26 30 L18 20 H22 L20 14 Z" fill="#7dd8ff"/></svg>
@@ -191,52 +413,54 @@
   </div>
   <div class="nav-links" id="navLinks"></div>
 </div>
-
+ 
 <main>
-
+ 
   <!-- HOME -->
   <section class="page active" id="page-home">
     <div class="hero">
       <div class="team-art" id="teamArt"></div>
-      <div class="eyebrow">Group Ironman &middot; Est. this account</div>
       <h1>Lost Boys Clan</h1>
+      <div class="eyebrow">Group Ironman</div>
+      <div class="gim-rank-badge" id="gimRankBadge"></div>
       <p>One team, one bank, no trading. Track gear, grinds, bosses and quest progress in one place.</p>
     </div>
     <div class="tiles" id="homeTiles"></div>
   </section>
-
+ 
   <!-- GEAR -->
   <section class="page" id="page-gear">
     <div class="page-head"><h2>Gear Progression</h2><button class="back" onclick="go('home')">← Home</button></div>
-
+ 
     <div class="stat-grid" id="gearPlayerStats"></div>
-
+ 
     <div class="row" style="justify-content:space-between; margin-bottom:16px;">
       <div class="filter-tabs" id="gearFilterTabs"></div>
     </div>
-
+ 
     <div class="row" style="margin-bottom:18px;">
       <input id="newItemName" type="text" placeholder="Add an item or grind...">
       <select id="newItemCategory"></select>
       <button class="btn small" onclick="addGearItem()">Add</button>
     </div>
-
+ 
     <div class="gear-tiles" id="gearItemGrid"></div>
-
+ 
     <div class="card" style="margin-top:24px;">
       <h4>Team Notes &amp; Goals</h4>
       <textarea id="gearNotes" style="width:100%; min-height:80px; font-family:'Spectral',serif;" placeholder="e.g. Saving for a group ToB attempt, need everyone at fire cape first..." onchange="saveGearNotes()"></textarea>
     </div>
   </section>
-
+ 
   <!-- BOSSES -->
   <section class="page" id="page-bosses">
     <div class="page-head"><h2>Boss KC Tracking</h2><button class="back" onclick="go('home')">← Home</button></div>
+    <div class="stat-grid" id="bossStatTiles" style="margin-bottom:22px;"></div>
     <div class="row" style="margin-bottom:14px;">
       <input id="newBossName" type="text" placeholder="Add a boss/activity...">
       <button class="btn small" onclick="addBoss()">Add</button>
     </div>
-    <p style="color:var(--text-dim); font-size:.78rem; margin-top:-8px;">Boss KCs stay manual entry — Jagex adds new bosses to the hiscores over time, which shifts the data order and makes auto-parsing unreliable. Skill levels sync automatically (see the Skills page); for KCs, open a player's official hiscores page below and copy the numbers across.</p>
+    <p style="color:var(--text-dim); font-size:.78rem; margin-top:-8px;">Boss KCs sync from the hiscores using the wiki's official named activity list. If a boss you're tracking isn't syncing, it may be brand new — add it to the list above and let us know.</p>
     <div class="row" id="bossHiscoreLinks" style="margin-bottom:16px;"></div>
     <div class="card">
       <table>
@@ -245,7 +469,7 @@
       </table>
     </div>
   </section>
-
+ 
   <!-- CALENDAR -->
   <section class="page" id="page-calendar">
     <div class="page-head"><h2>Group Calendar</h2><button class="back" onclick="go('home')">← Home</button></div>
@@ -262,7 +486,7 @@
       <div id="upcomingList"></div>
     </div>
   </section>
-
+ 
   <!-- QUESTS -->
   <section class="page" id="page-quests">
     <div class="page-head"><h2>Quests &amp; Diaries</h2><button class="back" onclick="go('home')">← Home</button></div>
@@ -276,7 +500,7 @@
       <div id="diaryContainer"></div>
     </div>
   </section>
-
+ 
   <!-- SKILLS -->
   <section class="page" id="page-skills">
     <div class="page-head"><h2>Skill Levels &amp; Stats</h2><button class="back" onclick="go('home')">← Home</button></div>
@@ -292,11 +516,18 @@
       </table>
     </div>
   </section>
-
+ 
+  <!-- SMART GOALS -->
+  <section class="page" id="page-goals">
+    <div class="page-head"><h2>Smart Goals</h2><button class="back" onclick="go('home')">← Home</button></div>
+    <p style="color:var(--text-dim); font-size:.8rem; margin-top:-14px; margin-bottom:22px;">Generated from each player's skills, boss KCs, gear ownership, and quest/diary progress — updates automatically as data changes.</p>
+    <div class="goals-grid" id="goalsGrid"></div>
+  </section>
+ 
 </main>
-
+ 
 <div class="save-note">Data is shared and editable by anyone with this link — it saves automatically for the whole clan.</div>
-
+ 
 <!-- Event Modal -->
 <div class="modal-bg" id="eventModal">
   <div class="modal">
@@ -317,7 +548,7 @@
     </div>
   </div>
 </div>
-
+ 
 <script>
 /* ---------------- DATA MODEL ---------------- */
 const PAGES = [
@@ -326,16 +557,18 @@ const PAGES = [
   {id:'calendar', label:'Calendar', desc:'Plan group sessions — bossing, questing, whatever\'s next.', icon:'calendar'},
   {id:'quests', label:'Quests & Diaries', desc:'Quest completion and achievement diary tiers.', icon:'scroll'},
   {id:'skills', label:'Skill Levels', desc:'Current levels, XP, and who\'s closest to levelling up.', icon:'star'},
+  {id:'goals', label:'Smart Goals', desc:'Personalised suggestions based on everyone\'s live data.', icon:'target'},
 ];
-
+ 
 const ICONS = {
   sword:'<path d="M6 42 L28 20 M24 8 L40 24 L34 30 L18 14 Z" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 44 L9 39" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>',
   skull:'<path d="M24 6 C14 6 7 13 7 22 C7 28 10 32 13 35 V40 H35 V35 C38 32 41 28 41 22 C41 13 34 6 24 6 Z" stroke="currentColor" stroke-width="2.2" fill="none"/><circle cx="17" cy="21" r="3.4" fill="currentColor"/><circle cx="31" cy="21" r="3.4" fill="currentColor"/><path d="M20 40 L20 45 M28 40 L28 45" stroke="currentColor" stroke-width="2.2"/>',
   calendar:'<rect x="7" y="10" width="34" height="30" rx="3" stroke="currentColor" stroke-width="2.2" fill="none"/><path d="M7 18 H41 M15 6 V13 M33 6 V13" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="13" y="24" width="6" height="6" fill="currentColor"/><rect x="24" y="24" width="6" height="6" fill="currentColor"/>',
   scroll:'<path d="M10 8 H34 V34 H16 C12 34 10 36 10 40 C10 36 12 34 16 34 M10 8 C10 8 10 12 14 12 M34 34 C34 38 36 40 40 40 C36 40 34 38 34 34 V8" stroke="currentColor" stroke-width="2.1" fill="none" stroke-linejoin="round"/><path d="M16 15 H30 M16 21 H30 M16 27 H26" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
-  star:'<path d="M24 4 L29.5 18 L44 19.5 L33 29.5 L36.5 44 L24 36 L11.5 44 L15 29.5 L4 19.5 L18.5 18 Z" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linejoin="round"/>'
+  star:'<path d="M24 4 L29.5 18 L44 19.5 L33 29.5 L36.5 44 L24 36 L11.5 44 L15 29.5 L4 19.5 L18.5 18 Z" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linejoin="round"/>',
+  target:'<circle cx="24" cy="24" r="18" stroke="currentColor" stroke-width="2.2" fill="none"/><circle cx="24" cy="24" r="10.5" stroke="currentColor" stroke-width="2.2" fill="none"/><circle cx="24" cy="24" r="3.5" fill="currentColor"/>'
 };
-
+ 
 /* ---- pixel-art team header (original chibi sprites, not game assets) ---- */
 const PIXEL_GRID = [
   '  HHHH    ',
@@ -383,7 +616,7 @@ function renderTeamArt(){
   if(!el) return;
   const players = activePlayers();
   const roster = (players.length ? players : state.players).slice(0,4);
-
+ 
   // reserve fixed colours for known names, then fill remaining players with unused palettes
   const usedIdx = new Set();
   const assigned = roster.map(p=>{
@@ -399,13 +632,13 @@ function renderTeamArt(){
       usedIdx.add(a.idx);
     }
   });
-
+ 
   el.innerHTML = assigned.map(a=>{
     const palette = PIXEL_PALETTES[a.idx];
     return `<div class="char-wrap">${pixelCharSVG(palette)}<span class="char-name">${(a.p.rsn||'Open Slot').replace(/^GIM\s*/i,'')}</span></div>`;
   }).join('');
 }
-
+ 
 /* ---- wiki item icons (best-effort live lookup, falls back to initials) ---- */
 const ICON_OVERRIDES = {
   'ancestral-robes-set': 'Ancestral robe top',
@@ -432,12 +665,12 @@ const CATEGORY_GLYPH = {
   'Skilling Gear': '<path d="M6 26 L18 14 M15 6 C19 6 23 10 23 14 C19 14 15 10 15 6 Z" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
   'Misc / QoL': '<path d="M9 12 H21 L23 24 C23 26.2 21 27.5 19 27.5 H11 C9 27.5 7 26.2 7 24 Z M12 12 C12 8.5 14 6 15 6 C16 6 18 8.5 18 12" stroke="currentColor" stroke-width="2.1" fill="none" stroke-linejoin="round"/>'
 };
-
+ 
 const GEAR_CATEGORIES = ['PVM Gear','Skilling Gear','Misc / QoL'];
-
+ 
 function slugify(name){ return name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,''); }
 function makeItems(list, category){ return list.map(name=>({id:slugify(name), name, category})); }
-
+ 
 const DEFAULT_GEAR_ITEMS = [
   ...makeItems(['Fire Cape','Infernal Cape','Dragon Defender','Avernic Defender','Barrows Gloves',
     'Berserker Ring (i)','Ring of Suffering (i)','Amulet of Torture','Necklace of Anguish','Occult Necklace',
@@ -451,26 +684,26 @@ const DEFAULT_GEAR_ITEMS = [
     'Skills Necklace','Explorer\'s Ring 4','Bonecrusher','Herb Sack','Seed Box','Looting Bag','Coal Bag',
     'Gem Bag','Log Basket','Ring of Wealth','Quest Point Cape','Music Cape','Achievement Diary Cape'], 'Misc / QoL')
 ];
-
+ 
 const DEFAULT_BOSSES = ['Vorkath','Zulrah','General Graardor','Kree\'Arra','K\'ril Tsutsaroth','Commander Zilyana',
   'Kraken','Cerberus','Thermonuclear Smoke Devil','Alchemical Hydra','Chambers of Xeric','Theatre of Blood',
   'Tombs of Amascut','Nex','Nightmare','The Whisperer','Duke Sucellus','The Leviathan','Vardorvis','Yama',
   'Corporeal Beast','King Black Dragon','Giant Mole','Barrows Chests','Wintertodt','Tempoross','Zalcano'];
-
+ 
 const SKILLS = ['Attack','Defence','Strength','Hitpoints','Ranged','Prayer','Magic','Cooking','Woodcutting',
   'Fletching','Fishing','Firemaking','Crafting','Smithing','Mining','Herblore','Agility','Thieving','Slayer',
   'Farming','Runecraft','Hunter','Construction'];
-
+ 
 const QUESTS = ['Dragon Slayer I','Dragon Slayer II','Monkey Madness I','Monkey Madness II','Song of the Elves',
   'Desert Treasure I','Desert Treasure II','A Night at the Theatre','Sins of the Father','Client of Kourend',
   'Priest in Peril','Recipe for Disaster','Legends\' Quest','While Guthix Sleeps','Barbarian Training',
   'Waterfall Quest','Heroes\' Quest','Lost City','Mourning\'s End Part II','Regicide','Roving Elves',
   'Underground Pass','Watchtower','Fairytale II','Contact!','Perilous Moons','Children of the Sun'];
-
+ 
 const DIARY_REGIONS = ['Ardougne','Desert','Falador','Fremennik','Kandarin','Karamja','Kourend & Kebos',
   'Lumbridge & Draynor','Morytania','Varrock','Western Provinces','Wilderness'];
 const DIARY_TIERS = ['Easy','Medium','Hard','Elite'];
-
+ 
 function defaultState(){
   return {
     players: [
@@ -484,16 +717,17 @@ function defaultState(){
     bosses: DEFAULT_BOSSES.slice(),
     bossKc: {},
     skills: {},
-    quests: {}, diaries: {}
+    quests: {}, diaries: {},
+    gimRank: null, gimRankManual: '', gimRankTrend: null
   };
 }
-
+ 
 let state = defaultState();
 let events = [];
 let activePlayer = {quests:'p1', skills:'p1'};
 let gearFilter = 'All';
 let calCursor = new Date();
-
+ 
 /* ---------------- STORAGE (backed by Cloudflare Pages Function + KV) ---------------- */
 async function apiGet(key){
   try{
@@ -523,7 +757,7 @@ function saveState(){
   saveTimer = setTimeout(()=> apiSet('clan-data', state), 250);
 }
 async function saveEvents(){ await apiSet('clan-events', events); }
-
+ 
 /* ---------------- NAV ---------------- */
 function buildNav(){
   const nav = document.getElementById('navLinks');
@@ -538,9 +772,10 @@ function go(pageId){
   if(pageId==='calendar') renderCalendar();
   if(pageId==='quests') renderQuests();
   if(pageId==='skills') renderSkills();
+  if(pageId==='goals') renderGoals();
   window.scrollTo({top:0, behavior:'smooth'});
 }
-
+ 
 function buildHomeTiles(){
   document.getElementById('homeTiles').innerHTML = PAGES.map(p=>`
     <div class="tile" onclick="go('${p.id}')">
@@ -551,10 +786,10 @@ function buildHomeTiles(){
     </div>`).join('');
   renderTeamArt();
 }
-
+ 
 function activePlayers(){ return state.players.filter(p=>p.rsn.trim()!==''); }
 function allSlots(){ return state.players; } // includes empty 5th slot for editing
-
+ 
 /* ---------------- PLAYER TABS (shared helper) ---------------- */
 function renderPlayerTabs(containerId, key, onSelect){
   const el = document.getElementById(containerId);
@@ -575,32 +810,32 @@ function selectPlayer(key, id){
   if(key==='quests') renderQuests();
   if(key==='skills') renderSkills();
 }
-
+ 
 /* ---------------- GEAR ---------------- */
 function initials(rsn){ return rsn.replace(/^GIM\s*/i,'').trim().slice(0,2).toUpperCase(); }
-
+ 
 function itemsForFilter(){
   return gearFilter==='All' ? state.items : state.items.filter(it=>it.category===gearFilter);
 }
-
+ 
 function playerCompletion(pid){
   const items = itemsForFilter();
   if(items.length===0) return 0;
   const owned = items.filter(it=> state.ownership[it.id] && state.ownership[it.id][pid]).length;
   return Math.round((owned/items.length)*100);
 }
-
+ 
 function renderGear(){
   const players = activePlayers();
-
+ 
   // filter tabs
   document.getElementById('gearFilterTabs').innerHTML = ['All', ...GEAR_CATEGORIES].map(cat=>
     `<button class="${gearFilter===cat?'active':''}" onclick="setGearFilter('${cat}')">${cat}</button>`).join('');
-
+ 
   // category select for adding new items
   const sel = document.getElementById('newItemCategory');
   sel.innerHTML = GEAR_CATEGORIES.map(c=>`<option value="${c}">${c}</option>`).join('');
-
+ 
   // per-player completion stats (respects current filter)
   document.getElementById('gearPlayerStats').innerHTML = players.map(p=>{
     const pct = playerCompletion(p.id);
@@ -610,7 +845,7 @@ function renderGear(){
       <div class="bar"><div style="width:${pct}%"></div></div>
     </div>`;
   }).join('') || '<p style="color:var(--text-dim); font-size:.85rem;">Add team members to see completion stats.</p>';
-
+ 
   // item tiles
   const items = itemsForFilter();
   document.getElementById('gearItemGrid').innerHTML = items.map(it=>{
@@ -639,7 +874,7 @@ function renderGear(){
       <div class="chip-row">${chips || '<span style="color:var(--text-dim); font-size:.75rem;">Add team members first</span>'}</div>
     </div>`;
   }).join('') || '<p style="color:var(--text-dim);">No items in this category yet — add one above.</p>';
-
+ 
   document.getElementById('gearNotes').value = state.gearNotes || '';
 }
 function setGearFilter(cat){ gearFilter = cat; renderGear(); }
@@ -667,12 +902,12 @@ function saveGearNotes(){
   state.gearNotes = document.getElementById('gearNotes').value;
   saveState();
 }
-
+ 
 /* ---------------- BOSSES ---------------- */
 function renderBosses(){
   const players = activePlayers();
-  document.getElementById('bossHeaderRow').innerHTML = '<th>Boss</th>' + players.map(p=>`<th>${p.rsn}</th>`).join('');
-   document.getElementById('bossHiscoreLinks').innerHTML = players.map(p=>
+  document.getElementById('bossHeaderRow').innerHTML = '<th>Boss</th>' + players.map(p=>`<th>${p.rsn}</th>`).join('') + '<th class="total-col">Total</th>';
+  document.getElementById('bossHiscoreLinks').innerHTML = players.map(p=>
     `<span class="row" style="gap:6px;">
        <button class="btn small" onclick="syncBossesForPlayer('${p.id}', this)">⟳ ${p.rsn}</button>
        <a class="btn ghost small" style="text-decoration:none;" target="_blank" rel="noopener"
@@ -684,8 +919,88 @@ function renderBosses(){
       const val = (state.bossKc[p.id] && state.bossKc[p.id][boss]) || 0;
       return `<td><input type="number" min="0" value="${val}" onchange="updateKc('${p.id}','${boss.replace(/'/g,"\\'")}',this.value)"></td>`;
     }).join('');
-    return `<tr><td>${boss} <button class="del-btn" title="Remove" onclick="removeBoss(${i})">✕</button></td>${cells}</tr>`;
+    const total = players.reduce((sum,p)=> sum + ((state.bossKc[p.id] && state.bossKc[p.id][boss]) || 0), 0);
+    return `<tr><td>${boss} <button class="del-btn" title="Remove" onclick="removeBoss(${i})">✕</button></td>${cells}<td class="total-col">${total.toLocaleString()}</td></tr>`;
   }).join('');
+  renderBossStats();
+}
+ 
+let mvpTimer = null;
+function renderBossStats(){
+  const players = activePlayers();
+  const el = document.getElementById('bossStatTiles');
+  if(!el) return;
+  clearInterval(mvpTimer);
+  if(players.length===0){ el.innerHTML=''; return; }
+ 
+  let grandTotal = 0;
+  const bossTotals = {};
+  state.bosses.forEach(boss=>{
+    let sum = 0;
+    players.forEach(p=>{ sum += (state.bossKc[p.id] && state.bossKc[p.id][boss]) || 0; });
+    bossTotals[boss] = sum;
+    grandTotal += sum;
+  });
+ 
+  let topBoss = null, topVal = -1;
+  Object.entries(bossTotals).forEach(([boss,val])=>{ if(val>topVal){ topVal=val; topBoss=boss; } });
+ 
+  // "solo carry" — the boss with the biggest single-player share of the team total
+  let carryBoss = null, carryPlayer = null, carryShare = -1;
+  state.bosses.forEach(boss=>{
+    const total = bossTotals[boss];
+    if(total <= 0) return;
+    players.forEach(p=>{
+      const kc = (state.bossKc[p.id] && state.bossKc[p.id][boss]) || 0;
+      const share = kc/total;
+      if(share > carryShare){ carryShare = share; carryBoss = boss; carryPlayer = p; }
+    });
+  });
+ 
+  el.innerHTML = `
+    <div class="stat">
+      <div class="label">Team Total KC</div>
+      <div class="value">${grandTotal.toLocaleString()}</div>
+    </div>
+    <div class="stat">
+      <div class="label">Most-Killed Boss</div>
+      <div class="value" style="font-size:1.1rem;">${topVal>0 ? topBoss : '—'} ${topVal>0?`<small>${topVal.toLocaleString()} combined</small>`:''}</div>
+    </div>
+    <div class="stat">
+      <div class="label">Solo Carry</div>
+      <div class="value" style="font-size:1.1rem;">${carryBoss && carryShare>0 ? `${carryPlayer.rsn.replace(/^GIM\s*/i,'')} <small>${Math.round(carryShare*100)}% of ${carryBoss}</small>` : '—'}</div>
+    </div>
+    <div class="stat spotlight">
+      <div class="label"><svg viewBox="0 0 48 48">${ICONS.star}</svg>MVP Spotlight</div>
+      <div class="value" style="font-size:1rem;" id="mvpSpotlightValue">—</div>
+    </div>
+  `;
+  rotateMvpSpotlight();
+}
+function rotateMvpSpotlight(){
+  const players = activePlayers();
+  const update = ()=>{
+    const el = document.getElementById('mvpSpotlightValue');
+    if(!el){ clearInterval(mvpTimer); return; }
+    const candidates = state.bosses.filter(boss=>
+      players.some(p=> ((state.bossKc[p.id]&&state.bossKc[p.id][boss])||0) > 0));
+    el.style.opacity = 0;
+    setTimeout(()=>{
+      const el2 = document.getElementById('mvpSpotlightValue');
+      if(!el2) return;
+      if(candidates.length===0){ el2.innerHTML = 'No KCs logged yet'; el2.style.opacity=1; return; }
+      const boss = candidates[Math.floor(Math.random()*candidates.length)];
+      let leader=null, leadKc=-1;
+      players.forEach(p=>{
+        const kc = (state.bossKc[p.id]&&state.bossKc[p.id][boss])||0;
+        if(kc>leadKc){ leadKc=kc; leader=p; }
+      });
+      el2.innerHTML = `<strong style="color:var(--gold)">${leader.rsn.replace(/^GIM\s*/i,'')}</strong> leads <strong>${boss}</strong><br><span class="mono" style="font-size:.75rem;color:var(--text-dim)">${leadKc.toLocaleString()} kills</span>`;
+      el2.style.opacity = 1;
+    }, 300);
+  };
+  update();
+  mvpTimer = setInterval(update, 4500);
 }
 function updateKc(pid, boss, val){
   if(!state.bossKc[pid]) state.bossKc[pid] = {};
@@ -697,7 +1012,7 @@ function addBoss(){
   if(name && !state.bosses.includes(name)){ state.bosses.push(name); input.value=''; saveState(); renderBosses(); }
 }
 function removeBoss(i){ state.bosses.splice(i,1); saveState(); renderBosses(); }
-
+ 
 /* ---------------- CALENDAR ---------------- */
 function renderCalendar(){
   const y = calCursor.getFullYear(), m = calCursor.getMonth();
@@ -721,7 +1036,7 @@ function renderCalendar(){
     </div>`;
   }
   grid.innerHTML = labels + cells;
-
+ 
   const upcoming = events.filter(e=> new Date(e.date+'T'+(e.time||'00:00')) >= new Date(new Date().toDateString()))
     .sort((a,b)=> (a.date+a.time).localeCompare(b.date+b.time));
   document.getElementById('upcomingList').innerHTML = upcoming.length ? upcoming.map(e=>{
@@ -750,7 +1065,7 @@ function bstToEst(date, time){
   const suffix = dayShift ? ' (prev day)' : '';
   return `${String(est).padStart(2,'0')}:${String(mi).padStart(2,'0')}${suffix}`;
 }
-
+ 
 let modalDate = null;
 function openEventModal(iso){
   modalDate = iso || new Date().toISOString().slice(0,10);
@@ -780,21 +1095,21 @@ function saveEvent(){
   renderCalendar();
 }
 function deleteEvent(id){ events = events.filter(e=>e.id!==id); saveEvents(); renderCalendar(); }
-
+ 
 /* ---------------- QUESTS / DIARIES ---------------- */
 function renderQuests(){
   renderPlayerTabs('questPlayerTabs','quests');
   const pid = activePlayer.quests;
   if(!state.quests[pid]) state.quests[pid] = {};
   if(!state.diaries[pid]) state.diaries[pid] = {};
-
+ 
   document.getElementById('questList').innerHTML = QUESTS.map(q=>{
     const done = !!state.quests[pid][q];
     return `<label class="quest-item ${done?'done':''}">
       <input type="checkbox" ${done?'checked':''} onchange="toggleQuest('${pid}','${q.replace(/'/g,"\\'")}',this.checked)"> ${q}
     </label>`;
   }).join('');
-
+ 
   document.getElementById('diaryContainer').innerHTML = DIARY_REGIONS.map(region=>`
     <div class="region-block">
       <div class="region-name">${region}</div>
@@ -811,7 +1126,7 @@ function renderQuests(){
 }
 function toggleQuest(pid,q,val){ state.quests[pid][q]=val; saveState(); renderQuests(); }
 function toggleDiary(pid,key){ state.diaries[pid][key] = !state.diaries[pid][key]; saveState(); renderQuests(); }
-
+ 
 /* ---------------- SKILLS ---------------- */
 function xpForLevel(level){
   let xp=0;
@@ -823,7 +1138,8 @@ function levelForXp(xp){
   for(let l=1;l<=99;l++){ if(xpForLevel(l)<=xp) lvl=l; else break; }
   return lvl;
 }
-  const HISCORE_ACTIVITY_ORDER = [
+ 
+const HISCORE_ACTIVITY_ORDER = [
   'Grid Points','League Points','Deadman Points','Bounty Hunter - Hunter','Bounty Hunter - Rogue',
   'Bounty Hunter (Legacy) - Hunter','Bounty Hunter (Legacy) - Rogue','Clue Scrolls (all)','Clue Scrolls (beginner)',
   'Clue Scrolls (easy)','Clue Scrolls (medium)','Clue Scrolls (hard)','Clue Scrolls (elite)','Clue Scrolls (master)',
@@ -871,8 +1187,9 @@ async function syncBossesForPlayer(pid, btn){
     alert('Could not sync ' + player.rsn + ': ' + e.message);
   }finally{
     btn.disabled = false; btn.textContent = originalText;
-    }
   }
+}
+ 
 function parseHiscoreSkills(raw){
   const lines = raw.trim().split('\n');
   const skillLines = lines.slice(1, 1+SKILLS.length); // line 0 is "Overall"
@@ -909,7 +1226,7 @@ function renderSkills(){
   const pid = activePlayer.skills;
   if(!state.skills[pid]) state.skills[pid] = {};
   SKILLS.forEach(s=>{ if(!state.skills[pid][s]) state.skills[pid][s] = {level: s==='Hitpoints'?10:1, xp:0}; });
-
+ 
   const body = document.getElementById('skillsTableBody');
   body.innerHTML = SKILLS.map(s=>{
     const d = state.skills[pid][s];
@@ -928,7 +1245,7 @@ function renderSkills(){
       </td>
     </tr>`;
   }).join('');
-
+ 
   // stats
   const totalLevel = SKILLS.reduce((a,s)=>a+state.skills[pid][s].level,0);
   const totalXp = SKILLS.reduce((a,s)=>a+(state.skills[pid][s].xp||0),0);
@@ -962,16 +1279,162 @@ function updateSkill(pid, skill, field, val){
   if(field==='xp') d.xp = Math.max(0, parseInt(val)||0);
   saveState(); renderSkills();
 }
-
+ 
+/* ---------------- SMART GOALS ---------------- */
+const GOAL_ICONS = {
+  skill: '<path d="M6 26 L18 14 M15 6 C19 6 23 10 23 14 C19 14 15 10 15 6 Z" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
+  gear: '<path d="M5 25 L23 7 M19 5 L25 11" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/><path d="M25 25 L7 7 M11 5 L5 11" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/>',
+  boss: '<path d="M15 4 C9 4 5 9 5 15 C5 18 6.5 20 8 21.5 V26 H22 V21.5 C23.5 20 25 18 25 15 C25 9 21 4 15 4 Z" stroke="currentColor" stroke-width="1.8" fill="none"/><circle cx="11" cy="14" r="2" fill="currentColor"/><circle cx="19" cy="14" r="2" fill="currentColor"/>',
+  quest: '<path d="M6 5 H21 V21 H10 C7.5 21 6 22.5 6 25 C6 22.5 7.5 21 10 21 M6 5 C6 5 6 7.5 8.5 7.5 M21 21 C21 23.5 22.5 25 25 25 C22.5 25 21 23.5 21 21 V5" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linejoin="round"/>',
+  default: '<circle cx="15" cy="15" r="9" stroke="currentColor" stroke-width="1.8" fill="none"/><circle cx="15" cy="15" r="2.5" fill="currentColor"/>'
+};
+ 
+function generateSmartGoals(pid, allPlayers){
+  const goals = [];
+  const otherPids = allPlayers.filter(p=>p.id!==pid).map(p=>p.id);
+  const hasAnyData = state.skills[pid] || state.bossKc[pid] ||
+    (state.ownership && Object.values(state.ownership).some(o=>o[pid])) || state.quests[pid];
+ 
+  // Skills: lowest-level trainable skills
+  const skills = state.skills[pid] || {};
+  const skillEntries = SKILLS.map(s=>({name:s, level:(skills[s]&&skills[s].level)||1}));
+  skillEntries.filter(s=>s.level<99).sort((a,b)=>a.level-b.level).slice(0,2).forEach(s=>{
+    goals.push({icon:'skill', text:`Level up ${s.name} — currently level ${s.level}, your lowest trainable skill.`});
+  });
+ 
+  // Skills: close to next level
+  Object.keys(skills).forEach(name=>{
+    const d = skills[name];
+    if(!d || !d.xp || d.level>=99) return;
+    const remaining = xpForLevel(d.level+1) - d.xp;
+    if(remaining>0 && remaining<5000){
+      goals.push({icon:'skill', text:`Almost level ${d.level+1} ${name} — only ${remaining.toLocaleString()} XP away.`});
+    }
+  });
+ 
+  // Gear: items teammates already own that this player doesn't
+  const gaps = state.items.map(it=>{
+    const ownedByOthers = otherPids.filter(op=> state.ownership[it.id] && state.ownership[it.id][op]).length;
+    const ownedBySelf = !!(state.ownership[it.id] && state.ownership[it.id][pid]);
+    return {item:it, ownedByOthers, ownedBySelf};
+  }).filter(g=>!g.ownedBySelf && g.ownedByOthers>0).sort((a,b)=>b.ownedByOthers-a.ownedByOthers);
+  gaps.slice(0,2).forEach(g=>{
+    goals.push({icon:'gear', text:`Work toward ${g.item.name} — ${g.ownedByOthers}/${otherPids.length} teammates already have it.`});
+  });
+ 
+  // Bosses: notably behind the team average
+  const bossGaps = [];
+  state.bosses.forEach(boss=>{
+    const myKc = (state.bossKc[pid] && state.bossKc[pid][boss]) || 0;
+    const others = otherPids.map(op=> (state.bossKc[op] && state.bossKc[op][boss]) || 0);
+    const avgOthers = others.length ? others.reduce((a,b)=>a+b,0)/others.length : 0;
+    if(avgOthers>=15 && myKc<avgOthers*0.35) bossGaps.push({boss, myKc, avgOthers, gap:avgOthers-myKc});
+  });
+  bossGaps.sort((a,b)=>b.gap-a.gap).slice(0,2).forEach(g=>{
+    goals.push({icon:'boss', text:`Get some ${g.boss} kills — teammates average ${Math.round(g.avgOthers)} KC, you're at ${g.myKc}.`});
+  });
+ 
+  // Quests: next unfinished
+  const nextQuest = QUESTS.find(q=> !(state.quests[pid] && state.quests[pid][q]));
+  if(nextQuest) goals.push({icon:'quest', text:`Complete ${nextQuest} — next quest on your list.`});
+ 
+  // Diaries: the region you're closest to finishing
+  let bestDiary = null, bestDone = -1;
+  DIARY_REGIONS.forEach(region=>{
+    let done = 0, nextTier = null;
+    DIARY_TIERS.forEach(tier=>{
+      const isDone = state.diaries[pid] && state.diaries[pid][region+'|'+tier];
+      if(isDone) done++; else if(!nextTier) nextTier = tier;
+    });
+    if(nextTier && done>bestDone){ bestDone=done; bestDiary={region, tier:nextTier}; }
+  });
+  if(bestDiary) goals.push({icon:'quest', text:`Finish the ${bestDiary.region} ${bestDiary.tier} diary — you're closest to completing this one.`});
+ 
+  if(goals.length===0 && !hasAnyData){
+    goals.push({icon:'default', text:'No data logged yet — sync skills/bosses or fill in gear and quests to see personalised goals here.'});
+  } else if(goals.length===0){
+    goals.push({icon:'default', text:'Nothing stands out right now — you\'re roughly in line with the team across the board. Nice work.'});
+  }
+  return goals.slice(0,7);
+}
+ 
+function renderGoals(){
+  const players = activePlayers();
+  const el = document.getElementById('goalsGrid');
+  if(!el) return;
+  if(players.length===0){ el.innerHTML = '<p style="color:var(--text-dim);">Add team members to see goals.</p>'; return; }
+  el.innerHTML = players.map(p=>{
+    const goals = generateSmartGoals(p.id, players);
+    return `<div class="goal-card">
+      <h4>${p.rsn}</h4>
+      <div class="sub">Suggested focus</div>
+      <ul class="goal-list">
+        ${goals.map(g=>`<li class="goal-item"><svg class="g-icon" viewBox="0 0 30 30">${GOAL_ICONS[g.icon]||GOAL_ICONS.default}</svg><span>${g.text}</span></li>`).join('')}
+      </ul>
+    </div>`;
+  }).join('');
+}
+ 
+/* ---------------- GROUP IRONMAN RANK ---------------- */
+function renderGimRank(){
+  const el = document.getElementById('gimRankBadge');
+  if(!el) return;
+  const rankValue = state.gimRank ? '#'+state.gimRank.toLocaleString() : (state.gimRankManual ? '#'+state.gimRankManual+' (manual)' : '—');
+  const trendIcon = state.gimRankTrend==='improved' ? '<span class="rank-trend improved" title="Rank improved since last check">▼</span>'
+    : state.gimRankTrend==='worse' ? '<span class="rank-trend worse" title="Rank dropped since last check">▲</span>'
+    : '';
+  el.innerHTML = `<span>Current Team Rank:</span> <span class="rank-value">${rankValue}</span> ${trendIcon} <button onclick="syncGimRank(this)" title="Refresh rank">⟳</button>`;
+}
+function applyNewRank(newRank){
+  const old = state.gimRank;
+  if(old !== null && old !== undefined && old !== newRank){
+    state.gimRankTrend = newRank < old ? 'improved' : 'worse';
+  } else if(old === newRank){
+    state.gimRankTrend = null;
+  }
+  state.gimRank = newRank;
+  state.gimRankManual = '';
+}
+async function syncGimRank(btn){
+  const original = btn.textContent;
+  btn.textContent = '…';
+  try{
+    const res = await fetch('/api/gim-rank?group=lostboysclan');
+    const data = await res.json();
+    if(data.ok && data.rank){
+      applyNewRank(data.rank);
+      saveState();
+    } else {
+      const manual = prompt('Auto-sync didn\'t find a rank (Jagex\'s leaderboard page sometimes blocks automated requests). You can check ' +
+        'https://secure.runescape.com/m=hiscore_oldschool_ironman/group-ironman/?groupName=lostboysclan manually and enter the rank here, or leave blank to skip:', state.gimRankManual||'');
+      if(manual!==null && manual.trim()){
+        const parsed = parseInt(manual.replace(/,/g,''),10);
+        if(!isNaN(parsed)) applyNewRank(parsed);
+        else state.gimRankManual = manual.trim();
+        saveState();
+      }
+    }
+  }catch(e){
+    alert('Could not reach the rank lookup.');
+  }finally{
+    btn.textContent = original;
+    renderGimRank();
+  }
+}
+ 
 /* ---------------- INIT ---------------- */
 async function init(){
   buildNav();
   buildHomeTiles();
   await loadState();
   renderTeamArt();
+  renderGimRank();
   renderGear(); renderBosses(); renderCalendar(); renderQuests(); renderSkills();
 }
 init();
 </script>
 </body>
 </html>
+ 
+
+
