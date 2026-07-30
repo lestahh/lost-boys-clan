@@ -822,6 +822,7 @@ function levelForXp(xp){
   let lvl=1;
   for(let l=1;l<=99;l++){ if(xpForLevel(l)<=xp) lvl=l; else break; }
   return lvl;
+}
   const HISCORE_ACTIVITY_ORDER = [
   'Grid Points','League Points','Deadman Points','Bounty Hunter - Hunter','Bounty Hunter - Rogue',
   'Bounty Hunter (Legacy) - Hunter','Bounty Hunter (Legacy) - Rogue','Clue Scrolls (all)','Clue Scrolls (beginner)',
