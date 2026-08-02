@@ -62,6 +62,11 @@
   .rank-trend{font-size:.8rem; font-weight:700;}
   .rank-trend.improved{color:var(--good);}
   .rank-trend.worse{color:var(--bad);}
+  .rank-chart{max-width:640px; margin:0 auto 22px; background:var(--bg-panel); border:1px solid var(--border-dim); border-radius:10px; padding:14px 16px 10px;}
+  .rank-chart-svg{width:100%; height:auto; display:block;}
+  .rank-axis-label{fill:var(--text-dim); font-size:9px; font-family:'JetBrains Mono',monospace;}
+  .rank-chart-empty{margin:0; padding:22px 0; text-align:center; color:var(--text-dim); font-size:.8rem;}
+  .rank-chart-note{margin:6px 0 0; text-align:center; color:var(--text-dim); font-size:.68rem; letter-spacing:.02em;}
 
   .tiles{display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:18px;}
   .tile{position:relative; background:linear-gradient(180deg, var(--bg-panel-2), var(--bg-panel)); border:1px solid var(--border); border-radius:8px; padding:22px 20px; text-align:left; box-shadow:var(--shadow); transition:transform .15s ease, border-color .15s ease;}
@@ -226,6 +231,7 @@
       <h1>Lost Boys Clan</h1>
       <div class="eyebrow">Group Ironman</div>
       <div class="gim-rank-badge" id="gimRankBadge"></div>
+      <div class="rank-chart" id="gimRankChart"></div>
       <p>One team, one bank, no trading. Track gear, grinds, bosses and quest progress in one place.</p>
     </div>
     <div class="tiles" id="homeTiles"></div>
@@ -521,7 +527,7 @@ function defaultState(){
     bossKc: {},
     skills: {},
     quests: {}, diaries: {},
-    gimRank: null, gimRankManual: '', gimRankTrend: null
+    gimRank: null, gimRankManual: '', gimRankTrend: null, gimRankHistory: []
   };
 }
 
@@ -556,7 +562,7 @@ function sectionSlice(section){
     case 'bosses':  return { bosses: state.bosses, bossKc: state.bossKc };
     case 'skills':  return { skills: state.skills };
     case 'quests':  return { quests: state.quests, diaries: state.diaries };
-    case 'gimrank': return { gimRank: state.gimRank, gimRankManual: state.gimRankManual, gimRankTrend: state.gimRankTrend };
+    case 'gimrank': return { gimRank: state.gimRank, gimRankManual: state.gimRankManual, gimRankTrend: state.gimRankTrend, gimRankHistory: state.gimRankHistory };
   }
 }
 
@@ -616,8 +622,10 @@ async function saveSection(section){
   const local = sectionSlice(section);
 
   if(section==='gimrank'){
-    // flat, rarely-contested fields — straight write is fine
-    await apiSet(SECTION_KEYS.gimrank, local);
+    const server = (await apiGet(SECTION_KEYS.gimrank)) || {};
+    const merged = Object.assign({}, local, { gimRankHistory: mergeRankHistory(server.gimRankHistory, local.gimRankHistory) });
+    state.gimRankHistory = merged.gimRankHistory;
+    await apiSet(SECTION_KEYS.gimrank, merged);
     return;
   }
 
@@ -627,6 +635,12 @@ async function saveSection(section){
   const merged = mergeSection(section, server, local, ids);
   Object.assign(state, merged); // also pick up anyone else's changes we just fetched
   await apiSet(SECTION_KEYS[section], merged);
+}
+
+function mergeRankHistory(a, b){
+  const map = new Map();
+  [...(a||[]), ...(b||[])].forEach(h=> map.set(h.ts, h));
+  return Array.from(map.values()).sort((x,y)=>x.ts-y.ts).slice(-200);
 }
 
 function mergeSection(section, server, local, ids){
@@ -1305,6 +1319,64 @@ function renderGimRank(){
     : state.gimRankTrend==='worse' ? '<span class="rank-trend worse" title="Rank dropped since last check">▲</span>'
     : '';
   el.innerHTML = `<span>Current Team Rank:</span> <span class="rank-value">${rankValue}</span> ${trendIcon} <button onclick="syncGimRank(this)" title="Refresh rank">⟳</button>`;
+  renderRankChart();
+}
+function renderRankChart(){
+  const el = document.getElementById('gimRankChart');
+  if(!el) return;
+  const hist = state.gimRankHistory || [];
+  if(hist.length < 2){
+    el.innerHTML = `<p class="rank-chart-empty">Rank history will show up here after a couple more syncs — click ⟳ on the badge above.</p>`;
+    return;
+  }
+
+  const W = 640, H = 150, padL = 54, padR = 16, padT = 16, padB = 28;
+  const ranks = hist.map(h=>h.rank);
+  const origMin = Math.min(...ranks), origMax = Math.max(...ranks);
+  const margin = Math.max(1, Math.round((origMax - origMin) * 0.15) || Math.max(1, Math.round(origMin * 0.02)));
+  const minR = origMin - margin, maxR = origMax + margin;
+  const range = (maxR - minR) || 1;
+
+  const minT = hist[0].ts, maxT = hist[hist.length - 1].ts;
+  const spanT = (maxT - minT) || 1;
+
+  const points = hist.map((h, i) => {
+    const x = padL + (W - padL - padR) * (maxT === minT ? i / (hist.length - 1 || 1) : (h.ts - minT) / spanT);
+    // inverted: a lower (better) rank number sits higher on the chart
+    const y = padT + (H - padT - padB) * ((h.rank - minR) / range);
+    return [x, y];
+  });
+
+  const linePath = points.map((p, i) => (i === 0 ? 'M' : 'L') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' ');
+  const areaPath = linePath +
+    ` L${points[points.length - 1][0].toFixed(1)} ${(H - padB).toFixed(1)}` +
+    ` L${points[0][0].toFixed(1)} ${(H - padB).toFixed(1)} Z`;
+
+  const fmtDate = ts => new Date(ts).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+
+  const dots = hist.map((h, i) => {
+    const [x, y] = points[i];
+    return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.2" fill="var(--gold)" stroke="var(--bg)" stroke-width="1"><title>#${h.rank.toLocaleString()} — ${fmtDate(h.ts)}</title></circle>`;
+  }).join('');
+
+  el.innerHTML = `
+    <svg viewBox="0 0 ${W} ${H}" class="rank-chart-svg">
+      <defs>
+        <linearGradient id="rankFill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="var(--gold)" stop-opacity="0.28"/>
+          <stop offset="100%" stop-color="var(--gold)" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <text x="${padL - 6}" y="${padT + 4}" text-anchor="end" class="rank-axis-label">#${origMin.toLocaleString()}</text>
+      <text x="${padL - 6}" y="${H - padB}" text-anchor="end" class="rank-axis-label">#${origMax.toLocaleString()}</text>
+      <path d="${areaPath}" fill="url(#rankFill)" stroke="none"/>
+      <path d="${linePath}" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+      ${dots}
+      <text x="${points[0][0].toFixed(1)}" y="${H - 6}" text-anchor="start" class="rank-axis-label">${fmtDate(hist[0].ts)}</text>
+      <text x="${points[points.length - 1][0].toFixed(1)}" y="${H - 6}" text-anchor="end" class="rank-axis-label">${fmtDate(hist[hist.length - 1].ts)}</text>
+    </svg>
+    <p class="rank-chart-note">Lower is better — line trending up means the team's climbing the leaderboard.</p>
+  `;
 }
 function applyNewRank(newRank){
   const old = state.gimRank;
@@ -1315,6 +1387,9 @@ function applyNewRank(newRank){
   }
   state.gimRank = newRank;
   state.gimRankManual = '';
+  if(!state.gimRankHistory) state.gimRankHistory = [];
+  state.gimRankHistory.push({ rank: newRank, ts: Date.now() });
+  if(state.gimRankHistory.length > 200) state.gimRankHistory = state.gimRankHistory.slice(-200);
 }
 async function syncGimRank(btn){
   const original = btn.textContent;
