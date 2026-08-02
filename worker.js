@@ -34,7 +34,9 @@ async function handleDataGet(request, env) {
   }
 
   const value = await env.CLAN_KV.get(key);
-  return new Response(value ?? 'null', { headers: { 'content-type': 'application/json' } });
+  return new Response(value ?? 'null', {
+    headers: { 'content-type': 'application/json', 'cache-control': 'no-store' }
+  });
 }
 
 async function handleDataPost(request, env) {
