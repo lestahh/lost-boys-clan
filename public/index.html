@@ -154,11 +154,8 @@
   .filter-tabs button.active{color:var(--bg); background:var(--ember); border-color:var(--ember); font-weight:600;}
 
   .gear-tiles{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:12px;}
-  .gear-tile{position:relative; background:var(--bg-panel); border:1px solid var(--border-dim); border-radius:8px; padding:14px 15px; transition:border-color .15s ease, background .15s ease;}
+  .gear-tile{background:var(--bg-panel); border:1px solid var(--border-dim); border-radius:8px; padding:14px 15px; transition:border-color .15s ease;}
   .gear-tile:hover{border-color:var(--border);}
-  .gear-tile.complete{border-color:var(--good); background:linear-gradient(160deg, rgba(90,168,138,.16), var(--bg-panel));}
-  .gear-tile.complete .count-badge{color:var(--good);}
-  .complete-badge{position:absolute; top:-9px; right:-9px; width:24px; height:24px; border-radius:50%; background:var(--good); color:#0d1a12; font-weight:800; font-size:.82rem; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,.45); border:2px solid var(--bg);}
   .gear-tile .tile-top{display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:10px;}
   .gear-tile .item-name{font-size:.88rem; font-weight:600; color:var(--text); line-height:1.25;}
   .gear-tile .cat-badge{font-size:.6rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:.05em; display:block; margin-top:2px;}
@@ -534,35 +531,169 @@ let activePlayer = {quests:'p1', skills:'p1'};
 let gearFilter = 'All';
 let calCursor = new Date();
 
-/* ---------------- STORAGE (backed by Cloudflare Pages Function + KV) ---------------- */
+/* ---------------- STORAGE (backed by Cloudflare Worker + KV) ----------------
+   Data is split into independent per-topic KV keys (gear, bosses, skills,
+   quests/diaries, players, gim rank) instead of one big blob. Every save does
+   a fetch-merge-write: pull the latest server copy, apply only the specific
+   ids that actually changed locally, and write that back. This means two
+   members editing different things (or even different players' KC/skills)
+   at the same time merge cleanly instead of one save wiping out the other's
+   change, which is what happened with the old single 'clan-data' blob. */
+
+const SECTION_KEYS = {
+  players: 'players-data',
+  gear:    'gear-data',
+  bosses:  'boss-data',
+  skills:  'skills-data',
+  quests:  'quests-diaries-data',
+  gimrank: 'gimrank-data'
+};
+
+function sectionSlice(section){
+  switch(section){
+    case 'players': return { players: state.players };
+    case 'gear':    return { items: state.items, ownership: state.ownership, gearNotes: state.gearNotes };
+    case 'bosses':  return { bosses: state.bosses, bossKc: state.bossKc };
+    case 'skills':  return { skills: state.skills };
+    case 'quests':  return { quests: state.quests, diaries: state.diaries };
+    case 'gimrank': return { gimRank: state.gimRank, gimRankManual: state.gimRankManual, gimRankTrend: state.gimRankTrend };
+  }
+}
+
+// ids that changed locally since the last successful save, per section
+const dirty = { players:new Set(), gear:new Set(), bosses:new Set(), skills:new Set(), quests:new Set() };
+
 async function apiGet(key){
   try{
-    const res = await fetch('/api/data?key='+encodeURIComponent(key));
+    const res = await fetch('/api/data?key='+encodeURIComponent(key), {cache:'no-store'});
     if(!res.ok) return null;
     return await res.json();
   }catch(e){ return null; }
 }
 async function apiSet(key, value){
   try{
-    await fetch('/api/data?key='+encodeURIComponent(key), {
+    const res = await fetch('/api/data?key='+encodeURIComponent(key), {
       method:'POST',
       headers:{'content-type':'application/json'},
-      body: JSON.stringify(value)
+      body: JSON.stringify(value),
+      cache: 'no-store'
     });
-  }catch(e){ console.error('save failed', e); }
+    return res.ok;
+  }catch(e){ console.error('save failed', e); return false; }
 }
+
 async function loadState(){
-  const d = await apiGet('clan-data');
-  if(d) state = Object.assign(defaultState(), d);
-  const ev = await apiGet('clan-events');
+  state = defaultState();
+  const [players, gear, bosses, skills, quests, gimrank, ev] = await Promise.all([
+    apiGet(SECTION_KEYS.players), apiGet(SECTION_KEYS.gear), apiGet(SECTION_KEYS.bosses),
+    apiGet(SECTION_KEYS.skills), apiGet(SECTION_KEYS.quests), apiGet(SECTION_KEYS.gimrank),
+    apiGet('clan-events')
+  ]);
+  if(players||gear||bosses||skills||quests||gimrank){
+    Object.assign(state, players||{}, gear||{}, bosses||{}, skills||{}, quests||{}, gimrank||{});
+  } else {
+    // one-time migration: nothing in the new split keys yet, so fall back to
+    // the old single 'clan-data' blob if it exists, then re-save split so
+    // future loads use the new keys.
+    const old = await apiGet('clan-data');
+    if(old){
+      state = Object.assign(defaultState(), old);
+      await Promise.all(Object.keys(SECTION_KEYS).map(s=>apiSet(SECTION_KEYS[s], sectionSlice(s))));
+    }
+  }
   if(ev) events = ev;
 }
-let saveTimer = null;
-function saveState(){
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(()=> apiSet('clan-data', state), 250);
+
+let saveTimers = {};
+function saveState(section, ids){
+  if(Array.isArray(ids)) ids.forEach(i=>dirty[section].add(i));
+  else if(ids!==undefined) dirty[section].add(ids);
+  clearTimeout(saveTimers[section]);
+  saveTimers[section] = setTimeout(()=> saveSection(section), 250);
 }
-async function saveEvents(){ await apiSet('clan-events', events); }
+
+async function saveSection(section){
+  const local = sectionSlice(section);
+
+  if(section==='gimrank'){
+    // flat, rarely-contested fields — straight write is fine
+    await apiSet(SECTION_KEYS.gimrank, local);
+    return;
+  }
+
+  const ids = new Set(dirty[section]);
+  dirty[section].clear();
+  const server = (await apiGet(SECTION_KEYS[section])) || local;
+  const merged = mergeSection(section, server, local, ids);
+  Object.assign(state, merged); // also pick up anyone else's changes we just fetched
+  await apiSet(SECTION_KEYS[section], merged);
+}
+
+function mergeSection(section, server, local, ids){
+  if(section==='players'){
+    return { players: (server.players||local.players).map(sp=>
+      ids.has(sp.id) ? (local.players.find(p=>p.id===sp.id) || sp) : sp) };
+  }
+  if(section==='gear'){
+    const merged = { items: server.items, ownership: Object.assign({}, server.ownership), gearNotes: server.gearNotes };
+    ids.forEach(id=>{
+      if(id==='__items__') merged.items = local.items;
+      else if(id==='__notes__') merged.gearNotes = local.gearNotes;
+      else if(local.ownership[id]) merged.ownership[id] = local.ownership[id];
+      else delete merged.ownership[id];
+    });
+    return merged;
+  }
+  if(section==='bosses'){
+    const merged = { bosses: server.bosses, bossKc: Object.assign({}, server.bossKc) };
+    ids.forEach(id=>{
+      if(id==='__list__') merged.bosses = local.bosses;
+      else merged.bossKc[id] = local.bossKc[id] || {};
+    });
+    return merged;
+  }
+  if(section==='skills'){
+    const merged = { skills: Object.assign({}, server.skills) };
+    ids.forEach(id=>{ merged.skills[id] = local.skills[id] || {}; });
+    return merged;
+  }
+  if(section==='quests'){
+    const merged = { quests: Object.assign({}, server.quests), diaries: Object.assign({}, server.diaries) };
+    ids.forEach(id=>{
+      merged.quests[id] = local.quests[id] || {};
+      merged.diaries[id] = local.diaries[id] || {};
+    });
+    return merged;
+  }
+  return local;
+}
+
+// Events also merge rather than overwrite: read the current server list,
+// apply just this one add/delete, write it back.
+async function saveEvent(){
+  const title = document.getElementById('evtTitle').value.trim();
+  if(!title) return alert('Give the event a title first.');
+  const attendees = Array.from(document.querySelectorAll('#evtAttendees input:checked')).map(c=>c.value);
+  const newEvent = {
+    id: 'e'+Date.now(),
+    title,
+    date: document.getElementById('evtDate').value,
+    time: document.getElementById('evtTime').value,
+    attendees,
+    notes: document.getElementById('evtNotes').value.trim()
+  };
+  const server = (await apiGet('clan-events')) || [];
+  events = [...server, newEvent];
+  await apiSet('clan-events', events);
+  closeEventModal();
+  renderCalendar();
+}
+async function deleteEvent(id){
+  const server = (await apiGet('clan-events')) || [];
+  events = server.filter(e=>e.id!==id);
+  await apiSet('clan-events', events);
+  renderCalendar();
+}
 
 /* ---------------- NAV ---------------- */
 function buildNav(){
@@ -609,7 +740,7 @@ function selectPlayer(key, id){
   const p = state.players.find(x=>x.id===id);
   if(p.rsn.trim()===''){
     const name = prompt('Enter RSN for the 5th team member:');
-    if(name && name.trim()!==''){ p.rsn = name.trim(); saveState(); renderTeamArt(); }
+    if(name && name.trim()!==''){ p.rsn = name.trim(); saveState('players', p.id); renderTeamArt(); }
     else return;
   }
   activePlayer[key] = id;
@@ -660,9 +791,7 @@ function renderGear(){
       const owned = !!(state.ownership[it.id] && state.ownership[it.id][p.id]);
       return `<div class="chip ${owned?'owned':''}" title="${p.rsn}" onclick="toggleOwnership('${it.id}','${p.id}')">${initials(p.rsn)}</div>`;
     }).join('');
-    const isComplete = players.length>0 && ownedCount===players.length;
-    return `<div class="gear-tile${isComplete?' complete':''}">
-      ${isComplete?'<div class="complete-badge" title="Everyone on the team has this!">✓</div>':''}
+    return `<div class="gear-tile">
       <div class="tile-top">
         <div class="name-row">
           <div class="item-icon-wrap">
@@ -689,7 +818,7 @@ function setGearFilter(cat){ gearFilter = cat; renderGear(); }
 function toggleOwnership(itemId, pid){
   if(!state.ownership[itemId]) state.ownership[itemId] = {};
   state.ownership[itemId][pid] = !state.ownership[itemId][pid];
-  saveState(); renderGear();
+  saveState('gear', itemId); renderGear();
 }
 function addGearItem(){
   const input = document.getElementById('newItemName');
@@ -699,16 +828,16 @@ function addGearItem(){
   const id = slugify(name) + '-' + Date.now().toString(36);
   state.items.push({id, name, category});
   input.value='';
-  saveState(); renderGear();
+  saveState('gear', '__items__'); renderGear();
 }
 function removeGearItem(id){
   state.items = state.items.filter(it=>it.id!==id);
   delete state.ownership[id];
-  saveState(); renderGear();
+  saveState('gear', ['__items__', id]); renderGear();
 }
 function saveGearNotes(){
   state.gearNotes = document.getElementById('gearNotes').value;
-  saveState();
+  saveState('gear', '__notes__');
 }
 
 /* ---------------- BOSSES ---------------- */
@@ -812,14 +941,14 @@ function rotateMvpSpotlight(){
 }
 function updateKc(pid, boss, val){
   if(!state.bossKc[pid]) state.bossKc[pid] = {};
-  state.bossKc[pid][boss] = parseInt(val)||0; saveState();
+  state.bossKc[pid][boss] = parseInt(val)||0; saveState('bosses', pid);
 }
 function addBoss(){
   const input = document.getElementById('newBossName');
   const name = input.value.trim();
-  if(name && !state.bosses.includes(name)){ state.bosses.push(name); input.value=''; saveState(); renderBosses(); }
+  if(name && !state.bosses.includes(name)){ state.bosses.push(name); input.value=''; saveState('bosses', '__list__'); renderBosses(); }
 }
-function removeBoss(i){ state.bosses.splice(i,1); saveState(); renderBosses(); }
+function removeBoss(i){ state.bosses.splice(i,1); saveState('bosses', '__list__'); renderBosses(); }
 
 /* ---------------- CALENDAR ---------------- */
 function renderCalendar(){
@@ -886,23 +1015,7 @@ function openEventModal(iso){
   document.getElementById('eventModal').classList.add('show');
 }
 function closeEventModal(){ document.getElementById('eventModal').classList.remove('show'); }
-function saveEvent(){
-  const title = document.getElementById('evtTitle').value.trim();
-  if(!title) return alert('Give the event a title first.');
-  const attendees = Array.from(document.querySelectorAll('#evtAttendees input:checked')).map(c=>c.value);
-  events.push({
-    id: 'e'+Date.now(),
-    title,
-    date: document.getElementById('evtDate').value,
-    time: document.getElementById('evtTime').value,
-    attendees,
-    notes: document.getElementById('evtNotes').value.trim()
-  });
-  saveEvents();
-  closeEventModal();
-  renderCalendar();
-}
-function deleteEvent(id){ events = events.filter(e=>e.id!==id); saveEvents(); renderCalendar(); }
+// saveEvent() / deleteEvent() are defined in the STORAGE block above.
 
 /* ---------------- QUESTS / DIARIES ---------------- */
 function renderQuests(){
@@ -932,8 +1045,8 @@ function renderQuests(){
       </div>
     </div>`).join('');
 }
-function toggleQuest(pid,q,val){ state.quests[pid][q]=val; saveState(); renderQuests(); }
-function toggleDiary(pid,key){ state.diaries[pid][key] = !state.diaries[pid][key]; saveState(); renderQuests(); }
+function toggleQuest(pid,q,val){ state.quests[pid][q]=val; saveState('quests', pid); renderQuests(); }
+function toggleDiary(pid,key){ state.diaries[pid][key] = !state.diaries[pid][key]; saveState('quests', pid); renderQuests(); }
 
 /* ---------------- SKILLS ---------------- */
 function xpForLevel(level){
@@ -989,7 +1102,7 @@ async function syncBossesForPlayer(pid, btn){
       const kc = map[boss.toLowerCase()];
       if(kc !== undefined) state.bossKc[pid][boss] = kc;
     });
-    saveState();
+    saveState('bosses', pid);
     renderBosses();
   }catch(e){
     alert('Could not sync ' + player.rsn + ': ' + e.message);
@@ -1021,7 +1134,7 @@ async function syncSkills(btn){
     const data = await res.json();
     if(!data.ok) throw new Error(data.error || 'Sync failed');
     state.skills[pid] = parseHiscoreSkills(data.raw);
-    saveState();
+    saveState('skills', pid);
     renderSkills();
   }catch(e){
     alert('Could not sync ' + player.rsn + ': ' + e.message + '\n\nDouble check the RSN is spelled exactly right and the account\'s hiscores aren\'t private.');
@@ -1085,7 +1198,7 @@ function updateSkill(pid, skill, field, val){
   const d = state.skills[pid][skill];
   if(field==='level') d.level = Math.min(99, Math.max(1, parseInt(val)||1));
   if(field==='xp') d.xp = Math.max(0, parseInt(val)||0);
-  saveState(); renderSkills();
+  saveState('skills', pid); renderSkills();
 }
 
 /* ---------------- SMART GOALS ---------------- */
@@ -1211,7 +1324,7 @@ async function syncGimRank(btn){
     const data = await res.json();
     if(data.ok && data.rank){
       applyNewRank(data.rank);
-      saveState();
+      saveState('gimrank');
     } else {
       const manual = prompt('Auto-sync didn\'t find a rank (Jagex\'s leaderboard page sometimes blocks automated requests). You can check ' +
         'https://secure.runescape.com/m=hiscore_oldschool_ironman/group-ironman/?groupName=lostboysclan manually and enter the rank here, or leave blank to skip:', state.gimRankManual||'');
@@ -1219,7 +1332,7 @@ async function syncGimRank(btn){
         const parsed = parseInt(manual.replace(/,/g,''),10);
         if(!isNaN(parsed)) applyNewRank(parsed);
         else state.gimRankManual = manual.trim();
-        saveState();
+        saveState('gimrank');
       }
     }
   }catch(e){
