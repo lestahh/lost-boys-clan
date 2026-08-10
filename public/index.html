@@ -1599,7 +1599,7 @@ function generateSmartGoals(pid, allPlayers){
   const skills = state.skills[pid] || {};
   const skillEntries = SKILLS.map(s=>({name:s, level:(skills[s]&&skills[s].level)||1}));
   skillEntries.filter(s=>s.level<99).sort((a,b)=>a.level-b.level).slice(0,2).forEach(s=>{
-    goals.push({icon:'skill', text:`Level up ${s.name} — currently level ${s.level}, your lowest trainable skill.`});
+    goals.push({icon:'skill', text:`${s.name} is sitting at a sad level ${s.level} — your worst skill by a mile. Maybe do something about it.`});
   });
 
   // Skills: close to next level
@@ -1608,7 +1608,7 @@ function generateSmartGoals(pid, allPlayers){
     if(!d || !d.xp || d.level>=99) return;
     const remaining = xpForLevel(d.level+1) - d.xp;
     if(remaining>0 && remaining<5000){
-      goals.push({icon:'skill', text:`Almost level ${d.level+1} ${name} — only ${remaining.toLocaleString()} XP away.`});
+      goals.push({icon:'skill', text:`${remaining.toLocaleString()} XP from ${d.level+1} ${name}. Stop reading this and go get it.`});
     }
   });
 
@@ -1619,7 +1619,7 @@ function generateSmartGoals(pid, allPlayers){
     return {item:it, ownedByOthers, ownedBySelf};
   }).filter(g=>!g.ownedBySelf && g.ownedByOthers>0).sort((a,b)=>b.ownedByOthers-a.ownedByOthers);
   gaps.slice(0,2).forEach(g=>{
-    goals.push({icon:'gear', text:`Work toward ${g.item.name} — ${g.ownedByOthers}/${otherPids.length} teammates already have it.`});
+    goals.push({icon:'gear', text:`Still no ${g.item.name}? ${g.ownedByOthers}/${otherPids.length} of the team already have one. Catch up.`});
   });
 
   // Bosses: notably behind the team average
@@ -1631,12 +1631,12 @@ function generateSmartGoals(pid, allPlayers){
     if(avgOthers>=15 && myKc<avgOthers*0.35) bossGaps.push({boss, myKc, avgOthers, gap:avgOthers-myKc});
   });
   bossGaps.sort((a,b)=>b.gap-a.gap).slice(0,2).forEach(g=>{
-    goals.push({icon:'boss', text:`Get some ${g.boss} kills — teammates average ${Math.round(g.avgOthers)} KC, you're at ${g.myKc}.`});
+    goals.push({icon:'boss', text:`${g.boss}: team's averaging ${Math.round(g.avgOthers)} KC and you're on ${g.myKc}. A bit embarrassing, honestly.`});
   });
 
   // Quests: next unfinished
   const nextQuest = QUESTS.find(q=> !(state.quests[pid] && state.quests[pid][q]));
-  if(nextQuest) goals.push({icon:'quest', text:`Complete ${nextQuest} — next quest on your list.`});
+  if(nextQuest) goals.push({icon:'quest', text:`${nextQuest} isn't going to complete itself. Get on with it.`});
 
   // Diaries: the region you're closest to finishing
   let bestDiary = null, bestDone = -1;
@@ -1648,12 +1648,12 @@ function generateSmartGoals(pid, allPlayers){
     });
     if(nextTier && done>bestDone){ bestDone=done; bestDiary={region, tier:nextTier}; }
   });
-  if(bestDiary) goals.push({icon:'quest', text:`Finish the ${bestDiary.region} ${bestDiary.tier} diary — you're closest to completing this one.`});
+  if(bestDiary) goals.push({icon:'quest', text:`${bestDiary.region} ${bestDiary.tier} diary is basically done — finish it before someone asks why it isn't.`});
 
   if(goals.length===0 && !hasAnyData){
-    goals.push({icon:'default', text:'No data logged yet — sync skills/bosses or fill in gear and quests to see personalised goals here.'});
+    goals.push({icon:'default', text:'Zero data logged on you. Ghost account, or just lazy? Sync your skills/bosses so we can judge you properly.'});
   } else if(goals.length===0){
-    goals.push({icon:'default', text:'Nothing stands out right now — you\'re roughly in line with the team across the board. Nice work.'});
+    goals.push({icon:'default', text:'Annoyingly, you\'re keeping pace with everyone else. Don\'t let it go to your head.'});
   }
   return goals.slice(0,7);
 }
