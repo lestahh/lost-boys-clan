@@ -64,6 +64,10 @@ async function handleDataPost(request, env) {
     await notifyNewEvents(body, env);
   }
 
+  if (key === 'clan-availability') {
+    await notifyNewAvailability(body, env);
+  }
+
   if (key === 'gear-edit-lock') {
     // short-lived advisory lock — expires on its own if the editor's tab
     // closes or goes idle, instead of needing an explicit "release" call
@@ -153,6 +157,82 @@ async function postDiscordEventNotice(evt, env) {
     }
   } catch (e) {
     console.error('discord notify: webhook fetch failed — ' + e.message);
+  }
+}
+
+/* ---------------- Discord "new availability" announcements ----------------
+   Same diff-and-notify shape as new events, so people find out when a
+   teammate marks themselves free without having to check the site.
+   Also needs DISCORD_EVENTS_WEBHOOK — reuses the same webhook/channel
+   as event announcements rather than a separate one. */
+
+async function notifyNewAvailability(newBodyText, env) {
+  if (!env.DISCORD_EVENTS_WEBHOOK) {
+    console.log('discord notify: availability skipped — DISCORD_EVENTS_WEBHOOK secret not set');
+    return;
+  }
+
+  let added = [];
+  try {
+    const oldRaw = await env.CLAN_KV.get('clan-availability');
+    if (oldRaw === null) {
+      console.log('discord notify: skipped — first-ever write to clan-availability, nothing to diff against');
+      return;
+    }
+
+    const oldEntries = JSON.parse(oldRaw);
+    const newEntries = JSON.parse(newBodyText || '[]');
+    const oldIds = new Set(oldEntries.map(a => a.id));
+    added = newEntries.filter(a => !oldIds.has(a.id));
+    console.log('discord notify: ' + added.length + ' new availability entr' + (added.length===1?'y':'ies') + ' found');
+  } catch (e) {
+    console.error('discord notify: availability diff failed — ' + e.message);
+    return;
+  }
+  if (!added.length) return;
+
+  let playerNames = {};
+  try {
+    const playersRaw = await env.CLAN_KV.get('players-data');
+    const playersData = playersRaw ? JSON.parse(playersRaw) : null;
+    ((playersData && playersData.players) || []).forEach(p => {
+      playerNames[p.id] = (p.rsn || 'Someone').replace(/^GIM\s*/i, '');
+    });
+  } catch (e) {
+    // best-effort — entries just fall back to "Someone" below
+  }
+
+  for (const a of added) {
+    await postDiscordAvailabilityNotice(a, playerNames[a.pid] || 'Someone', env);
+  }
+}
+
+async function postDiscordAvailabilityNotice(a, name, env) {
+  const dateLabel = formatDiscordDate(a.date);
+  const content = '@everyone :clock3: **' + name + '** is free ' + dateLabel + ' — ' + a.start + '–' + a.end + ' (BST)';
+
+  try {
+    const res = await fetch(env.DISCORD_EVENTS_WEBHOOK, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ content })
+    });
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      console.error('discord notify: availability webhook post failed — ' + res.status + ' ' + text);
+    } else {
+      console.log('discord notify: posted availability for "' + name + '" ok');
+    }
+  } catch (e) {
+    console.error('discord notify: availability webhook fetch failed — ' + e.message);
+  }
+}
+
+function formatDiscordDate(dateStr) {
+  try {
+    return new Date(dateStr + 'T00:00:00Z').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' });
+  } catch (e) {
+    return dateStr;
   }
 }
 
