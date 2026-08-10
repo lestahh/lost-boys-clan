@@ -189,6 +189,30 @@
   .total-col{background:rgba(125,216,255,.12); font-weight:700; color:var(--gold); text-align:center;}
   th.total-col{color:var(--gold); background:rgba(125,216,255,.08);}
 
+  .boss-tiles{display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px;}
+  .boss-tile{position:relative; background:var(--bg-panel); border:1px solid var(--border-dim); border-radius:10px; overflow:hidden; transition:border-color .15s ease;}
+  .boss-tile:hover{border-color:var(--gold);}
+  .boss-tile .rm{position:absolute; top:8px; right:8px; z-index:2; background:rgba(10,22,34,.7); border:none; border-radius:50%; width:22px; height:22px; line-height:1; color:var(--bad); font-size:.75rem; opacity:.55;}
+  .boss-tile .rm:hover{opacity:1;}
+  .boss-portrait{position:relative; height:110px; display:flex; align-items:center; justify-content:center; background:radial-gradient(circle at 50% 35%, var(--bg-panel-2), var(--bg)); border-bottom:1px solid var(--border-dim);}
+  .boss-portrait img{max-height:86%; max-width:72%; object-fit:contain; image-rendering:pixelated; filter:drop-shadow(0 4px 6px rgba(0,0,0,.5));}
+  .boss-portrait-fallback{display:none; color:var(--ember);}
+  .boss-portrait-fallback svg{width:40px; height:40px;}
+  .boss-portrait.icon-fallback img{display:none;}
+  .boss-portrait.icon-fallback .boss-portrait-fallback{display:flex;}
+  .boss-tile-body{padding:12px 14px 14px;}
+  .boss-name-row{display:flex; justify-content:space-between; align-items:baseline; gap:8px; margin-bottom:10px;}
+  .boss-name{font-family:'Cinzel',serif; font-size:.92rem; color:var(--gold); font-weight:600; line-height:1.2;}
+  .boss-total{font-size:.68rem; color:var(--text-dim); font-family:'JetBrains Mono',monospace; white-space:nowrap;}
+  .boss-total span{text-transform:uppercase; letter-spacing:.04em;}
+  .boss-leaderboard{display:flex; flex-direction:column; gap:7px;}
+  .boss-kc-row{display:grid; grid-template-columns:minmax(0,1fr) 56px 54px; align-items:center; gap:8px;}
+  .boss-kc-name{font-size:.72rem; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .boss-kc-name .crown{color:var(--gold); margin-right:2px;}
+  .boss-kc-bar{height:6px; border-radius:3px; background:var(--bg); overflow:hidden; border:1px solid var(--border-dim);}
+  .boss-kc-bar div{height:100%; background:linear-gradient(90deg, var(--ember), var(--gold)); border-radius:3px; transition:width .2s ease;}
+  .boss-kc-input{width:54px; padding:3px 5px; font-size:.72rem; text-align:right;}
+
   .stat.spotlight{border-color:var(--ember); background:linear-gradient(160deg, var(--bg-panel-2), var(--bg-panel));}
   .stat.spotlight .label{display:flex; align-items:center; gap:5px;}
   .stat.spotlight .label svg{width:12px; height:12px; color:var(--ember);}
@@ -271,12 +295,7 @@
     </div>
     <p style="color:var(--text-dim); font-size:.78rem; margin-top:-8px;">Boss KCs sync from the hiscores using the wiki's official named activity list. If a boss you're tracking isn't syncing, it may be brand new — add it to the list above and let us know.</p>
     <div class="row" id="bossHiscoreLinks" style="margin-bottom:16px;"></div>
-    <div class="card">
-      <table>
-        <thead><tr id="bossHeaderRow"><th>Boss</th></tr></thead>
-        <tbody id="bossTableBody"></tbody>
-      </table>
-    </div>
+    <div class="boss-tiles" id="bossTileGrid"></div>
   </section>
 
   <!-- CALENDAR -->
@@ -469,6 +488,14 @@ function iconFileName(item){
 }
 function iconUrl(item){
   return 'https://oldschool.runescape.wiki/w/Special:FilePath/' + encodeURIComponent(iconFileName(item)) + '.png';
+}
+
+/* ---- wiki boss portraits (best-effort live lookup, falls back to a skull icon) ---- */
+const BOSS_ICON_OVERRIDES = {
+  'Zulrah': 'Zulrah (serpentine)'
+};
+function bossIconUrl(boss){
+  return 'https://oldschool.runescape.wiki/w/Special:FilePath/' + encodeURIComponent(BOSS_ICON_OVERRIDES[boss] || boss) + '.png';
 }
 const CATEGORY_GLYPH = {
   'PVM Gear': '<path d="M5 25 L23 7 M19 5 L25 11" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/><path d="M25 25 L7 7 M11 5 L5 11" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/>',
@@ -858,22 +885,47 @@ function saveGearNotes(){
 /* ---------------- BOSSES ---------------- */
 function renderBosses(){
   const players = activePlayers();
-  document.getElementById('bossHeaderRow').innerHTML = '<th>Boss</th>' + players.map(p=>`<th>${p.rsn}</th>`).join('') + '<th class="total-col">Total</th>';
   document.getElementById('bossHiscoreLinks').innerHTML = players.map(p=>
     `<span class="row" style="gap:6px;">
        <button class="btn small" onclick="syncBossesForPlayer('${p.id}', this)">⟳ ${p.rsn}</button>
        <a class="btn ghost small" style="text-decoration:none;" target="_blank" rel="noopener"
           href="https://secure.runescape.com/m=hiscore_oldschool/hiscorepersonal?user1=${encodeURIComponent(p.rsn)}">↗</a>
      </span>`).join('');
-  const body = document.getElementById('bossTableBody');
-  body.innerHTML = state.bosses.map((boss,i)=>{
-    const cells = players.map(p=>{
-      const val = (state.bossKc[p.id] && state.bossKc[p.id][boss]) || 0;
-      return `<td><input type="number" min="0" value="${val}" onchange="updateKc('${p.id}','${boss.replace(/'/g,"\\'")}',this.value)"></td>`;
-    }).join('');
-    const total = players.reduce((sum,p)=> sum + ((state.bossKc[p.id] && state.bossKc[p.id][boss]) || 0), 0);
-    return `<tr><td>${boss} <button class="del-btn" title="Remove" onclick="removeBoss(${i})">✕</button></td>${cells}<td class="total-col">${total.toLocaleString()}</td></tr>`;
-  }).join('');
+
+  const grid = document.getElementById('bossTileGrid');
+  grid.innerHTML = state.bosses.map((boss,i)=>{
+    const rows = players.map(p=> ({p, kc:(state.bossKc[p.id] && state.bossKc[p.id][boss]) || 0}))
+      .sort((a,b)=> b.kc - a.kc);
+    const total = rows.reduce((sum,r)=> sum + r.kc, 0);
+    const topKc = rows.length ? rows[0].kc : 0;
+
+    const leaderboard = rows.map((r,idx)=>{
+      const pct = topKc>0 ? Math.round(r.kc/topKc*100) : 0;
+      const crown = (idx===0 && r.kc>0) ? '<span class="crown" title="Highest KC">♛</span>' : '';
+      return `<div class="boss-kc-row">
+        <div class="boss-kc-name">${crown}${r.p.rsn.replace(/^GIM\s*/i,'')}</div>
+        <div class="boss-kc-bar"><div style="width:${pct}%"></div></div>
+        <input type="number" min="0" class="boss-kc-input" value="${r.kc}"
+          onchange="updateKc('${r.p.id}','${boss.replace(/'/g,"\\'")}',this.value)">
+      </div>`;
+    }).join('') || '<p style="color:var(--text-dim); font-size:.75rem;">Add team members first</p>';
+
+    return `<div class="boss-tile">
+      <button class="rm" title="Remove" onclick="removeBoss(${i})">✕</button>
+      <div class="boss-portrait">
+        <img src="${bossIconUrl(boss)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('icon-fallback')">
+        <div class="boss-portrait-fallback"><svg viewBox="0 0 48 48">${ICONS.skull}</svg></div>
+      </div>
+      <div class="boss-tile-body">
+        <div class="boss-name-row">
+          <div class="boss-name">${boss}</div>
+          <div class="boss-total">${total.toLocaleString()} <span>total</span></div>
+        </div>
+        <div class="boss-leaderboard">${leaderboard}</div>
+      </div>
+    </div>`;
+  }).join('') || '<p style="color:var(--text-dim);">No bosses tracked yet — add one above.</p>';
+
   renderBossStats();
 }
 
