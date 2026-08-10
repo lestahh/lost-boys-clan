@@ -8,23 +8,25 @@
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Spectral:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0a1622;
-    --bg-panel:#0f2135;
-    --bg-panel-2:#153044;
-    --border:#2f5d82;
-    --border-dim:#1c3a52;
-    --gold:#4db8f0;
-    --ember:#7dd8ff;
-    --text:#e6f1fb;
-    --text-dim:#7d9bb5;
-    --good:#5aa88a;
-    --bad:#d05c56;
-    --shadow: 0 8px 24px rgba(0,0,0,.5);
+    --bg:#140805;
+    --bg-panel:#1f0f09;
+    --bg-panel-2:#2b140c;
+    --border:#6b2a12;
+    --border-dim:#3a1a0e;
+    --gold:#ff7a1a;
+    --ember:#ffb020;
+    --text:#fbe8d8;
+    --text-dim:#c98a63;
+    --good:#7fae4f;
+    --bad:#ff3b3b;
+    --shadow: 0 8px 24px rgba(0,0,0,.6);
   }
   *{box-sizing:border-box;}
   body{margin:0;background:
-      radial-gradient(1200px 600px at 10% -10%, #163150 0%, transparent 60%),
-      radial-gradient(1000px 500px at 110% 10%, #0f2338 0%, transparent 55%),
+      radial-gradient(1200px 600px at 10% -10%, #4a1708 0%, transparent 60%),
+      radial-gradient(1000px 500px at 110% 10%, #3a1006 0%, transparent 55%),
+      repeating-linear-gradient(45deg, rgba(255,122,26,.05) 0 2px, transparent 2px 64px),
+      repeating-linear-gradient(-45deg, rgba(255,122,26,.05) 0 2px, transparent 2px 64px),
       var(--bg);
     color:var(--text); font-family:'Spectral',serif; min-height:100vh;}
   h1,h2,h3,.display{font-family:'Cinzel',serif; letter-spacing:.03em;}
@@ -42,7 +44,7 @@
   .brand-text .sub{font-size:.68rem; color:var(--text-dim); letter-spacing:.15em; text-transform:uppercase;}
   .nav-links{display:flex; gap:4px; flex-wrap:wrap;}
   .nav-links button{background:transparent; border:1px solid transparent; color:var(--text-dim); padding:7px 12px; border-radius:5px; font-size:.82rem; letter-spacing:.04em;}
-  .nav-links button.active, .nav-links button:hover{color:var(--gold); border-color:var(--border-dim); background:rgba(215,173,63,.06);}
+  .nav-links button.active, .nav-links button:hover{color:var(--gold); border-color:var(--border-dim); background:rgba(255,122,26,.08);}
 
   main{max-width:1180px; margin:0 auto; padding:28px 22px 80px;}
   .page{display:none;}
@@ -52,7 +54,7 @@
   /* ---- home ---- */
   .hero{text-align:center; padding:36px 10px 30px; border-bottom:1px solid var(--border-dim); margin-bottom:34px;}
   .hero .eyebrow{color:var(--ember); text-transform:uppercase; letter-spacing:.3em; font-size:.72rem; margin:6px 0 16px;}
-  .hero h1{font-size:2.6rem; margin:0 0 4px; color:var(--gold); text-shadow:0 2px 0 rgba(0,0,0,.5);}
+  .hero h1{font-size:2.6rem; margin:0 0 4px; color:var(--gold); text-shadow:0 0 22px rgba(255,122,26,.45), 0 0 50px rgba(255,60,0,.2), 0 2px 0 rgba(0,0,0,.6);}
   .hero p{color:var(--text-dim); max-width:520px; margin:0 auto;}
 
   .gim-rank-badge{display:inline-flex; align-items:center; gap:10px; background:var(--bg-panel); border:1px solid var(--border-dim); border-radius:20px; padding:8px 18px; margin-bottom:20px; font-size:.8rem; color:var(--text-dim);}
@@ -70,7 +72,7 @@
 
   .tiles{display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:18px;}
   .tile{position:relative; background:linear-gradient(180deg, var(--bg-panel-2), var(--bg-panel)); border:1px solid var(--border); border-radius:8px; padding:22px 20px; text-align:left; box-shadow:var(--shadow); transition:transform .15s ease, border-color .15s ease;}
-  .tile:hover{transform:translateY(-3px); border-color:var(--gold); cursor:pointer;}
+  .tile:hover{transform:translateY(-3px); border-color:var(--gold); cursor:pointer; box-shadow:var(--shadow), 0 0 18px rgba(255,122,26,.3);}
   .tile .icon{width:34px; height:34px; color:var(--ember); margin-bottom:14px;}
   .tile h3{margin:0 0 6px; font-size:1.05rem; color:var(--gold);}
   .tile p{margin:0; color:var(--text-dim); font-size:.85rem; line-height:1.4;}
@@ -89,7 +91,7 @@
   th, td{padding:7px 8px; text-align:left; border-bottom:1px solid var(--border-dim);}
   th{color:var(--text-dim); font-weight:600; text-transform:uppercase; font-size:.68rem; letter-spacing:.06em;}
   td input[type=number], td input[type=text]{width:100%; min-width:60px;}
-  tr:hover td{background:rgba(215,173,63,.04);}
+  tr:hover td{background:rgba(255,122,26,.05);}
 
   .player-tabs{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:18px;}
   .player-tabs button{background:var(--bg-panel); border:1px solid var(--border-dim); color:var(--text-dim); padding:8px 14px; border-radius:6px; font-size:.82rem;}
@@ -101,13 +103,15 @@
   .stat .label{font-size:.68rem; text-transform:uppercase; letter-spacing:.08em; color:var(--text-dim); margin-bottom:4px;}
   .stat .value{font-size:1.35rem; color:var(--gold); font-family:'JetBrains Mono',monospace;}
   .stat .value small{font-size:.6rem; color:var(--text-dim); display:block; font-family:'Spectral',serif; margin-top:2px;}
+  .rank-badge{display:inline-block; padding:2px 10px; border-radius:20px; font-size:.62rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase; margin:2px 0 6px; font-family:'Cinzel',serif;}
+  .rank-badge.glow{box-shadow:0 0 10px rgba(255,90,40,.65);}
 
   .skill-row td.name{color:var(--text);}
   .bar{height:5px; background:var(--border-dim); border-radius:3px; overflow:hidden; margin-top:3px;}
   .bar > div{height:100%; background:var(--ember);}
 
-  .btn{background:var(--gold); color:#1a1305; border:none; padding:8px 16px; border-radius:6px; font-weight:600; font-size:.82rem;}
-  .btn:hover{background:#e8c25a;}
+  .btn{background:var(--gold); color:#1a0a02; border:none; padding:8px 16px; border-radius:6px; font-weight:600; font-size:.82rem;}
+  .btn:hover{background:#ffa552; box-shadow:0 0 14px rgba(255,122,26,.45);}
   .btn.ghost{background:transparent; color:var(--gold); border:1px solid var(--border);}
   .btn.ghost:hover{border-color:var(--gold);}
   .btn.small{padding:5px 10px; font-size:.75rem;}
@@ -115,14 +119,14 @@
 
   .diary-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:6px;}
   .diary-cell{display:flex; flex-direction:column; align-items:center; gap:4px; padding:8px 4px; border:1px solid var(--border-dim); border-radius:6px; background:var(--bg);}
-  .diary-cell.done{border-color:var(--good); background:rgba(122,155,82,.12);}
+  .diary-cell.done{border-color:var(--good); background:rgba(127,174,79,.14);}
   .diary-cell span{font-size:.62rem; color:var(--text-dim); text-transform:uppercase;}
   .region-block{margin-bottom:14px;}
   .region-block .region-name{font-size:.85rem; color:var(--text); margin-bottom:6px; font-weight:600;}
 
   .quest-list{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:8px;}
   .quest-item{display:flex; align-items:center; gap:8px; padding:8px 10px; border:1px solid var(--border-dim); border-radius:6px; font-size:.85rem;}
-  .quest-item.done{border-color:var(--good); background:rgba(122,155,82,.1);}
+  .quest-item.done{border-color:var(--good); background:rgba(127,174,79,.12);}
   .quest-item input{width:auto;}
 
   .cal-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:6px; margin-bottom:22px;}
@@ -132,7 +136,7 @@
   .cal-cell.empty{background:transparent; border-color:transparent; cursor:default;}
   .cal-cell.today{border-color:var(--ember);}
   .cal-cell .num{color:var(--text-dim); font-family:'JetBrains Mono',monospace;}
-  .cal-cell .evt{margin-top:4px; background:var(--ember); color:#1a1305; border-radius:3px; padding:2px 4px; font-size:.65rem; margin-bottom:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .cal-cell .evt{margin-top:4px; background:var(--ember); color:#1a0a02; border-radius:3px; padding:2px 4px; font-size:.65rem; margin-bottom:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
   .cal-nav{display:flex; align-items:center; gap:14px; margin-bottom:14px;}
   .cal-nav h3{margin:0; color:var(--gold); min-width:170px; text-align:center;}
 
@@ -160,7 +164,7 @@
 
   .gear-tiles{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:12px;}
   .gear-tile{background:var(--bg-panel); border:1px solid var(--border-dim); border-radius:8px; padding:14px 15px; transition:border-color .15s ease;}
-  .gear-tile:hover{border-color:var(--border);}
+  .gear-tile:hover{border-color:var(--gold); box-shadow:0 0 14px rgba(255,122,26,.2);}
   .gear-tile .tile-top{display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:10px;}
   .gear-tile .item-name{font-size:.88rem; font-weight:600; color:var(--text); line-height:1.25;}
   .gear-tile .cat-badge{font-size:.6rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:.05em; display:block; margin-top:2px;}
@@ -170,7 +174,7 @@
   .chip-row{display:flex; gap:6px; flex-wrap:wrap;}
   .chip{width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.62rem; font-weight:700; border:1px solid var(--border-dim); color:var(--text-dim); cursor:pointer; background:var(--bg); transition:all .12s ease;}
   .chip:hover{border-color:var(--gold);}
-  .chip.owned{background:var(--good); border-color:var(--good); color:#132008;}
+  .chip.owned{background:var(--good); border-color:var(--good); color:#0f1d08;}
 
   .team-art{display:flex; flex-wrap:wrap; justify-content:center; gap:14px; margin-bottom:20px;}
   .team-art svg{width:56px; height:78px; image-rendering:pixelated;}
@@ -186,13 +190,13 @@
   .item-icon-wrap.icon-fallback .item-icon-fallback{display:flex;}
   .tile-top .name-row{display:flex; gap:10px; align-items:flex-start;}
 
-  .total-col{background:rgba(125,216,255,.12); font-weight:700; color:var(--gold); text-align:center;}
-  th.total-col{color:var(--gold); background:rgba(125,216,255,.08);}
+  .total-col{background:rgba(255,176,32,.14); font-weight:700; color:var(--gold); text-align:center;}
+  th.total-col{color:var(--gold); background:rgba(255,176,32,.1);}
 
   .boss-tiles{display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px;}
   .boss-tile{position:relative; background:var(--bg-panel); border:1px solid var(--border-dim); border-radius:10px; overflow:hidden; transition:border-color .15s ease;}
-  .boss-tile:hover{border-color:var(--gold);}
-  .boss-tile .rm{position:absolute; top:8px; right:8px; z-index:2; background:rgba(10,22,34,.7); border:none; border-radius:50%; width:22px; height:22px; line-height:1; color:var(--bad); font-size:.75rem; opacity:.55;}
+  .boss-tile:hover{border-color:var(--gold); box-shadow:0 0 16px rgba(255,122,26,.25);}
+  .boss-tile .rm{position:absolute; top:8px; right:8px; z-index:2; background:rgba(20,8,5,.75); border:none; border-radius:50%; width:22px; height:22px; line-height:1; color:var(--bad); font-size:.75rem; opacity:.55;}
   .boss-tile .rm:hover{opacity:1;}
   .boss-portrait{position:relative; height:110px; display:flex; align-items:center; justify-content:center; background:radial-gradient(circle at 50% 35%, var(--bg-panel-2), var(--bg)); border-bottom:1px solid var(--border-dim);}
   .boss-portrait img{max-height:86%; max-width:72%; object-fit:contain; image-rendering:pixelated; filter:drop-shadow(0 4px 6px rgba(0,0,0,.5));}
@@ -237,7 +241,7 @@
 
 <div class="topbar">
   <div class="brand" onclick="go('home')">
-    <svg class="crest" viewBox="0 0 48 48" fill="none"><path d="M24 3 L42 12 V24 C42 35 34 43 24 45 C14 43 6 35 6 24 V12 Z" stroke="#4db8f0" stroke-width="2.5" fill="#153044"/><path d="M24 14 L28 22 H24 L26 30 L18 20 H22 L20 14 Z" fill="#7dd8ff"/></svg>
+    <svg class="crest" viewBox="0 0 48 48" fill="none"><path d="M24 3 L42 12 V24 C42 35 34 43 24 45 C14 43 6 35 6 24 V12 Z" stroke="#ff7a1a" stroke-width="2.5" fill="#2b140c"/><path d="M24 14 L28 22 H24 L26 30 L18 20 H22 L20 14 Z" fill="#ffb020"/></svg>
     <div class="brand-text">
       <div class="title">Lost Boys Clan</div>
       <div class="sub">Group Ironman Tracker</div>
@@ -514,12 +518,26 @@ const DEFAULT_GEAR_ITEMS = [
     'Bandos Chestplate','Bandos Tassets','Armadyl Chestplate','Armadyl Chainskirt','Ancestral Robes (Set)',
     'Justiciar Armour (Set)','Masori Armour (Set)','Torva Armour (Set)','Toxic Blowpipe','Dragon Warhammer',
     'Bandos Godsword','Ghrazi Rapier','Twisted Bow','Scythe of Vitur','Tumeken\'s Shadow'], 'PVM Gear'),
+  // Ironman progression staples (via ladlorchart.com) not already covered above
+  ...makeItems(['Amulet of Strength','Iban\'s Staff (u)','Ancient Staff','Fighter Torso','Granite Body',
+    'Dragon Scimitar','Dragon Dagger','Helm of Neitiznot','Salve Amulet(ei)','Imbued Zamorak Cape',
+    'Infinity Boots','Mage\'s Book','Arkan Blade','Black Mask (i)','Slayer Helmet (i)',
+    'Void Knight Top','Void Knight Robe','Void Ranger Helm','Void Knight Gloves','Elite Void Top','Elite Void Robe',
+    'Crystal Halberd','Crystal Body','Crystal Legs','Crystal Helm','Bow of Faerdhinen (c)',
+    'Bloodbark Body','Bloodbark Legs','Bloodbark Helm','Zamorakian Hasta','Voidwaker',
+    'Necklace of Rupture','Thread of Elidinis','Lightbearer','Abyssal Whip','Abyssal Tentacle',
+    'Emberlight','Dragon Boots','Scorching Bow','Tormented Bracelet','Burning Claws','Avernic Treads',
+    'Desert Amulet 4','Rada\'s Blessing 4','Primordial Boots','Amulet of Rancour','Eternal Boots',
+    'Confliction Gauntlets','Osmumten\'s Fang','Ferocious Gloves','Oathplate Chest','Oathplate Legs','Oathplate Helm',
+    'Ultor Ring','Dizana\'s Quiver','Magus Ring','Dragon Claws','Elder Maul','Elidinis\' Ward',
+    'Alchemist\'s Amulet','Eye of Ayak','Arclight'], 'PVM Gear'),
   ...makeItems(['Graceful Outfit','Crystal Axe','Crystal Pickaxe','Infernal Axe','Infernal Harpoon',
     'Dragon Pickaxe','Motherlode Maul','Angler Outfit','Lumberjack Outfit','Prospector Outfit',
     'Farmer\'s Outfit','Rogue Outfit','Pyromancer Outfit','Rune Pouch','Dragon Harpoon'], 'Skilling Gear'),
   ...makeItems(['Ava\'s Assembler','Ring of Dueling','Games Necklace','Amulet of Glory','Combat Bracelet',
     'Skills Necklace','Explorer\'s Ring 4','Bonecrusher','Herb Sack','Seed Box','Looting Bag','Coal Bag',
-    'Gem Bag','Log Basket','Ring of Wealth','Quest Point Cape','Music Cape','Achievement Diary Cape'], 'Misc / QoL')
+    'Gem Bag','Log Basket','Ring of Wealth','Quest Point Cape','Music Cape','Achievement Diary Cape',
+    'Karamja Gloves 4','Ghommal\'s Hilt 4','Pharaoh\'s Sceptre','Ash Sanctifier','Book of the Dead'], 'Misc / QoL')
 ];
 
 const DEFAULT_BOSSES = ['Vorkath','Zulrah','General Graardor','Kree\'Arra','K\'ril Tsutsaroth','Commander Zilyana',
@@ -635,6 +653,16 @@ async function loadState(){
       await Promise.all(Object.keys(SECTION_KEYS).map(s=>apiSet(SECTION_KEYS[s], sectionSlice(s))));
     }
   }
+
+  // backfill: add any new default gear items that aren't in the saved list yet,
+  // so shipping new checklist entries doesn't require touching KV by hand
+  const existingItemIds = new Set(state.items.map(it=>it.id));
+  const missingItems = DEFAULT_GEAR_ITEMS.filter(it=>!existingItemIds.has(it.id));
+  if(missingItems.length){
+    state.items = state.items.concat(missingItems);
+    await apiSet(SECTION_KEYS.gear, sectionSlice('gear'));
+  }
+
   if(ev) events = ev;
 }
 
@@ -804,6 +832,30 @@ function playerCompletion(pid){
   return Math.round((owned/items.length)*100);
 }
 
+// rank badge always reflects total gear ownership, independent of the active category filter
+function playerOverallCompletion(pid){
+  const items = state.items;
+  if(items.length===0) return 0;
+  const owned = items.filter(it=> state.ownership[it.id] && state.ownership[it.id][pid]).length;
+  return Math.round((owned/items.length)*100);
+}
+
+const GEAR_RANK_TIERS = [
+  {name:'Bronze',  min:0,   bg:'#7a4a25', fg:'#f6ddc0'},
+  {name:'Iron',    min:10,  bg:'#6e6e6e', fg:'#f2f2f2'},
+  {name:'Steel',   min:25,  bg:'#8fa7b3', fg:'#10171b'},
+  {name:'Black',   min:40,  bg:'#1a1a1a', fg:'#e6a3a3', border:'#7a1f1f'},
+  {name:'Mithril', min:55,  bg:'#3d4fc9', fg:'#e9ecff'},
+  {name:'Adamant', min:70,  bg:'#3a8a4a', fg:'#eafff0'},
+  {name:'Rune',    min:85,  bg:'#3fc7d9', fg:'#062226'},
+  {name:'Dragon',  min:100, bg:'#c9302f', fg:'#ffe9d9', glow:true}
+];
+function gearRankFor(pct){
+  let tier = GEAR_RANK_TIERS[0];
+  for(const t of GEAR_RANK_TIERS){ if(pct>=t.min) tier=t; }
+  return tier;
+}
+
 function renderGear(){
   const players = activePlayers();
 
@@ -818,8 +870,10 @@ function renderGear(){
   // per-player completion stats (respects current filter)
   document.getElementById('gearPlayerStats').innerHTML = players.map(p=>{
     const pct = playerCompletion(p.id);
+    const tier = gearRankFor(playerOverallCompletion(p.id));
     return `<div class="stat">
       <div class="label">${p.rsn}</div>
+      <div class="rank-badge${tier.glow?' glow':''}" style="background:${tier.bg}; color:${tier.fg};${tier.border?` border:1px solid ${tier.border};`:''}">${tier.name}</div>
       <div class="value">${pct}%</div>
       <div class="bar"><div style="width:${pct}%"></div></div>
     </div>`;
@@ -1395,8 +1449,8 @@ function renderRankChart(){
 
   const points = hist.map((h, i) => {
     const x = padL + (W - padL - padR) * (maxT === minT ? i / (hist.length - 1 || 1) : (h.ts - minT) / spanT);
-    // inverted: a lower (better) rank number sits higher on the chart
-    const y = padT + (H - padT - padB) * ((h.rank - minR) / range);
+    // inverted: a lower (better) rank number sits lower on the chart, so improving draws the line downward
+    const y = padT + (H - padT - padB) * ((maxR - h.rank) / range);
     return [x, y];
   });
 
@@ -1420,15 +1474,15 @@ function renderRankChart(){
           <stop offset="100%" stop-color="var(--gold)" stop-opacity="0"/>
         </linearGradient>
       </defs>
-      <text x="${padL - 6}" y="${padT + 4}" text-anchor="end" class="rank-axis-label">#${origMin.toLocaleString()}</text>
-      <text x="${padL - 6}" y="${H - padB}" text-anchor="end" class="rank-axis-label">#${origMax.toLocaleString()}</text>
+      <text x="${padL - 6}" y="${padT + 4}" text-anchor="end" class="rank-axis-label">#${origMax.toLocaleString()}</text>
+      <text x="${padL - 6}" y="${H - padB}" text-anchor="end" class="rank-axis-label">#${origMin.toLocaleString()}</text>
       <path d="${areaPath}" fill="url(#rankFill)" stroke="none"/>
       <path d="${linePath}" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
       ${dots}
       <text x="${points[0][0].toFixed(1)}" y="${H - 6}" text-anchor="start" class="rank-axis-label">${fmtDate(hist[0].ts)}</text>
       <text x="${points[points.length - 1][0].toFixed(1)}" y="${H - 6}" text-anchor="end" class="rank-axis-label">${fmtDate(hist[hist.length - 1].ts)}</text>
     </svg>
-    <p class="rank-chart-note">Lower is better — line trending up means the team's climbing the leaderboard.</p>
+    <p class="rank-chart-note">Lower is better — line trending down means the team's climbing the leaderboard.</p>
   `;
 }
 function applyNewRank(newRank){
@@ -1470,6 +1524,50 @@ async function syncGimRank(btn){
     renderGimRank();
   }
 }
+
+/* ---------------- UI SOUNDS (dashboard-style hover/click blips) ----------------
+   Synthesized via Web Audio so no sound files need to be fetched/bundled.
+   Browsers won't let audio play until the user has interacted with the page
+   at least once, so we lazily create/resume the AudioContext on first click. */
+let audioCtx = null;
+function ensureAudio(){
+  if(!audioCtx){
+    try{ audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return null; }
+  }
+  if(audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+function playTone(freq, duration, type, peak){
+  const ctx = audioCtx;
+  if(!ctx || ctx.state !== 'running') return;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = type;
+  osc.frequency.setValueAtTime(freq, ctx.currentTime);
+  gain.gain.setValueAtTime(0, ctx.currentTime);
+  gain.gain.linearRampToValueAtTime(peak, ctx.currentTime + 0.008);
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+  osc.connect(gain).connect(ctx.destination);
+  osc.start();
+  osc.stop(ctx.currentTime + duration + 0.02);
+}
+function playHoverSound(){ playTone(720, 0.08, 'sine', 0.045); }
+function playClickSound(){
+  playTone(500, 0.06, 'triangle', 0.07);
+  setTimeout(()=>playTone(820, 0.09, 'triangle', 0.06), 50);
+}
+
+const TILE_SOUND_SELECTOR = '.tile, .gear-tile, .boss-tile, .goal-card';
+let hoverSoundEl = null;
+document.addEventListener('mouseover', (e)=>{
+  const tile = e.target.closest(TILE_SOUND_SELECTOR);
+  if(tile && tile !== hoverSoundEl){ hoverSoundEl = tile; playHoverSound(); }
+  else if(!tile){ hoverSoundEl = null; }
+});
+document.addEventListener('click', (e)=>{
+  ensureAudio();
+  if(e.target.closest(TILE_SOUND_SELECTOR)) playClickSound();
+});
 
 /* ---------------- INIT ---------------- */
 async function init(){

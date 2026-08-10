@@ -15,6 +15,10 @@ export default {
       return handleGimRank(request);
     }
 
+    if (url.pathname === '/api/dink' && request.method === 'POST') {
+      return handleDinkWebhook(request, env);
+    }
+
     // everything else falls through to the static site (index.html, etc.)
     return env.ASSETS.fetch(request);
   }
@@ -51,8 +55,59 @@ async function handleDataPost(request, env) {
   }
 
   const body = await request.text();
+
+  if (key === 'clan-events') {
+    await notifyNewEvents(body, env);
+  }
+
   await env.CLAN_KV.put(key, body);
   return json({ ok: true });
+}
+
+/* ---------------- Discord "new event" announcements ----------------
+   Diffs the incoming calendar events against what's already in KV and
+   pings Discord only for genuinely new events (not edits or deletes),
+   so this doesn't fire during the old-blob migration or on every save.
+   Needs a DISCORD_EVENTS_WEBHOOK secret set on the Worker — without it,
+   this is a silent no-op and saving events still works normally. */
+
+async function notifyNewEvents(newBodyText, env) {
+  if (!env.DISCORD_EVENTS_WEBHOOK) return;
+
+  try {
+    const oldRaw = await env.CLAN_KV.get('clan-events');
+    if (oldRaw === null) return; // first-ever write for this key — nothing to diff against
+
+    const oldEvents = JSON.parse(oldRaw);
+    const newEvents = JSON.parse(newBodyText || '[]');
+    const oldIds = new Set(oldEvents.map(e => e.id));
+    const added = newEvents.filter(e => !oldIds.has(e.id));
+
+    for (const evt of added) {
+      await postDiscordEventNotice(evt, env);
+    }
+  } catch (e) {
+    // best-effort — a notification hiccup should never block saving the event
+  }
+}
+
+async function postDiscordEventNotice(evt, env) {
+  const lines = [
+    '@everyone :calendar_spiral: **New event added: ' + (evt.title || 'Untitled') + '**',
+    (evt.date || '') + (evt.time ? ' at ' + evt.time + ' (BST)' : '')
+  ];
+  if (evt.attendees && evt.attendees.length) lines.push("Who's in: " + evt.attendees.join(', '));
+  if (evt.notes) lines.push(evt.notes);
+
+  try {
+    await fetch(env.DISCORD_EVENTS_WEBHOOK, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ content: lines.join('\n') })
+    });
+  } catch (e) {
+    // best-effort — ignore delivery failures
+  }
 }
 
 /* ---------------- OSRS hiscores proxy ---------------- */
@@ -122,6 +177,54 @@ async function handleGimRank(request) {
   } catch (e) {
     return json({ ok: false, error: 'fetch_failed' });
   }
+}
+
+/* ---------------- Dink (RuneLite) webhook ingest ----------------
+   Dink can send its notifications to multiple webhook URLs at once,
+   so this can sit alongside your existing Discord webhook rather than
+   replacing it. Dink's payload is Discord-shaped (content/embeds) plus
+   a structured "extra" object per event type — we store the raw event
+   and pull out a best-effort summary for the site to render later. */
+
+const DINK_FEED_KEY = 'dink-feed';
+const DINK_FEED_MAX = 200;
+
+async function handleDinkWebhook(request, env) {
+  if (!env.CLAN_KV) {
+    return json({ error: 'CLAN_KV namespace is not bound to this project yet' }, 500);
+  }
+
+  let payload;
+  try {
+    const contentType = request.headers.get('content-type') || '';
+    if (contentType.includes('multipart/form-data')) {
+      const form = await request.formData();
+      const raw = form.get('payload_json');
+      payload = raw ? JSON.parse(raw) : {};
+    } else {
+      payload = await request.json();
+    }
+  } catch (e) {
+    return json({ ok: false, error: 'could not parse dink payload' }, 400);
+  }
+
+  const embed = (payload.embeds && payload.embeds[0]) || {};
+  const entry = {
+    id: crypto.randomUUID(),
+    ts: Date.now(),
+    type: payload.type || 'UNKNOWN',
+    player: payload.playerName || (payload.extra && payload.extra.playerName) || null,
+    title: embed.title || payload.content || null,
+    description: embed.description || null,
+    thumbnail: (embed.thumbnail && embed.thumbnail.url) || null,
+    extra: payload.extra || null
+  };
+
+  const existing = (await env.CLAN_KV.get(DINK_FEED_KEY, { type: 'json' })) || [];
+  existing.unshift(entry);
+  await env.CLAN_KV.put(DINK_FEED_KEY, JSON.stringify(existing.slice(0, DINK_FEED_MAX)));
+
+  return json({ ok: true });
 }
 
 function json(obj, status) {
