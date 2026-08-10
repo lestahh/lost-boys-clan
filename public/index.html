@@ -139,6 +139,8 @@
   .cal-cell.today{border-color:var(--ember);}
   .cal-cell .num{color:var(--text-dim); font-family:'JetBrains Mono',monospace;}
   .cal-cell .evt{margin-top:4px; background:var(--ember); color:#1a0a02; border-radius:3px; padding:2px 4px; font-size:.65rem; margin-bottom:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .avail-row{display:flex; gap:3px; flex-wrap:wrap; margin-top:5px;}
+  .avail-dot{width:9px; height:9px; border-radius:50%; display:inline-block; border:1px solid rgba(0,0,0,.45); box-shadow:0 0 4px rgba(0,0,0,.4);}
   .cal-nav{display:flex; align-items:center; gap:14px; margin-bottom:14px;}
   .cal-nav h3{margin:0; color:var(--gold); min-width:170px; text-align:center;}
 
@@ -314,12 +316,17 @@
       <button class="btn ghost small" onclick="changeMonth(-1)">‹ Prev</button>
       <h3 id="calMonthLabel"></h3>
       <button class="btn ghost small" onclick="changeMonth(1)">Next ›</button>
-      <button class="btn small" style="margin-left:auto;" onclick="openEventModal()">+ New Event</button>
+      <button class="btn ghost small" style="margin-left:auto;" onclick="openAvailModal()">+ Set Availability</button>
+      <button class="btn small" onclick="openEventModal()">+ New Event</button>
     </div>
     <div class="cal-grid" id="calGrid"></div>
     <div class="card">
       <h4>Upcoming Events</h4>
       <div id="upcomingList"></div>
+    </div>
+    <div class="card">
+      <h4>Who's Free</h4>
+      <div id="availList"></div>
     </div>
   </section>
 
@@ -381,6 +388,25 @@
     <div class="actions">
       <button class="btn ghost small" onclick="closeEventModal()">Cancel</button>
       <button class="btn small" onclick="saveEvent()">Save Event</button>
+    </div>
+  </div>
+</div>
+
+<!-- Availability Modal -->
+<div class="modal-bg" id="availModal">
+  <div class="modal">
+    <h3>Set Availability</h3>
+    <label>Who</label>
+    <select id="availPlayer"></select>
+    <label>Date</label>
+    <input id="availDate" type="date">
+    <label>From (BST)</label>
+    <input id="availStart" type="time">
+    <label>To (BST)</label>
+    <input id="availEnd" type="time">
+    <div class="actions">
+      <button class="btn ghost small" onclick="closeAvailModal()">Cancel</button>
+      <button class="btn small" onclick="saveAvailability()">Save</button>
     </div>
   </div>
 </div>
@@ -448,13 +474,10 @@ function pixelCharSVG(palette){
   const w = PIXEL_GRID[0].length*cell, h = PIXEL_GRID.length*cell;
   return `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">${rects}</svg>`;
 }
-function renderTeamArt(){
-  const el = document.getElementById('teamArt');
-  if(!el) return;
-  const players = activePlayers();
-  const roster = (players.length ? players : state.players).slice(0,5);
-
-  // reserve fixed colours for known names, then fill remaining players with unused palettes
+// reserve fixed colours for known names, then fill remaining players with unused palettes —
+// shared so a player's colour is consistent between the hero avatars and things like
+// the calendar availability dots
+function resolvePlayerPalettes(roster){
   const usedIdx = new Set();
   const assigned = roster.map(p=>{
     const key = (p.rsn||'').replace(/^GIM\s*/i,'').trim().toLowerCase();
@@ -469,8 +492,20 @@ function renderTeamArt(){
       usedIdx.add(a.idx);
     }
   });
+  return assigned;
+}
+function playerColorMap(roster){
+  const map = {};
+  resolvePlayerPalettes(roster).forEach(a=>{ map[a.p.id] = PIXEL_PALETTES[a.idx].H; });
+  return map;
+}
+function renderTeamArt(){
+  const el = document.getElementById('teamArt');
+  if(!el) return;
+  const players = activePlayers();
+  const roster = (players.length ? players : state.players).slice(0,5);
 
-  el.innerHTML = assigned.map(a=>{
+  el.innerHTML = resolvePlayerPalettes(roster).map(a=>{
     const palette = PIXEL_PALETTES[a.idx];
     return `<div class="char-wrap">${pixelCharSVG(palette)}<span class="char-name">${(a.p.rsn||'Open Slot').replace(/^GIM\s*/i,'')}</span></div>`;
   }).join('');
@@ -617,6 +652,7 @@ function defaultState(){
 
 let state = defaultState();
 let events = [];
+let availability = [];
 let activePlayer = {quests:'p1', skills:'p1'};
 let gearFilter = 'All';
 let calCursor = new Date();
@@ -674,10 +710,10 @@ async function apiSet(key, value){
 
 async function loadState(){
   state = defaultState();
-  const [players, gear, bosses, skills, quests, gimrank, ev] = await Promise.all([
+  const [players, gear, bosses, skills, quests, gimrank, ev, av] = await Promise.all([
     apiGet(SECTION_KEYS.players), apiGet(SECTION_KEYS.gear), apiGet(SECTION_KEYS.bosses),
     apiGet(SECTION_KEYS.skills), apiGet(SECTION_KEYS.quests), apiGet(SECTION_KEYS.gimrank),
-    apiGet('clan-events')
+    apiGet('clan-events'), apiGet('clan-availability')
   ]);
   if(players||gear||bosses||skills||quests||gimrank){
     Object.assign(state, players||{}, gear||{}, bosses||{}, skills||{}, quests||{}, gimrank||{});
@@ -702,6 +738,7 @@ async function loadState(){
   }
 
   if(ev) events = ev;
+  if(av) availability = av;
 }
 
 let saveTimers = {};
@@ -1191,17 +1228,25 @@ function renderCalendar(){
   const daysInMonth = new Date(y,m+1,0).getDate();
   const grid = document.getElementById('calGrid');
   const labels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d=>`<div class="cal-day-label">${d}</div>`).join('');
+  const playerColors = playerColorMap(activePlayers());
   let cells = '';
   for(let i=0;i<startOffset;i++) cells += `<div class="cal-cell empty"></div>`;
   const todayStr = new Date().toDateString();
   for(let d=1; d<=daysInMonth; d++){
     const dateObj = new Date(y,m,d);
-    const iso = dateObj.toISOString().slice(0,10);
+    const iso = localISO(dateObj);
     const dayEvents = events.filter(e=>e.date===iso);
+    const dayAvail = availability.filter(a=>a.date===iso);
     const isToday = dateObj.toDateString()===todayStr ? ' today':'';
+    const availDots = dayAvail.map(a=>{
+      const p = state.players.find(pp=>pp.id===a.pid);
+      const name = p ? p.rsn.replace(/^GIM\s*/i,'') : 'Someone';
+      return `<span class="avail-dot" style="background:${playerColors[a.pid]||'#888'}" title="${name} free ${a.start}–${a.end}"></span>`;
+    }).join('');
     cells += `<div class="cal-cell${isToday}" onclick="openEventModal('${iso}')">
       <div class="num">${d}</div>
       ${dayEvents.map(e=>`<div class="evt">${e.time} ${e.title}</div>`).join('')}
+      ${availDots ? `<div class="avail-row">${availDots}</div>` : ''}
     </div>`;
   }
   grid.innerHTML = labels + cells;
@@ -1222,9 +1267,32 @@ function renderCalendar(){
       </div>
     </div>`;
   }).join('') : '<p style="color:var(--text-dim); font-size:.85rem;">Nothing scheduled yet.</p>';
+
+  const upcomingAvail = availability.filter(a=> new Date(a.date+'T'+(a.end||'23:59')) >= new Date(new Date().toDateString()))
+    .sort((a,b)=> (a.date+a.start).localeCompare(b.date+b.start));
+  document.getElementById('availList').innerHTML = upcomingAvail.length ? upcomingAvail.map(a=>{
+    const p = state.players.find(pp=>pp.id===a.pid);
+    const name = p ? p.rsn.replace(/^GIM\s*/i,'') : 'Someone';
+    const color = playerColors[a.pid] || 'var(--gold)';
+    return `<div class="upcoming-evt">
+      <div>
+        <div class="title" style="color:${color}">${name}</div>
+        <div class="tz-note">${formatDate(a.date)}</div>
+      </div>
+      <div style="text-align:right">
+        <div class="when">${a.start}–${a.end} BST</div>
+        <button class="del-btn" onclick="deleteAvailability('${a.id}')">✕</button>
+      </div>
+    </div>`;
+  }).join('') : '<p style="color:var(--text-dim); font-size:.85rem;">No one has marked availability yet.</p>';
 }
 function changeMonth(delta){ calCursor.setMonth(calCursor.getMonth()+delta); renderCalendar(); }
 function formatDate(iso){ return new Date(iso+'T00:00').toLocaleDateString('en-GB',{weekday:'short', day:'numeric', month:'short'}); }
+// local calendar date as YYYY-MM-DD — unlike toISOString(), this doesn't shift to UTC,
+// so it matches what the date picker shows regardless of the browser's timezone offset
+function localISO(dateObj){
+  return dateObj.getFullYear() + '-' + String(dateObj.getMonth()+1).padStart(2,'0') + '-' + String(dateObj.getDate()).padStart(2,'0');
+}
 function bstToEst(date, time){
   if(!time) return '--:--';
   const [h,mi] = time.split(':').map(Number);
@@ -1237,7 +1305,7 @@ function bstToEst(date, time){
 
 let modalDate = null;
 function openEventModal(iso){
-  modalDate = iso || new Date().toISOString().slice(0,10);
+  modalDate = iso || localISO(new Date());
   document.getElementById('evtTitle').value='';
   document.getElementById('evtDate').value = modalDate;
   document.getElementById('evtTime').value='18:00';
@@ -1248,6 +1316,37 @@ function openEventModal(iso){
 }
 function closeEventModal(){ document.getElementById('eventModal').classList.remove('show'); }
 // saveEvent() / deleteEvent() are defined in the STORAGE block above.
+
+function openAvailModal(iso){
+  const players = activePlayers();
+  document.getElementById('availPlayer').innerHTML = players.map(p=>
+    `<option value="${p.id}">${p.rsn.replace(/^GIM\s*/i,'')}</option>`).join('') || '<option disabled>Add team members first</option>';
+  document.getElementById('availDate').value = iso || localISO(new Date());
+  document.getElementById('availStart').value = '18:00';
+  document.getElementById('availEnd').value = '21:00';
+  document.getElementById('availModal').classList.add('show');
+}
+function closeAvailModal(){ document.getElementById('availModal').classList.remove('show'); }
+async function saveAvailability(){
+  const pid = document.getElementById('availPlayer').value;
+  const date = document.getElementById('availDate').value;
+  const start = document.getElementById('availStart').value;
+  const end = document.getElementById('availEnd').value;
+  if(!pid || !date || !start || !end) return alert('Fill in who, the date, and both times.');
+  if(start >= end) return alert('End time must be after the start time.');
+  const entry = {id:'a'+Date.now(), pid, date, start, end};
+  const server = (await apiGet('clan-availability')) || [];
+  availability = [...server, entry];
+  await apiSet('clan-availability', availability);
+  closeAvailModal();
+  renderCalendar();
+}
+async function deleteAvailability(id){
+  const server = (await apiGet('clan-availability')) || [];
+  availability = server.filter(a=>a.id!==id);
+  await apiSet('clan-availability', availability);
+  renderCalendar();
+}
 
 /* ---------------- QUESTS / DIARIES ---------------- */
 function renderQuests(){
