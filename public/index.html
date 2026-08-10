@@ -141,6 +141,15 @@
   .cal-cell .evt{margin-top:4px; background:var(--ember); color:#1a0a02; border-radius:3px; padding:2px 4px; font-size:.65rem; margin-bottom:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
   .avail-row{display:flex; gap:3px; flex-wrap:wrap; margin-top:5px;}
   .avail-dot{width:9px; height:9px; border-radius:50%; display:inline-block; border:1px solid rgba(0,0,0,.45); box-shadow:0 0 4px rgba(0,0,0,.4);}
+
+  .cal-cell.birthday{border-color:var(--gold); box-shadow:0 0 10px rgba(255,176,32,.4) inset;}
+  .cal-cell .birthday-tag{font-size:.85rem; margin-top:2px;}
+  .birthday-banner{background:linear-gradient(135deg, var(--bg-panel-2), var(--bg-panel)); border:2px solid var(--gold); border-radius:12px; padding:16px 20px; margin-bottom:22px; text-align:center; animation:birthdayGlow 2.2s ease-in-out infinite;}
+  .birthday-banner .confetti{font-size:1.4rem; letter-spacing:.35em; margin-bottom:6px; animation:birthdayBounce 1.1s ease-in-out infinite;}
+  .birthday-banner h2{margin:0 0 4px; color:var(--gold); font-family:'Cinzel',serif; font-size:1.25rem; text-shadow:0 0 16px rgba(255,122,26,.6);}
+  .birthday-banner p{margin:0; color:var(--text-dim); font-size:.82rem;}
+  @keyframes birthdayGlow{0%,100%{box-shadow:0 0 16px rgba(255,122,26,.3);} 50%{box-shadow:0 0 32px rgba(255,176,32,.55);}}
+  @keyframes birthdayBounce{0%,100%{transform:translateY(0);} 50%{transform:translateY(-5px);}}
   .cal-nav{display:flex; align-items:center; gap:14px; margin-bottom:14px;}
   .cal-nav h3{margin:0; color:var(--gold); min-width:170px; text-align:center;}
 
@@ -259,6 +268,7 @@
   <!-- HOME -->
   <section class="page active" id="page-home">
     <div class="hero">
+      <div id="birthdayBanner"></div>
       <div class="team-art" id="teamArt"></div>
       <h1>Lost Boys Clan</h1>
       <div class="eyebrow">Group Ironman</div>
@@ -1241,13 +1251,15 @@ function renderCalendar(){
     const dayEvents = events.filter(e=>e.date===iso);
     const dayAvail = availability.filter(a=>a.date===iso);
     const isToday = dateObj.toDateString()===todayStr ? ' today':'';
+    const isBirthday = iso.slice(5)===CLAN_BIRTHDAY_MD ? ' birthday':'';
     const availDots = dayAvail.map(a=>{
       const p = state.players.find(pp=>pp.id===a.pid);
       const name = p ? p.rsn.replace(/^GIM\s*/i,'') : 'Someone';
       return `<span class="avail-dot" style="background:${playerColors[a.pid]||'#888'}" title="${name} free ${a.start}–${a.end}"></span>`;
     }).join('');
-    cells += `<div class="cal-cell${isToday}" onclick="openEventModal('${iso}')">
+    cells += `<div class="cal-cell${isToday}${isBirthday}" onclick="openEventModal('${iso}')">
       <div class="num">${d}</div>
+      ${isBirthday ? `<div class="birthday-tag" title="Clan Birthday 🎉">🎂</div>` : ''}
       ${dayEvents.map(e=>`<div class="evt" onclick="event.stopPropagation(); openEventModal(null,'${e.id}')">${e.time} ${e.title}</div>`).join('')}
       ${availDots ? `<div class="avail-row">${availDots}</div>` : ''}
     </div>`;
@@ -1295,6 +1307,20 @@ function formatDate(iso){ return new Date(iso+'T00:00').toLocaleDateString('en-G
 // so it matches what the date picker shows regardless of the browser's timezone offset
 function localISO(dateObj){
   return dateObj.getFullYear() + '-' + String(dateObj.getMonth()+1).padStart(2,'0') + '-' + String(dateObj.getDate()).padStart(2,'0');
+}
+
+/* ---- clan birthday ---- */
+const CLAN_BIRTHDAY_MD = '08-22'; // MM-DD, recurring every year
+function renderBirthdayBanner(){
+  const el = document.getElementById('birthdayBanner');
+  if(!el) return;
+  const isToday = localISO(new Date()).slice(5) === CLAN_BIRTHDAY_MD;
+  el.innerHTML = isToday ? `
+    <div class="birthday-banner">
+      <div class="confetti">🎉🔥🎂🔥🎉</div>
+      <h2>Happy Birthday, Lost Boys Clan!</h2>
+      <p>Here's to another year of no trading and questionable boss splits.</p>
+    </div>` : '';
 }
 function bstToEst(date, time){
   if(!time) return '--:--';
@@ -1795,6 +1821,7 @@ document.addEventListener('click', (e)=>{
 async function init(){
   buildNav();
   buildHomeTiles();
+  renderBirthdayBanner();
   await loadState();
   renderTeamArt();
   renderGimRank();
