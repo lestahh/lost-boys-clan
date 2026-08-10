@@ -171,6 +171,7 @@ async function postDiscordEventNotice(evt, env) {
     '@everyone :calendar_spiral: **New event added: ' + (evt.title || 'Untitled') + '**',
     (evt.date || '') + (evt.time ? ' at ' + evt.time + ' (BST)' : '')
   ];
+  await appendEstLine(lines, evt.time, evt.time, env);
   if (evt.attendees && evt.attendees.length) lines.push("Who's in: " + evt.attendees.join(', '));
   if (evt.notes) lines.push(evt.notes);
   await postToDiscord(lines.join('\n'), env, 'event "' + evt.title + '"');
@@ -181,7 +182,46 @@ async function postDiscordAttendeeChangeNotice(evt, joined, left, env) {
   if (joined.length) lines.push('Joined: ' + joined.join(', '));
   if (left.length) lines.push('Dropped out: ' + left.join(', '));
   lines.push((evt.date || '') + (evt.time ? ' at ' + evt.time + ' (BST)' : ''));
+  await appendEstLine(lines, evt.time, evt.time, env);
   await postToDiscord(lines.join('\n'), env, 'attendee update for "' + evt.title + '"');
+}
+
+/* ---- BST -> EST conversion for Discord messages, mirroring the site's
+   own display logic, plus who it's actually relevant for (any player
+   whose tz starts with "EST") ---- */
+
+function bstToEstTime(time) {
+  const [h, mi] = time.split(':').map(Number);
+  let est = h - 5;
+  let dayShift = '';
+  if (est < 0) { est += 24; dayShift = ' (prev day)'; }
+  const pad = n => String(n).padStart(2, '0');
+  return pad(est) + ':' + pad(mi) + dayShift;
+}
+
+async function getEstPlayerNames(env) {
+  try {
+    const playersRaw = await env.CLAN_KV.get('players-data');
+    const playersData = playersRaw ? JSON.parse(playersRaw) : null;
+    return ((playersData && playersData.players) || [])
+      .filter(p => (p.tz || '').toUpperCase().startsWith('EST'))
+      .map(p => (p.rsn || 'Someone').replace(/^GIM\s*/i, ''));
+  } catch (e) {
+    return [];
+  }
+}
+
+// pushes an "EST for X & Y" line onto `lines` if there are EST-timezone
+// members and at least one of the given times is set; startTime/endTime
+// can be the same value for a single point-in-time event
+async function appendEstLine(lines, startTime, endTime, env) {
+  if (!startTime && !endTime) return;
+  const estNames = await getEstPlayerNames(env);
+  if (!estNames.length) return;
+  const label = startTime === endTime
+    ? bstToEstTime(startTime)
+    : bstToEstTime(startTime) + '–' + bstToEstTime(endTime);
+  lines.push(label + ' EST for ' + estNames.join(' & '));
 }
 
 async function postToDiscord(content, env, label) {
@@ -251,23 +291,9 @@ async function notifyNewAvailability(newBodyText, env) {
 
 async function postDiscordAvailabilityNotice(a, name, env) {
   const dateLabel = formatDiscordDate(a.date);
-  const content = '@everyone :clock3: **' + name + '** is free ' + dateLabel + ' — ' + a.start + '–' + a.end + ' (BST)';
-
-  try {
-    const res = await fetch(env.DISCORD_EVENTS_WEBHOOK, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ content })
-    });
-    if (!res.ok) {
-      const text = await res.text().catch(() => '');
-      console.error('discord notify: availability webhook post failed — ' + res.status + ' ' + text);
-    } else {
-      console.log('discord notify: posted availability for "' + name + '" ok');
-    }
-  } catch (e) {
-    console.error('discord notify: availability webhook fetch failed — ' + e.message);
-  }
+  const lines = ['@everyone :clock3: **' + name + '** is free ' + dateLabel + ' — ' + a.start + '–' + a.end + ' (BST)'];
+  await appendEstLine(lines, a.start, a.end, env);
+  await postToDiscord(lines.join('\n'), env, 'availability for "' + name + '"');
 }
 
 function formatDiscordDate(dateStr) {
@@ -381,9 +407,12 @@ async function postWeeklyAvailabilityDigest(env) {
     const availability = availRaw ? JSON.parse(availRaw) : [];
     const playersData = playersRaw ? JSON.parse(playersRaw) : null;
     const playerNames = {};
+    const estPlayerIds = new Set();
     ((playersData && playersData.players) || []).forEach(p => {
       playerNames[p.id] = (p.rsn || 'Someone').replace(/^GIM\s*/i, '');
+      if ((p.tz || '').toUpperCase().startsWith('EST')) estPlayerIds.add(p.id);
     });
+    const estNames = [...estPlayerIds].map(id => playerNames[id]);
 
     const weekDays = getWeekDays(new Date());
     const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -399,7 +428,13 @@ async function postWeeklyAvailabilityDigest(env) {
         .sort((a, b) => a.start.localeCompare(b.start));
       const dayLabel = '**' + dayNames[i] + ' ' + shortDayMonth(d) + '**';
       if (dayAvail.length) {
-        const entries = dayAvail.map(a => (playerNames[a.pid] || 'Someone') + ' (' + a.start + '–' + a.end + ')').join(', ');
+        const entries = dayAvail.map(a => {
+          const name = playerNames[a.pid] || 'Someone';
+          const bstRange = a.start + '–' + a.end;
+          if (!estNames.length) return name + ' (' + bstRange + ')';
+          const estRange = bstToEstTime(a.start) + '–' + bstToEstTime(a.end);
+          return name + ' (' + bstRange + ' BST / ' + estRange + ' EST)';
+        }).join(', ');
         lines.push(dayLabel + ': ' + entries);
       } else {
         lines.push(dayLabel + ': _no one has marked availability_');
