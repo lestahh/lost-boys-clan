@@ -172,7 +172,7 @@
   .chip:hover{border-color:var(--gold);}
   .chip.owned{background:var(--good); border-color:var(--good); color:#132008;}
 
-  .team-art{display:flex; justify-content:center; gap:14px; margin-bottom:20px;}
+  .team-art{display:flex; flex-wrap:wrap; justify-content:center; gap:14px; margin-bottom:20px;}
   .team-art svg{width:56px; height:78px; image-rendering:pixelated;}
   .team-art .char-wrap{display:flex; flex-direction:column; align-items:center; gap:6px;}
   .team-art .char-name{font-size:.6rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:.06em;}
@@ -399,7 +399,8 @@ const PIXEL_PALETTES = [
   {H:'#c94b3f', A:'#a83730', W:'#d8b24a', name:'Red'},
   {H:'#3f7fc9', A:'#2f5da3', W:'#e6d98a', name:'Blue'},
   {H:'#4f9d5c', A:'#3a7a46', W:'#8a6a3f', name:'Green'},
-  {H:'#c9a23f', A:'#a8842f', W:'#d8d8d8', name:'Gold'}
+  {H:'#c9a23f', A:'#a8842f', W:'#d8d8d8', name:'Gold'},
+  {H:'#8a4fc9', A:'#6a3aa8', W:'#c9b8e6', name:'Purple'}
 ];
 // Fixed team colours: Lestah (Leicester) = blue, Briistol (Bristol) = red
 const PLAYER_PALETTE_BY_NAME = {
@@ -424,7 +425,7 @@ function renderTeamArt(){
   const el = document.getElementById('teamArt');
   if(!el) return;
   const players = activePlayers();
-  const roster = (players.length ? players : state.players).slice(0,4);
+  const roster = (players.length ? players : state.players).slice(0,5);
 
   // reserve fixed colours for known names, then fill remaining players with unused palettes
   const usedIdx = new Set();
@@ -520,7 +521,7 @@ function defaultState(){
       {id:'p2', rsn:'GIM Briistol', tz:'BST'},
       {id:'p3', rsn:'GIM Drink', tz:'BST'},
       {id:'p4', rsn:'GIM PhatMatt', tz:'EST (UTC-5)'},
-      {id:'p5', rsn:'', tz:'BST'}
+      {id:'p5', rsn:'GIM Seaworthsbag', tz:'BST'}
     ],
     items: DEFAULT_GEAR_ITEMS.slice(), ownership: {}, gearNotes: '',
     bosses: DEFAULT_BOSSES.slice(),
