@@ -323,7 +323,7 @@
   <!-- CALENDAR -->
   <section class="page" id="page-calendar">
     <div class="page-head"><h2>Group Calendar</h2><button class="back" onclick="go('home')">← Home</button></div>
-    <p style="color:var(--text-dim); font-size:.8rem; margin-top:-10px;">Times are entered in <strong>BST</strong> (UK). PhatMatt's local time (EST/EDT, UTC-5/-4) is shown automatically alongside each event.</p>
+    <p style="color:var(--text-dim); font-size:.8rem; margin-top:-10px;">Times are entered in <strong>BST</strong> (UK). Local time (EST/EDT, UTC-5/-4) for any EST-timezone members is shown automatically alongside each event.</p>
     <div class="cal-nav">
       <button class="btn ghost small" onclick="changeMonth(-1)">‹ Prev</button>
       <h3 id="calMonthLabel"></h3>
@@ -1269,6 +1269,10 @@ function renderCalendar(){
   }
   grid.innerHTML = labels + cells;
 
+  const estPlayerNames = state.players
+    .filter(p=> (p.tz||'').toUpperCase().startsWith('EST'))
+    .map(p=> p.rsn.replace(/^GIM\s*/i,''));
+
   const upcoming = events.filter(e=> new Date(e.date+'T'+(e.time||'00:00')) >= new Date(new Date().toDateString()))
     .sort((a,b)=> (a.date+a.time).localeCompare(b.date+b.time));
   document.getElementById('upcomingList').innerHTML = upcoming.length ? upcoming.map(e=>{
@@ -1280,7 +1284,7 @@ function renderCalendar(){
       </div>
       <div style="text-align:right">
         <div class="when">${formatDate(e.date)} · ${e.time} BST</div>
-        <div class="tz-note">${est} EST for PhatMatt</div>
+        ${estPlayerNames.length ? `<div class="tz-note">${est} EST for ${estPlayerNames.join(' & ')}</div>` : ''}
         <button class="del-btn" onclick="event.stopPropagation(); deleteEvent('${e.id}')">✕</button>
       </div>
     </div>`;
