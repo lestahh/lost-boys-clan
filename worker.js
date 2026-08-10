@@ -105,22 +105,29 @@ async function handleVerifyGearPassword(request, env) {
    this is a silent no-op and saving events still works normally. */
 
 async function notifyNewEvents(newBodyText, env) {
-  if (!env.DISCORD_EVENTS_WEBHOOK) return;
+  if (!env.DISCORD_EVENTS_WEBHOOK) {
+    console.log('discord notify: skipped — DISCORD_EVENTS_WEBHOOK secret not set');
+    return;
+  }
 
   try {
     const oldRaw = await env.CLAN_KV.get('clan-events');
-    if (oldRaw === null) return; // first-ever write for this key — nothing to diff against
+    if (oldRaw === null) {
+      console.log('discord notify: skipped — first-ever write to clan-events, nothing to diff against');
+      return;
+    }
 
     const oldEvents = JSON.parse(oldRaw);
     const newEvents = JSON.parse(newBodyText || '[]');
     const oldIds = new Set(oldEvents.map(e => e.id));
     const added = newEvents.filter(e => !oldIds.has(e.id));
+    console.log('discord notify: ' + added.length + ' new event(s) found out of ' + newEvents.length + ' total');
 
     for (const evt of added) {
       await postDiscordEventNotice(evt, env);
     }
   } catch (e) {
-    // best-effort — a notification hiccup should never block saving the event
+    console.error('discord notify: failed — ' + e.message);
   }
 }
 
@@ -133,13 +140,19 @@ async function postDiscordEventNotice(evt, env) {
   if (evt.notes) lines.push(evt.notes);
 
   try {
-    await fetch(env.DISCORD_EVENTS_WEBHOOK, {
+    const res = await fetch(env.DISCORD_EVENTS_WEBHOOK, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ content: lines.join('\n') })
     });
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      console.error('discord notify: webhook post failed — ' + res.status + ' ' + text);
+    } else {
+      console.log('discord notify: posted event "' + evt.title + '" ok');
+    }
   } catch (e) {
-    // best-effort — ignore delivery failures
+    console.error('discord notify: webhook fetch failed — ' + e.message);
   }
 }
 
