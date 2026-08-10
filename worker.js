@@ -25,6 +25,12 @@ export default {
 
     // everything else falls through to the static site (index.html, etc.)
     return env.ASSETS.fetch(request);
+  },
+
+  // fires on the cron schedule in wrangler.jsonc (Monday mornings) —
+  // separate from fetch(), triggered by Cloudflare's own scheduler
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(postWeeklyAvailabilityDigest(env));
   }
 };
 
@@ -265,6 +271,94 @@ function formatDiscordDate(dateStr) {
     return new Date(dateStr + 'T00:00:00Z').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' });
   } catch (e) {
     return dateStr;
+  }
+}
+
+/* ---------------- Weekly "week ahead" availability digest ----------------
+   Runs from the cron trigger in wrangler.jsonc (Monday mornings), not from
+   any site visit. Posts one message covering everyone's marked availability
+   for that Monday-to-Sunday week. Needs DISCORD_EVENTS_WEBHOOK — reuses the
+   same webhook as event/availability notifications rather than a new one. */
+
+function isoUTC(d) {
+  const pad = n => String(n).padStart(2, '0');
+  return d.getUTCFullYear() + '-' + pad(d.getUTCMonth() + 1) + '-' + pad(d.getUTCDate());
+}
+
+// the 7 UTC-midnight Dates (Monday..Sunday) for the week containing `now`
+function getWeekDays(now) {
+  const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  const day = d.getUTCDay(); // 0=Sun..6=Sat
+  d.setUTCDate(d.getUTCDate() + (day === 0 ? -6 : 1 - day));
+  const days = [];
+  for (let i = 0; i < 7; i++) {
+    const dd = new Date(d);
+    dd.setUTCDate(d.getUTCDate() + i);
+    days.push(dd);
+  }
+  return days;
+}
+
+function shortDayMonth(d) {
+  return d.getUTCDate() + ' ' + d.toLocaleString('en-GB', { month: 'short', timeZone: 'UTC' });
+}
+
+async function postWeeklyAvailabilityDigest(env) {
+  if (!env.DISCORD_EVENTS_WEBHOOK) {
+    console.log('weekly digest: skipped — DISCORD_EVENTS_WEBHOOK secret not set');
+    return;
+  }
+  if (!env.CLAN_KV) {
+    console.log('weekly digest: skipped — CLAN_KV not bound');
+    return;
+  }
+
+  try {
+    const [availRaw, playersRaw] = await Promise.all([
+      env.CLAN_KV.get('clan-availability'),
+      env.CLAN_KV.get('players-data')
+    ]);
+    const availability = availRaw ? JSON.parse(availRaw) : [];
+    const playersData = playersRaw ? JSON.parse(playersRaw) : null;
+    const playerNames = {};
+    ((playersData && playersData.players) || []).forEach(p => {
+      playerNames[p.id] = (p.rsn || 'Someone').replace(/^GIM\s*/i, '');
+    });
+
+    const weekDays = getWeekDays(new Date());
+    const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+    const lines = [
+      '@everyone :calendar_spiral: **The Week Ahead — ' + shortDayMonth(weekDays[0]) + ' to ' + shortDayMonth(weekDays[6]) + '**',
+      ''
+    ];
+    weekDays.forEach((d, i) => {
+      const iso = isoUTC(d);
+      const dayAvail = availability
+        .filter(a => a.date === iso)
+        .sort((a, b) => a.start.localeCompare(b.start));
+      const dayLabel = '**' + dayNames[i] + ' ' + shortDayMonth(d) + '**';
+      if (dayAvail.length) {
+        const entries = dayAvail.map(a => (playerNames[a.pid] || 'Someone') + ' (' + a.start + '–' + a.end + ')').join(', ');
+        lines.push(dayLabel + ': ' + entries);
+      } else {
+        lines.push(dayLabel + ': _no one has marked availability_');
+      }
+    });
+
+    const res = await fetch(env.DISCORD_EVENTS_WEBHOOK, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ content: lines.join('\n') })
+    });
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      console.error('weekly digest: post failed — ' + res.status + ' ' + text);
+    } else {
+      console.log('weekly digest: posted ok');
+    }
+  } catch (e) {
+    console.error('weekly digest: failed — ' + e.message);
   }
 }
 

@@ -11,5 +11,10 @@
       "binding": "CLAN_KV",
       "id": "893a99795f3f4a13aacedd07f7322c6a"
     }
-  ]
+  ],
+  "triggers": {
+    // 07:00 UTC every Monday — 8am during BST (the site's assumed timezone
+    // year-round), same fixed-offset approach used elsewhere in the app
+    "crons": ["0 7 * * 1"]
+  }
 }
