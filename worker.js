@@ -74,6 +74,10 @@ async function handleDataPost(request, env) {
     await notifyNewAvailability(body, env);
   }
 
+  if (key === 'gimrank-data') {
+    await notifyRankChange(body, env);
+  }
+
   if (key === 'gear-edit-lock') {
     // short-lived advisory lock — expires on its own if the editor's tab
     // closes or goes idle, instead of needing an explicit "release" call
@@ -271,6 +275,62 @@ function formatDiscordDate(dateStr) {
     return new Date(dateStr + 'T00:00:00Z').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' });
   } catch (e) {
     return dateStr;
+  }
+}
+
+/* ---------------- Discord "rank update" announcements ----------------
+   Fires whenever the saved GIM rank actually changes — whether from the
+   "refresh" button's auto-sync or a manual rank entry, since both save
+   through this same gimrank-data key. Uses its own DISCORD_HIGHSCORES_WEBHOOK
+   secret (separate channel from event/availability announcements). */
+
+async function notifyRankChange(newBodyText, env) {
+  if (!env.DISCORD_HIGHSCORES_WEBHOOK) {
+    console.log('rank notify: skipped — DISCORD_HIGHSCORES_WEBHOOK secret not set');
+    return;
+  }
+
+  try {
+    const oldRaw = await env.CLAN_KV.get('gimrank-data');
+    if (oldRaw === null) {
+      console.log('rank notify: skipped — first-ever write to gimrank-data, nothing to diff against');
+      return;
+    }
+
+    const oldData = JSON.parse(oldRaw);
+    const newData = JSON.parse(newBodyText || '{}');
+    const oldRank = oldData.gimRank;
+    const newRank = newData.gimRank;
+
+    if (typeof oldRank !== 'number') {
+      console.log('rank notify: skipped — no previous numeric rank to compare against yet');
+      return;
+    }
+    if (typeof newRank !== 'number' || newRank === oldRank) {
+      console.log('rank notify: skipped — rank unchanged');
+      return;
+    }
+
+    const diff = oldRank - newRank; // positive = improved (lower rank number is better)
+    const emoji = diff > 0 ? ':chart_with_upwards_trend:' : ':chart_with_downwards_trend:';
+    const verb = diff > 0 ? 'climbed' : 'dropped';
+    const places = Math.abs(diff);
+    const content = emoji + ' **Group rank update:** #' + oldRank.toLocaleString() + ' → #' + newRank.toLocaleString() +
+      ' (' + verb + ' ' + places.toLocaleString() + ' place' + (places === 1 ? '' : 's') + ')';
+
+    const res = await fetch(env.DISCORD_HIGHSCORES_WEBHOOK, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ content })
+    });
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      console.error('rank notify: post failed — ' + res.status + ' ' + text);
+    } else {
+      console.log('rank notify: posted ok');
+    }
+  } catch (e) {
+    console.error('rank notify: failed — ' + e.message);
   }
 }
 
