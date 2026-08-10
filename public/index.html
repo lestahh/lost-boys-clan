@@ -374,7 +374,7 @@
 <!-- Event Modal -->
 <div class="modal-bg" id="eventModal">
   <div class="modal">
-    <h3>New Event</h3>
+    <h3 id="eventModalTitle">New Event</h3>
     <label>Title</label>
     <input id="evtTitle" type="text" placeholder="e.g. ToB run">
     <label>Date</label>
@@ -387,7 +387,7 @@
     <textarea id="evtNotes" placeholder="Optional details..."></textarea>
     <div class="actions">
       <button class="btn ghost small" onclick="closeEventModal()">Cancel</button>
-      <button class="btn small" onclick="saveEvent()">Save Event</button>
+      <button class="btn small" id="evtSaveBtn" onclick="saveEvent()">Save Event</button>
     </div>
   </div>
 </div>
@@ -639,7 +639,7 @@ function defaultState(){
       {id:'p2', rsn:'GIM Briistol', tz:'BST'},
       {id:'p3', rsn:'GIM Drink', tz:'BST'},
       {id:'p4', rsn:'GIM PhatMatt', tz:'EST (UTC-5)'},
-      {id:'p5', rsn:'GIM Seaworthsbag', tz:'BST'}
+      {id:'p5', rsn:'GIM Seaworthsbag', tz:'EST (UTC-5)'}
     ],
     items: DEFAULT_GEAR_ITEMS.slice(), ownership: {}, gearNotes: '',
     bosses: DEFAULT_BOSSES.slice(),
@@ -819,22 +819,25 @@ async function saveEvent(){
   const title = document.getElementById('evtTitle').value.trim();
   if(!title) return alert('Give the event a title first.');
   const attendees = Array.from(document.querySelectorAll('#evtAttendees input:checked')).map(c=>c.value);
-  const newEvent = {
-    id: 'e'+Date.now(),
+  const fields = {
     title,
     date: document.getElementById('evtDate').value,
     time: document.getElementById('evtTime').value,
     attendees,
     notes: document.getElementById('evtNotes').value.trim()
   };
-  const server = (await apiGet('clan-events')) || [];
-  events = [...server, newEvent];
+  // fall back to the local copy (not []) if the fetch fails, so a network
+  // hiccup can't wipe out everyone else's events by saving an empty list
+  const server = (await apiGet('clan-events')) || events;
+  events = editingEventId
+    ? server.map(e=> e.id===editingEventId ? {...e, ...fields} : e)
+    : [...server, {id:'e'+Date.now(), ...fields}];
   await apiSet('clan-events', events);
   closeEventModal();
   renderCalendar();
 }
 async function deleteEvent(id){
-  const server = (await apiGet('clan-events')) || [];
+  const server = (await apiGet('clan-events')) || events;
   events = server.filter(e=>e.id!==id);
   await apiSet('clan-events', events);
   renderCalendar();
@@ -1245,7 +1248,7 @@ function renderCalendar(){
     }).join('');
     cells += `<div class="cal-cell${isToday}" onclick="openEventModal('${iso}')">
       <div class="num">${d}</div>
-      ${dayEvents.map(e=>`<div class="evt">${e.time} ${e.title}</div>`).join('')}
+      ${dayEvents.map(e=>`<div class="evt" onclick="event.stopPropagation(); openEventModal(null,'${e.id}')">${e.time} ${e.title}</div>`).join('')}
       ${availDots ? `<div class="avail-row">${availDots}</div>` : ''}
     </div>`;
   }
@@ -1256,14 +1259,14 @@ function renderCalendar(){
   document.getElementById('upcomingList').innerHTML = upcoming.length ? upcoming.map(e=>{
     const est = bstToEst(e.date, e.time);
     return `<div class="upcoming-evt">
-      <div>
+      <div style="cursor:pointer;" onclick="openEventModal(null,'${e.id}')" title="Click to edit">
         <div class="title">${e.title}</div>
         <div class="tz-note">${e.attendees && e.attendees.length ? 'With: '+e.attendees.join(', ') : ''}${e.notes ? ' — '+e.notes:''}</div>
       </div>
       <div style="text-align:right">
         <div class="when">${formatDate(e.date)} · ${e.time} BST</div>
         <div class="tz-note">${est} EST for PhatMatt</div>
-        <button class="del-btn" onclick="deleteEvent('${e.id}')">✕</button>
+        <button class="del-btn" onclick="event.stopPropagation(); deleteEvent('${e.id}')">✕</button>
       </div>
     </div>`;
   }).join('') : '<p style="color:var(--text-dim); font-size:.85rem;">Nothing scheduled yet.</p>';
@@ -1304,17 +1307,24 @@ function bstToEst(date, time){
 }
 
 let modalDate = null;
-function openEventModal(iso){
-  modalDate = iso || localISO(new Date());
-  document.getElementById('evtTitle').value='';
+let editingEventId = null;
+function openEventModal(iso, eventId){
+  const editing = eventId ? events.find(e=>e.id===eventId) : null;
+  editingEventId = editing ? editing.id : null;
+  modalDate = editing ? editing.date : (iso || localISO(new Date()));
+
+  document.getElementById('eventModalTitle').textContent = editing ? 'Edit Event' : 'New Event';
+  document.getElementById('evtSaveBtn').textContent = editing ? 'Save Changes' : 'Save Event';
+  document.getElementById('evtTitle').value = editing ? editing.title : '';
   document.getElementById('evtDate').value = modalDate;
-  document.getElementById('evtTime').value='18:00';
-  document.getElementById('evtNotes').value='';
+  document.getElementById('evtTime').value = editing ? editing.time : '18:00';
+  document.getElementById('evtNotes').value = editing ? (editing.notes||'') : '';
+  const checkedRsns = new Set(editing ? (editing.attendees||[]) : []);
   document.getElementById('evtAttendees').innerHTML = activePlayers().map(p=>
-    `<label><input type="checkbox" value="${p.rsn}">${p.rsn}</label>`).join('');
+    `<label><input type="checkbox" value="${p.rsn}"${checkedRsns.has(p.rsn)?' checked':''}>${p.rsn}</label>`).join('');
   document.getElementById('eventModal').classList.add('show');
 }
-function closeEventModal(){ document.getElementById('eventModal').classList.remove('show'); }
+function closeEventModal(){ document.getElementById('eventModal').classList.remove('show'); editingEventId = null; }
 // saveEvent() / deleteEvent() are defined in the STORAGE block above.
 
 function openAvailModal(iso){
@@ -1335,14 +1345,16 @@ async function saveAvailability(){
   if(!pid || !date || !start || !end) return alert('Fill in who, the date, and both times.');
   if(start >= end) return alert('End time must be after the start time.');
   const entry = {id:'a'+Date.now(), pid, date, start, end};
-  const server = (await apiGet('clan-availability')) || [];
+  // fall back to the local copy (not []) if the fetch fails, so a network
+  // hiccup can't wipe out everyone else's availability by saving an empty list
+  const server = (await apiGet('clan-availability')) || availability;
   availability = [...server, entry];
   await apiSet('clan-availability', availability);
   closeAvailModal();
   renderCalendar();
 }
 async function deleteAvailability(id){
-  const server = (await apiGet('clan-availability')) || [];
+  const server = (await apiGet('clan-availability')) || availability;
   availability = server.filter(a=>a.id!==id);
   await apiSet('clan-availability', availability);
   renderCalendar();
