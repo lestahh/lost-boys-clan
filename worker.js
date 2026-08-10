@@ -101,10 +101,12 @@ async function handleVerifyGearPassword(request, env) {
   return json({ ok: match });
 }
 
-/* ---------------- Discord "new event" announcements ----------------
-   Diffs the incoming calendar events against what's already in KV and
-   pings Discord only for genuinely new events (not edits or deletes),
-   so this doesn't fire during the old-blob migration or on every save.
+/* ---------------- Discord "new event" / "attendee joined" announcements ----------------
+   Diffs the incoming calendar events against what's already in KV.
+   Brand new events get the full @everyone announcement; existing events
+   whose attendee list changed get a lighter "X joined" ping instead, so
+   clicking an event and adding yourself pushes an update to Discord too.
+   Other edits (title/time/notes with no attendee change) don't renotify.
    Needs a DISCORD_EVENTS_WEBHOOK secret set on the Worker — without it,
    this is a silent no-op and saving events still works normally. */
 
@@ -114,6 +116,8 @@ async function notifyNewEvents(newBodyText, env) {
     return;
   }
 
+  const added = [];
+  const attendeeChanges = [];
   try {
     const oldRaw = await env.CLAN_KV.get('clan-events');
     if (oldRaw === null) {
@@ -123,12 +127,29 @@ async function notifyNewEvents(newBodyText, env) {
 
     const oldEvents = JSON.parse(oldRaw);
     const newEvents = JSON.parse(newBodyText || '[]');
-    const oldIds = new Set(oldEvents.map(e => e.id));
-    const added = newEvents.filter(e => !oldIds.has(e.id));
-    console.log('discord notify: ' + added.length + ' new event(s) found out of ' + newEvents.length + ' total');
+    const oldById = new Map(oldEvents.map(e => [e.id, e]));
+
+    newEvents.forEach(evt => {
+      const old = oldById.get(evt.id);
+      if (!old) {
+        added.push(evt);
+        return;
+      }
+      const oldAttendees = old.attendees || [];
+      const newAttendees = evt.attendees || [];
+      const joined = newAttendees.filter(a => !oldAttendees.includes(a));
+      const left = oldAttendees.filter(a => !newAttendees.includes(a));
+      if (joined.length || left.length) {
+        attendeeChanges.push({ evt, joined, left });
+      }
+    });
+    console.log('discord notify: ' + added.length + ' new, ' + attendeeChanges.length + ' attendee-change event(s)');
 
     for (const evt of added) {
       await postDiscordEventNotice(evt, env);
+    }
+    for (const change of attendeeChanges) {
+      await postDiscordAttendeeChangeNotice(change.evt, change.joined, change.left, env);
     }
   } catch (e) {
     console.error('discord notify: failed — ' + e.message);
@@ -142,21 +163,32 @@ async function postDiscordEventNotice(evt, env) {
   ];
   if (evt.attendees && evt.attendees.length) lines.push("Who's in: " + evt.attendees.join(', '));
   if (evt.notes) lines.push(evt.notes);
+  await postToDiscord(lines.join('\n'), env, 'event "' + evt.title + '"');
+}
 
+async function postDiscordAttendeeChangeNotice(evt, joined, left, env) {
+  const lines = [':bust_in_silhouette: **' + (evt.title || 'Untitled') + '** — attendees updated'];
+  if (joined.length) lines.push('Joined: ' + joined.join(', '));
+  if (left.length) lines.push('Dropped out: ' + left.join(', '));
+  lines.push((evt.date || '') + (evt.time ? ' at ' + evt.time + ' (BST)' : ''));
+  await postToDiscord(lines.join('\n'), env, 'attendee update for "' + evt.title + '"');
+}
+
+async function postToDiscord(content, env, label) {
   try {
     const res = await fetch(env.DISCORD_EVENTS_WEBHOOK, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ content: lines.join('\n') })
+      body: JSON.stringify({ content })
     });
     if (!res.ok) {
       const text = await res.text().catch(() => '');
-      console.error('discord notify: webhook post failed — ' + res.status + ' ' + text);
+      console.error('discord notify: webhook post failed for ' + label + ' — ' + res.status + ' ' + text);
     } else {
-      console.log('discord notify: posted event "' + evt.title + '" ok');
+      console.log('discord notify: posted ' + label + ' ok');
     }
   } catch (e) {
-    console.error('discord notify: webhook fetch failed — ' + e.message);
+    console.error('discord notify: webhook fetch failed for ' + label + ' — ' + e.message);
   }
 }
 
