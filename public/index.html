@@ -164,6 +164,8 @@
   .modal{background:var(--bg-panel-2); border:1px solid var(--border); border-radius:10px; padding:24px; width:90%; max-width:420px; box-shadow:var(--shadow);}
   .modal h3{margin-top:0; color:var(--gold);}
   .modal label{display:block; font-size:.75rem; color:var(--text-dim); margin:12px 0 4px; text-transform:uppercase; letter-spacing:.05em;}
+  .link-btn{background:none; border:none; color:var(--ember); font-size:.75rem; text-decoration:underline; cursor:pointer; padding:0; margin-top:12px; display:inline-block;}
+  .link-btn:hover{color:var(--gold);}
   .modal input, .modal select, .modal textarea{width:100%;}
   .modal textarea{font-family:'Spectral',serif; min-height:60px; resize:vertical;}
   .modal .actions{display:flex; justify-content:flex-end; gap:8px; margin-top:20px;}
@@ -395,6 +397,7 @@
     <div class="checks" id="evtAttendees"></div>
     <label>Notes</label>
     <textarea id="evtNotes" placeholder="Optional details..."></textarea>
+    <button type="button" class="link-btn" id="switchToAvailBtn" onclick="switchToAvailModal()">Setting your availability instead? →</button>
     <div class="actions">
       <button class="btn ghost small" onclick="closeEventModal()">Cancel</button>
       <button class="btn small" id="evtSaveBtn" onclick="saveEvent()">Save Event</button>
@@ -1348,9 +1351,16 @@ function openEventModal(iso, eventId){
   const checkedRsns = new Set(editing ? (editing.attendees||[]) : []);
   document.getElementById('evtAttendees').innerHTML = activePlayers().map(p=>
     `<label><input type="checkbox" value="${p.rsn}"${checkedRsns.has(p.rsn)?' checked':''}>${p.rsn}</label>`).join('');
+  // switching to availability mid-edit of an existing event doesn't make sense — only offer it when creating
+  document.getElementById('switchToAvailBtn').style.display = editing ? 'none' : 'inline-block';
   document.getElementById('eventModal').classList.add('show');
 }
 function closeEventModal(){ document.getElementById('eventModal').classList.remove('show'); editingEventId = null; }
+function switchToAvailModal(){
+  const date = document.getElementById('evtDate').value || modalDate;
+  closeEventModal();
+  openAvailModal(date);
+}
 // saveEvent() / deleteEvent() are defined in the STORAGE block above.
 
 function openAvailModal(iso){
