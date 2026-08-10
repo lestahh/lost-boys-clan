@@ -501,6 +501,40 @@ const BOSS_ICON_OVERRIDES = {
 function bossIconUrl(boss){
   return 'https://oldschool.runescape.wiki/w/Special:FilePath/' + encodeURIComponent(BOSS_ICON_OVERRIDES[boss] || boss) + '.png';
 }
+
+/* ---- staggered icon loading ----
+   Pages like Gear Progression can have 100+ wiki icons at once. Loading them
+   all in a burst is what was triggering the wiki's rate limiting (429s), so
+   instead of setting src directly we set data-src and trickle real loads out
+   one at a time, only once an icon actually scrolls near the viewport. */
+const iconLoadQueue = [];
+let iconLoadTimer = null;
+function pumpIconQueue(){
+  const next = iconLoadQueue.shift();
+  if(!next){ iconLoadTimer = null; return; }
+  if(next.isConnected && next.dataset.src){
+    next.src = next.dataset.src;
+    next.removeAttribute('data-src');
+  }
+  iconLoadTimer = setTimeout(pumpIconQueue, 180);
+}
+function queueIconLoad(imgEl){
+  iconLoadQueue.push(imgEl);
+  if(!iconLoadTimer) pumpIconQueue();
+}
+const iconLazyObserver = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      queueIconLoad(entry.target);
+      iconLazyObserver.unobserve(entry.target);
+    }
+  });
+}, {rootMargin:'300px'});
+function lazyLoadIcons(container){
+  if(!container) return;
+  container.querySelectorAll('img[data-src]').forEach(img=> iconLazyObserver.observe(img));
+}
+
 const CATEGORY_GLYPH = {
   'PVM Gear': '<path d="M5 25 L23 7 M19 5 L25 11" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/><path d="M25 25 L7 7 M11 5 L5 11" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/>',
   'Skilling Gear': '<path d="M6 26 L18 14 M15 6 C19 6 23 10 23 14 C19 14 15 10 15 6 Z" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
@@ -891,7 +925,7 @@ function renderGear(){
       <div class="tile-top">
         <div class="name-row">
           <div class="item-icon-wrap">
-            <img class="item-icon" src="${iconUrl(it)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('icon-fallback')">
+            <img class="item-icon" data-src="${iconUrl(it)}" alt="" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('icon-fallback')">
             <div class="item-icon-fallback"><svg viewBox="0 0 30 30">${CATEGORY_GLYPH[it.category] || CATEGORY_GLYPH['Misc / QoL']}</svg></div>
           </div>
           <div>
@@ -907,6 +941,7 @@ function renderGear(){
       <div class="chip-row">${chips || '<span style="color:var(--text-dim); font-size:.75rem;">Add team members first</span>'}</div>
     </div>`;
   }).join('') || '<p style="color:var(--text-dim);">No items in this category yet — add one above.</p>';
+  lazyLoadIcons(document.getElementById('gearItemGrid'));
 
   document.getElementById('gearNotes').value = state.gearNotes || '';
 }
@@ -967,7 +1002,7 @@ function renderBosses(){
     return `<div class="boss-tile">
       <button class="rm" title="Remove" onclick="removeBoss(${i})">✕</button>
       <div class="boss-portrait">
-        <img src="${bossIconUrl(boss)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('icon-fallback')">
+        <img data-src="${bossIconUrl(boss)}" alt="" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('icon-fallback')">
         <div class="boss-portrait-fallback"><svg viewBox="0 0 48 48">${ICONS.skull}</svg></div>
       </div>
       <div class="boss-tile-body">
@@ -979,6 +1014,7 @@ function renderBosses(){
       </div>
     </div>`;
   }).join('') || '<p style="color:var(--text-dim);">No bosses tracked yet — add one above.</p>';
+  lazyLoadIcons(grid);
 
   renderBossStats();
 }
