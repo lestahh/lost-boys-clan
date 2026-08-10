@@ -19,6 +19,10 @@ export default {
       return handleDinkWebhook(request, env);
     }
 
+    if (url.pathname === '/api/verify-gear-pw' && request.method === 'POST') {
+      return handleVerifyGearPassword(request, env);
+    }
+
     // everything else falls through to the static site (index.html, etc.)
     return env.ASSETS.fetch(request);
   }
@@ -60,8 +64,37 @@ async function handleDataPost(request, env) {
     await notifyNewEvents(body, env);
   }
 
+  if (key === 'gear-edit-lock') {
+    // short-lived advisory lock — expires on its own if the editor's tab
+    // closes or goes idle, instead of needing an explicit "release" call
+    await env.CLAN_KV.put(key, body, { expirationTtl: 120 });
+    return json({ ok: true });
+  }
+
   await env.CLAN_KV.put(key, body);
   return json({ ok: true });
+}
+
+/* ---------------- Gear-edit password gate ----------------
+   A shared passphrase to stop accidental edits on Gear Progression, not a
+   real auth system — the whole app is an unauthenticated shared link, so
+   this only guards against fat-fingering, not a determined attacker. The
+   password itself is kept out of the public repo via a Worker secret. */
+
+async function handleVerifyGearPassword(request, env) {
+  if (!env.GEAR_EDIT_PASSWORD) {
+    return json({ ok: false, error: 'not_configured' }, 200);
+  }
+
+  let body;
+  try {
+    body = await request.json();
+  } catch (e) {
+    return json({ ok: false, error: 'bad_request' }, 400);
+  }
+
+  const match = typeof body.password === 'string' && body.password === env.GEAR_EDIT_PASSWORD;
+  return json({ ok: match });
 }
 
 /* ---------------- Discord "new event" announcements ----------------

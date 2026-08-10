@@ -105,6 +105,8 @@
   .stat .value small{font-size:.6rem; color:var(--text-dim); display:block; font-family:'Spectral',serif; margin-top:2px;}
   .rank-badge{display:inline-block; padding:2px 10px; border-radius:20px; font-size:.62rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase; margin:2px 0 6px; font-family:'Cinzel',serif;}
   .rank-badge.glow{box-shadow:0 0 10px rgba(255,90,40,.65);}
+  .lock-banner{align-items:center; gap:8px; background:rgba(255,59,59,.12); border:1px solid var(--bad); color:#ffd0d0; border-radius:8px; padding:10px 14px; margin-bottom:16px; font-size:.82rem;}
+  .lock-banner::before{content:'🔒'; font-size:.9rem;}
 
   .skill-row td.name{color:var(--text);}
   .bar{height:5px; background:var(--border-dim); border-radius:3px; overflow:hidden; margin-top:3px;}
@@ -215,7 +217,7 @@
   .boss-kc-name .crown{color:var(--gold); margin-right:2px;}
   .boss-kc-bar{height:6px; border-radius:3px; background:var(--bg); overflow:hidden; border:1px solid var(--border-dim);}
   .boss-kc-bar div{height:100%; background:linear-gradient(90deg, var(--ember), var(--gold)); border-radius:3px; transition:width .2s ease;}
-  .boss-kc-input{width:54px; padding:3px 5px; font-size:.72rem; text-align:right;}
+  .boss-kc-value{width:54px; padding:3px 5px; font-size:.72rem; text-align:right; color:var(--gold); font-weight:600;}
 
   .stat.spotlight{border-color:var(--ember); background:linear-gradient(160deg, var(--bg-panel-2), var(--bg-panel));}
   .stat.spotlight .label{display:flex; align-items:center; gap:5px;}
@@ -268,6 +270,8 @@
   <!-- GEAR -->
   <section class="page" id="page-gear">
     <div class="page-head"><h2>Gear Progression</h2><button class="back" onclick="go('home')">← Home</button></div>
+
+    <div class="lock-banner" id="gearLockBanner" style="display:none;"><span></span></div>
 
     <div class="stat-grid" id="gearPlayerStats"></div>
 
@@ -815,6 +819,12 @@ function go(pageId){
   if(pageId==='skills') renderSkills();
   if(pageId==='goals') renderGoals();
   window.scrollTo({top:0, behavior:'smooth'});
+
+  clearInterval(gearLockPollTimer);
+  if(pageId==='gear'){
+    checkGearLock();
+    gearLockPollTimer = setInterval(checkGearLock, 20000);
+  }
 }
 
 function buildHomeTiles(){
@@ -946,12 +956,15 @@ function renderGear(){
   document.getElementById('gearNotes').value = state.gearNotes || '';
 }
 function setGearFilter(cat){ gearFilter = cat; renderGear(); }
-function toggleOwnership(itemId, pid){
+async function toggleOwnership(itemId, pid){
+  if(!(await requireGearUnlock())) return;
   if(!state.ownership[itemId]) state.ownership[itemId] = {};
   state.ownership[itemId][pid] = !state.ownership[itemId][pid];
   saveState('gear', itemId); renderGear();
+  refreshGearLock();
 }
-function addGearItem(){
+async function addGearItem(){
+  if(!(await requireGearUnlock())) return;
   const input = document.getElementById('newItemName');
   const name = input.value.trim();
   if(!name) return;
@@ -960,15 +973,82 @@ function addGearItem(){
   state.items.push({id, name, category});
   input.value='';
   saveState('gear', '__items__'); renderGear();
+  refreshGearLock();
 }
-function removeGearItem(id){
+async function removeGearItem(id){
+  if(!(await requireGearUnlock())) return;
   state.items = state.items.filter(it=>it.id!==id);
   delete state.ownership[id];
   saveState('gear', ['__items__', id]); renderGear();
+  refreshGearLock();
 }
-function saveGearNotes(){
+async function saveGearNotes(){
+  if(!(await requireGearUnlock())) return;
   state.gearNotes = document.getElementById('gearNotes').value;
   saveState('gear', '__notes__');
+  refreshGearLock();
+}
+
+/* ---------------- gear-edit password gate + "someone's editing" indicator ----------------
+   Unlocking is per browser-session (in-memory only, resets on reload) so people
+   aren't re-prompted for every single click once they've entered it once. The
+   lock in KV is advisory, not exclusive — it warns other viewers, it doesn't
+   block them, since a stale lock from a closed tab shouldn't lock everyone out. */
+let gearUnlocked = false;
+let gearEditorName = localStorage.getItem('gearEditorName') || '';
+let gearLockPollTimer = null;
+
+async function requireGearUnlock(){
+  if(gearUnlocked) return true;
+  let pw;
+  try{
+    pw = prompt('Enter the gear-edit password:');
+  }catch(e){
+    alert('This browser is blocking password prompts, so gear can\'t be unlocked here.');
+    return false;
+  }
+  if(pw===null) return false;
+  let data;
+  try{
+    const res = await fetch('/api/verify-gear-pw', {
+      method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({password: pw})
+    });
+    data = await res.json();
+  }catch(e){
+    alert('Could not reach the password check — try again.');
+    return false;
+  }
+  if(!data.ok){
+    alert(data.error==='not_configured'
+      ? 'The gear-edit password hasn\'t been set up on the server yet.'
+      : 'Wrong password.');
+    return false;
+  }
+  gearUnlocked = true;
+  if(!gearEditorName){
+    let name = 'Someone';
+    try{ name = (prompt('What name should show up if someone sees you editing? (e.g. your RSN)') || 'Someone').trim() || 'Someone'; }catch(e){}
+    gearEditorName = name;
+    localStorage.setItem('gearEditorName', gearEditorName);
+  }
+  refreshGearLock();
+  return true;
+}
+function refreshGearLock(){
+  if(!gearUnlocked) return;
+  apiSet('gear-edit-lock', {name: gearEditorName, ts: Date.now()});
+}
+async function checkGearLock(){
+  const banner = document.getElementById('gearLockBanner');
+  if(!banner) return;
+  const lock = await apiGet('gear-edit-lock');
+  const stale = !lock || !lock.ts || (Date.now() - lock.ts) > 120000;
+  if(!stale && lock.name && lock.name !== gearEditorName){
+    banner.style.display = 'flex';
+    banner.querySelector('span').textContent = 'Locked out by ' + lock.name + ' — they\'re currently editing gear. Your changes could conflict.';
+  } else {
+    banner.style.display = 'none';
+  }
 }
 
 /* ---------------- BOSSES ---------------- */
@@ -994,8 +1074,7 @@ function renderBosses(){
       return `<div class="boss-kc-row">
         <div class="boss-kc-name">${crown}${r.p.rsn.replace(/^GIM\s*/i,'')}</div>
         <div class="boss-kc-bar"><div style="width:${pct}%"></div></div>
-        <input type="number" min="0" class="boss-kc-input" value="${r.kc}"
-          onchange="updateKc('${r.p.id}','${boss.replace(/'/g,"\\'")}',this.value)">
+        <div class="boss-kc-value mono" title="Synced from the hiscores — click ⟳ above to refresh">${r.kc.toLocaleString()}</div>
       </div>`;
     }).join('') || '<p style="color:var(--text-dim); font-size:.75rem;">Add team members first</p>';
 
@@ -1095,10 +1174,6 @@ function rotateMvpSpotlight(){
   };
   update();
   mvpTimer = setInterval(update, 4500);
-}
-function updateKc(pid, boss, val){
-  if(!state.bossKc[pid]) state.bossKc[pid] = {};
-  state.bossKc[pid][boss] = parseInt(val)||0; saveState('bosses', pid);
 }
 function addBoss(){
   const input = document.getElementById('newBossName');
