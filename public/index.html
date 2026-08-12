@@ -246,6 +246,28 @@
   .goal-item .g-icon{width:18px; height:18px; flex:none; margin-top:2px; color:var(--ember);}
   .goal-item.empty{color:var(--text-dim); font-style:italic;}
 
+  .ygoal-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:14px;}
+  .ygoal-tile{position:relative; background:var(--bg-panel); border:1px solid var(--border-dim); border-radius:10px; padding:16px 14px 14px; text-align:center; cursor:pointer; transition:border-color .15s ease, transform .15s ease; overflow:hidden; user-select:none;}
+  .ygoal-tile:hover{border-color:var(--gold); transform:translateY(-2px);}
+  .ygoal-month{position:absolute; top:8px; left:10px; font-size:.6rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:.05em;}
+  .ygoal-rm{position:absolute; top:6px; right:6px; z-index:3; background:rgba(20,8,5,.75); border:none; border-radius:50%; width:20px; height:20px; line-height:1; color:var(--bad); font-size:.72rem; opacity:.4;}
+  .ygoal-rm:hover{opacity:1;}
+  .ygoal-icon-wrap{width:56px; height:56px; margin:14px auto 12px; border:1px solid var(--border-dim); border-radius:8px; background:var(--bg); display:flex; align-items:center; justify-content:center; overflow:hidden; transition:opacity .2s ease;}
+  .ygoal-icon-wrap img.ygoal-icon{width:42px; height:42px; object-fit:contain; image-rendering:pixelated;}
+  .ygoal-icon-fallback{display:none; width:100%; height:100%; align-items:center; justify-content:center; color:var(--ember);}
+  .ygoal-icon-fallback svg{width:26px; height:26px;}
+  .ygoal-icon-wrap.icon-fallback{background:var(--bg-panel-2);}
+  .ygoal-icon-wrap.icon-fallback .ygoal-icon{display:none;}
+  .ygoal-icon-wrap.icon-fallback .ygoal-icon-fallback{display:flex;}
+  .ygoal-text{font-size:.82rem; color:var(--text); line-height:1.3; word-break:break-word; transition:color .2s ease;}
+  .ygoal-x{position:absolute; inset:0; width:100%; height:100%; opacity:0; transform:scale(.6); transition:opacity .22s ease, transform .22s cubic-bezier(.34,1.56,.64,1); pointer-events:none;}
+  .ygoal-x line{stroke:var(--bad); stroke-width:7; stroke-linecap:round;}
+  .ygoal-tile.done{border-color:var(--bad);}
+  .ygoal-tile.done .ygoal-x{opacity:.92; transform:scale(1);}
+  .ygoal-tile.done .ygoal-text{color:var(--text-dim); text-decoration:line-through;}
+  .ygoal-tile.done .ygoal-icon-wrap{opacity:.5;}
+  .ygoal-add-row select{max-width:150px;}
+
   .save-note{font-size:.72rem; color:var(--text-dim); text-align:center; margin-top:30px;}
   .empty-slot{opacity:.55; font-style:italic;}
   ::placeholder{color:#6b5c40;}
@@ -379,6 +401,30 @@
     <div class="goals-grid" id="goalsGrid"></div>
   </section>
 
+  <!-- YEARLY GOALS -->
+  <section class="page" id="page-yeargoals">
+    <div class="page-head"><h2>Yearly Goals</h2><button class="back" onclick="go('home')">← Home</button></div>
+    <p style="color:var(--text-dim); font-size:.8rem; margin-top:-14px; margin-bottom:20px;">Pick up to 20 personal goals for the year — tag any of them to a specific month if you like, or leave them year-long. Type what you're going for and an icon gets pulled from the wiki automatically. Click a goal to cross it off.</p>
+
+    <div class="player-tabs" id="yearGoalsPlayerTabs"></div>
+
+    <div class="row" style="justify-content:space-between; margin-bottom:12px;">
+      <div class="filter-tabs" id="yearGoalsYearTabs"></div>
+      <select id="yearGoalsMonthFilter" onchange="setYearGoalsMonthFilter(this.value)"></select>
+    </div>
+
+    <div id="yearGoalsCount" style="color:var(--text-dim); font-size:.78rem; margin-bottom:16px;"></div>
+
+    <div class="row ygoal-add-row" style="margin-bottom:18px;">
+      <input id="newYearGoalText" type="text" placeholder="e.g. 60-80 Slayer, Fire cape, ToA 106/200 KC..." style="flex:2; min-width:220px;">
+      <select id="newYearGoalMonth"></select>
+      <input id="newYearGoalIcon" type="text" placeholder="Icon search (optional, auto-guessed)" style="flex:1; min-width:180px;">
+      <button class="btn small" onclick="addYearGoal()">Add Goal</button>
+    </div>
+
+    <div class="ygoal-grid" id="yearGoalsGrid"></div>
+  </section>
+
 </main>
 
 <div class="save-note">Data is shared and editable by anyone with this link — it saves automatically for the whole clan.</div>
@@ -433,6 +479,7 @@ const PAGES = [
   {id:'quests', label:'Quests & Diaries', desc:'Quest completion and achievement diary tiers.', icon:'scroll'},
   {id:'skills', label:'Skill Levels', desc:'Current levels, XP, and who\'s closest to levelling up.', icon:'star'},
   {id:'goals', label:'Smart Goals', desc:'Personalised suggestions based on everyone\'s live data.', icon:'target'},
+  {id:'yeargoals', label:'Yearly Goals', desc:'Pick your own grinds for the year and check them off as you go.', icon:'flag'},
 ];
 
 const ICONS = {
@@ -441,7 +488,8 @@ const ICONS = {
   calendar:'<rect x="7" y="10" width="34" height="30" rx="3" stroke="currentColor" stroke-width="2.2" fill="none"/><path d="M7 18 H41 M15 6 V13 M33 6 V13" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="13" y="24" width="6" height="6" fill="currentColor"/><rect x="24" y="24" width="6" height="6" fill="currentColor"/>',
   scroll:'<path d="M10 8 H34 V34 H16 C12 34 10 36 10 40 C10 36 12 34 16 34 M10 8 C10 8 10 12 14 12 M34 34 C34 38 36 40 40 40 C36 40 34 38 34 34 V8" stroke="currentColor" stroke-width="2.1" fill="none" stroke-linejoin="round"/><path d="M16 15 H30 M16 21 H30 M16 27 H26" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
   star:'<path d="M24 4 L29.5 18 L44 19.5 L33 29.5 L36.5 44 L24 36 L11.5 44 L15 29.5 L4 19.5 L18.5 18 Z" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linejoin="round"/>',
-  target:'<circle cx="24" cy="24" r="18" stroke="currentColor" stroke-width="2.2" fill="none"/><circle cx="24" cy="24" r="10.5" stroke="currentColor" stroke-width="2.2" fill="none"/><circle cx="24" cy="24" r="3.5" fill="currentColor"/>'
+  target:'<circle cx="24" cy="24" r="18" stroke="currentColor" stroke-width="2.2" fill="none"/><circle cx="24" cy="24" r="10.5" stroke="currentColor" stroke-width="2.2" fill="none"/><circle cx="24" cy="24" r="3.5" fill="currentColor"/>',
+  flag:'<path d="M12 5 V43" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M12 7 C20 2 26 12 36 7 V25 C26 30 20 20 12 25 Z" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linejoin="round"/>'
 };
 
 /* ---- pixel-art team header (original chibi sprites, not game assets) ---- */
@@ -659,6 +707,7 @@ function defaultState(){
     bossKc: {},
     skills: {},
     quests: {}, diaries: {},
+    yearGoals: {},
     gimRank: null, gimRankManual: '', gimRankTrend: null, gimRankHistory: []
   };
 }
@@ -666,7 +715,7 @@ function defaultState(){
 let state = defaultState();
 let events = [];
 let availability = [];
-let activePlayer = {quests:'p1', skills:'p1'};
+let activePlayer = {quests:'p1', skills:'p1', yeargoals:'p1'};
 let gearFilter = 'All';
 let calCursor = new Date();
 
@@ -685,7 +734,8 @@ const SECTION_KEYS = {
   bosses:  'boss-data',
   skills:  'skills-data',
   quests:  'quests-diaries-data',
-  gimrank: 'gimrank-data'
+  gimrank: 'gimrank-data',
+  yeargoals: 'yeargoals-data'
 };
 
 function sectionSlice(section){
@@ -696,11 +746,12 @@ function sectionSlice(section){
     case 'skills':  return { skills: state.skills };
     case 'quests':  return { quests: state.quests, diaries: state.diaries };
     case 'gimrank': return { gimRank: state.gimRank, gimRankManual: state.gimRankManual, gimRankTrend: state.gimRankTrend, gimRankHistory: state.gimRankHistory };
+    case 'yeargoals': return { yearGoals: state.yearGoals };
   }
 }
 
 // ids that changed locally since the last successful save, per section
-const dirty = { players:new Set(), gear:new Set(), bosses:new Set(), skills:new Set(), quests:new Set() };
+const dirty = { players:new Set(), gear:new Set(), bosses:new Set(), skills:new Set(), quests:new Set(), yeargoals:new Set() };
 
 async function apiGet(key){
   try{
@@ -723,13 +774,14 @@ async function apiSet(key, value){
 
 async function loadState(){
   state = defaultState();
-  const [players, gear, bosses, skills, quests, gimrank, ev, av] = await Promise.all([
+  const [players, gear, bosses, skills, quests, gimrank, yeargoals, ev, av] = await Promise.all([
     apiGet(SECTION_KEYS.players), apiGet(SECTION_KEYS.gear), apiGet(SECTION_KEYS.bosses),
     apiGet(SECTION_KEYS.skills), apiGet(SECTION_KEYS.quests), apiGet(SECTION_KEYS.gimrank),
+    apiGet(SECTION_KEYS.yeargoals),
     apiGet('clan-events'), apiGet('clan-availability')
   ]);
-  if(players||gear||bosses||skills||quests||gimrank){
-    Object.assign(state, players||{}, gear||{}, bosses||{}, skills||{}, quests||{}, gimrank||{});
+  if(players||gear||bosses||skills||quests||gimrank||yeargoals){
+    Object.assign(state, players||{}, gear||{}, bosses||{}, skills||{}, quests||{}, gimrank||{}, yeargoals||{});
   } else {
     // one-time migration: nothing in the new split keys yet, so fall back to
     // the old single 'clan-data' blob if it exists, then re-save split so
@@ -823,6 +875,11 @@ function mergeSection(section, server, local, ids){
     });
     return merged;
   }
+  if(section==='yeargoals'){
+    const merged = { yearGoals: Object.assign({}, server.yearGoals) };
+    ids.forEach(id=>{ merged.yearGoals[id] = local.yearGoals[id] || []; });
+    return merged;
+  }
   return local;
 }
 
@@ -871,6 +928,7 @@ function go(pageId){
   if(pageId==='quests') renderQuests();
   if(pageId==='skills') renderSkills();
   if(pageId==='goals') renderGoals();
+  if(pageId==='yeargoals'){ renderYearGoalsControls(); renderYearGoals(); }
   window.scrollTo({top:0, behavior:'smooth'});
 
   clearInterval(gearLockPollTimer);
@@ -913,6 +971,7 @@ function selectPlayer(key, id){
   activePlayer[key] = id;
   if(key==='quests') renderQuests();
   if(key==='skills') renderSkills();
+  if(key==='yeargoals') renderYearGoals();
 }
 
 /* ---------------- GEAR ---------------- */
@@ -1677,6 +1736,201 @@ function renderGoals(){
       </ul>
     </div>`;
   }).join('');
+}
+
+/* ---------------- YEARLY GOALS ----------------
+   User-authored goals (not the auto-generated Smart Goals above), one list
+   per player, each optionally tagged to a month within its year. Capped at
+   20 per year. Icons are auto-guessed from the goal text against known
+   skills/bosses/items (same wiki lookup + lazy-load system as everywhere
+   else), with a manual search override if the guess is wrong. */
+
+const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function escapeHtml(s){
+  return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function skillIconUrl(skill){
+  return 'https://oldschool.runescape.wiki/w/Special:FilePath/' + encodeURIComponent(skill + ' icon') + '.png';
+}
+function genericWikiIconUrl(query){
+  const q = (query||'').trim();
+  if(!q) return null;
+  const guess = q.charAt(0).toUpperCase() + q.slice(1).toLowerCase();
+  return 'https://oldschool.runescape.wiki/w/Special:FilePath/' + encodeURIComponent(guess) + '.png';
+}
+// strips quantities/ranges/units out of free-typed goal text so what's left
+// is (hopefully) just the skill/boss/item name to search an icon for —
+// e.g. "60-80 Slayer" -> "Slayer", "ToA 106/200 KC" -> "ToA"
+function extractIconQuery(text){
+  return String(text||'')
+    .replace(/\d+(\.\d+)?[kKmM]?\s*[-\/–to]+\s*\d+(\.\d+)?[kKmM]?/gi, ' ')
+    .replace(/\b\d+(\.\d+)?[kKmM]?\b/g, ' ')
+    .replace(/\b(kc|xp|hrs?|hours?|times?|kills?|completions?|lvl|level|pts?|points?)\b/gi, ' ')
+    .replace(/[^\w\s'()]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+function guessGoalIconKind(query){
+  const q = (query||'').toLowerCase();
+  if(!q) return {kind:'wiki', name:query};
+  const skillMatch = SKILLS.find(s => new RegExp('\\b'+s.toLowerCase()+'\\b').test(q));
+  if(skillMatch) return {kind:'skill', name:skillMatch};
+  const bossPool = Array.from(new Set([...(state.bosses||[]), ...DEFAULT_BOSSES]));
+  const bossMatch = bossPool.find(b => q.includes(b.toLowerCase()));
+  if(bossMatch) return {kind:'boss', name:bossMatch};
+  const itemMatch = state.items.find(it => q.includes(it.name.toLowerCase()));
+  if(itemMatch) return {kind:'item', name:itemMatch.name};
+  return {kind:'wiki', name:query};
+}
+function yearGoalIconUrl(goal){
+  const q = (goal.iconQuery || extractIconQuery(goal.text) || goal.text || '').trim();
+  if(!q) return null;
+  const guess = guessGoalIconKind(q);
+  if(guess.kind==='skill') return skillIconUrl(guess.name);
+  if(guess.kind==='boss') return bossIconUrl(guess.name);
+  if(guess.kind==='item') return iconUrl({id:slugify(guess.name), name:guess.name});
+  return genericWikiIconUrl(guess.name);
+}
+
+let yearGoalsYear = 2026;
+let yearGoalsMonthFilter = 'all';
+
+function yearGoalYearOptions(){
+  const years = new Set([2026, new Date().getFullYear()]);
+  Object.values(state.yearGoals||{}).forEach(list=>(list||[]).forEach(g=>years.add(g.year)));
+  return Array.from(years).sort((a,b)=>a-b);
+}
+
+function renderYearGoalsControls(){
+  const yEl = document.getElementById('yearGoalsYearTabs');
+  if(yEl){
+    yEl.innerHTML = yearGoalYearOptions().map(y=>
+      `<button class="${y===yearGoalsYear?'active':''}" onclick="setYearGoalsYear(${y})">${y}</button>`
+    ).join('') + `<button onclick="addYearGoalsYear()">+ Year</button>`;
+  }
+  const mEl = document.getElementById('yearGoalsMonthFilter');
+  if(mEl){
+    mEl.innerHTML = `<option value="all">All months</option><option value="none">Year-long only</option>`
+      + MONTH_NAMES.map((m,i)=>`<option value="${i}">${m}</option>`).join('');
+    mEl.value = yearGoalsMonthFilter;
+  }
+  const gmEl = document.getElementById('newYearGoalMonth');
+  if(gmEl){
+    gmEl.innerHTML = `<option value="">Whole year</option>` + MONTH_NAMES.map((m,i)=>`<option value="${i}">${m}</option>`).join('');
+  }
+}
+function setYearGoalsYear(y){ yearGoalsYear = y; renderYearGoalsControls(); renderYearGoals(); }
+function addYearGoalsYear(){
+  let input;
+  try{ input = prompt('Add goals for which year?', String(new Date().getFullYear()+1)); }catch(e){ return; }
+  if(!input) return;
+  const n = parseInt(input, 10);
+  if(!n || n<2000 || n>2100) return alert('Enter a valid year.');
+  yearGoalsYear = n;
+  renderYearGoalsControls();
+  renderYearGoals();
+}
+function setYearGoalsMonthFilter(v){ yearGoalsMonthFilter = v; renderYearGoals(); }
+
+function renderYearGoals(){
+  renderPlayerTabs('yearGoalsPlayerTabs','yeargoals');
+  const grid = document.getElementById('yearGoalsGrid');
+  const countEl = document.getElementById('yearGoalsCount');
+  if(!grid) return;
+  const pid = activePlayer.yeargoals;
+  const all = (state.yearGoals[pid] || []).filter(g=>g.year===yearGoalsYear);
+  const filtered = all.filter(g=>{
+    if(yearGoalsMonthFilter==='all') return true;
+    if(yearGoalsMonthFilter==='none') return g.month===null || g.month===undefined;
+    return g.month===parseInt(yearGoalsMonthFilter, 10);
+  });
+  const doneCount = all.filter(g=>g.done).length;
+  if(countEl) countEl.textContent = `${doneCount}/${all.length} completed · ${all.length}/20 goals set for ${yearGoalsYear}`;
+
+  if(!filtered.length){
+    grid.innerHTML = `<p style="color:var(--text-dim); grid-column:1/-1;">No goals ${yearGoalsMonthFilter==='all' ? `set for ${yearGoalsYear} yet` : 'match this filter'}. Add one below.</p>`;
+    return;
+  }
+  grid.innerHTML = filtered.map(g=>{
+    const icon = yearGoalIconUrl(g);
+    const monthLabel = (g.month!==null && g.month!==undefined) ? MONTH_NAMES[g.month] : '';
+    return `<div class="ygoal-tile ${g.done?'done':''}" onclick="toggleYearGoal('${pid}','${g.id}')">
+      <button class="ygoal-rm" onclick="event.stopPropagation(); removeYearGoal('${pid}','${g.id}')" title="Remove goal">×</button>
+      ${monthLabel ? `<span class="ygoal-month">${monthLabel}</span>` : ''}
+      <div class="ygoal-icon-wrap">
+        ${icon ? `<img class="ygoal-icon" data-src="${icon}" alt="" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('icon-fallback')">` : ''}
+        <div class="ygoal-icon-fallback"><svg viewBox="0 0 30 30">${GOAL_ICONS.default}</svg></div>
+      </div>
+      <div class="ygoal-text">${escapeHtml(g.text)}</div>
+      <svg class="ygoal-x" viewBox="0 0 100 100"><line x1="10" y1="10" x2="90" y2="90"/><line x1="90" y1="10" x2="10" y2="90"/></svg>
+    </div>`;
+  }).join('');
+  lazyLoadIcons(grid);
+}
+
+function addYearGoal(){
+  const pid = activePlayer.yeargoals;
+  const textEl = document.getElementById('newYearGoalText');
+  const monthEl = document.getElementById('newYearGoalMonth');
+  const iconEl = document.getElementById('newYearGoalIcon');
+  const text = textEl.value.trim();
+  if(!text) return;
+
+  const list = state.yearGoals[pid] || (state.yearGoals[pid] = []);
+  const yearCount = list.filter(g=>g.year===yearGoalsYear).length;
+  if(yearCount >= 20){
+    alert(`You've already got 20 goals set for ${yearGoalsYear}. Remove one first, or switch to a different year.`);
+    return;
+  }
+
+  list.push({
+    id: 'g' + Date.now() + Math.random().toString(36).slice(2,6),
+    text,
+    year: yearGoalsYear,
+    month: monthEl.value==='' ? null : parseInt(monthEl.value, 10),
+    iconQuery: iconEl.value.trim() || extractIconQuery(text),
+    done: false,
+    doneAt: null
+  });
+
+  textEl.value = ''; monthEl.value = ''; iconEl.value = '';
+  saveState('yeargoals', pid);
+  renderYearGoals();
+}
+
+function removeYearGoal(pid, goalId){
+  let ok = true;
+  try{ ok = confirm('Remove this goal?'); }catch(e){ ok = true; }
+  if(!ok) return;
+  state.yearGoals[pid] = (state.yearGoals[pid] || []).filter(g=>g.id!==goalId);
+  saveState('yeargoals', pid);
+  renderYearGoals();
+}
+
+function toggleYearGoal(pid, goalId){
+  const g = (state.yearGoals[pid] || []).find(x=>x.id===goalId);
+  if(!g) return;
+  g.done = !g.done;
+  g.doneAt = g.done ? Date.now() : null;
+  saveState('yeargoals', pid);
+  renderYearGoals();
+  ensureAudio();
+  if(g.done) playGoalCompleteSound(); else playGoalUndoSound();
+}
+
+// a little rising three-note chime for completing a goal, and a short
+// descending blip for un-completing one — separate from the generic
+// hover/click blips so ticking a goal off feels distinct
+function playGoalCompleteSound(){
+  playTone(523, 0.1, 'triangle', 0.08);
+  setTimeout(()=>playTone(659, 0.1, 'triangle', 0.08), 90);
+  setTimeout(()=>playTone(784, 0.16, 'triangle', 0.09), 180);
+}
+function playGoalUndoSound(){
+  playTone(440, 0.08, 'sine', 0.06);
+  setTimeout(()=>playTone(330, 0.12, 'sine', 0.06), 70);
 }
 
 /* ---------------- GROUP IRONMAN RANK ---------------- */
