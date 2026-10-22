@@ -2092,7 +2092,8 @@ const PROG_CATEGORIES = [
   {id:'magic',     label:'Magic',      icon:'Magic icon'},
   {id:'skilling',  label:'Skilling',   icon:'Stats icon'},
   {id:'utility',   label:'Utility',    icon:'Bank icon'},
-  {id:'milestone', label:'Milestones', icon:'Quest point icon'}
+  {id:'unlock',    label:'Unlocks',    icon:'Quest point icon'},
+  {id:'milestone', label:'Milestones', icon:'Achievement Diaries icon'}
 ];
 
 // [name, tier, wiki icon file if it differs from the name]
@@ -2103,6 +2104,7 @@ const PROG_ITEMS = [
   ...progItems('melee', [
     ['Dragon scimitar',1], ['Dragon defender',1], ['Fighter torso',1], ['Helm of Neitiznot',1],
     ['Berserker ring (i)',2], ['Abyssal whip',2], ['Dragon boots',2], ['Salve amulet (ei)',2,'Salve amulet(ei)'],
+    ['Blood Moon armour',2,'Blood Moon chestplate'],
     ['Abyssal tentacle',3], ['Bandos armour',3,'Bandos chestplate'], ['Amulet of torture',3], ['Primordial boots',3],
     ['Dragon warhammer',3], ['Osmumten\'s fang',3], ['Ferocious gloves',3],
     ['Avernic defender',4], ['Ghrazi rapier',4], ['Torva armour',4,'Torva platebody'], ['Ultor ring',4], ['Amulet of rancour',4],
@@ -2111,6 +2113,7 @@ const PROG_ITEMS = [
   ...progItems('ranged', [
     ['Ava\'s accumulator',1], ['Rune crossbow',1], ['Void knight set',1,'Void knight top'],
     ['Toxic blowpipe',2], ['Ava\'s assembler',2], ['Archers ring (i)',2], ['Elite void',2,'Elite void top'],
+    ['Eclipse Moon armour',2,'Eclipse Moon chestplate'],
     ['Dragon hunter crossbow',3], ['Armadyl crossbow',3], ['Necklace of anguish',3], ['Armadyl armour',3,'Armadyl chestplate'],
     ['Bow of Faerdhinen',3,'Bow of Faerdhinen (c)'], ['Crystal armour',3,'Crystal body'], ['Zaryte vambraces',3],
     ['Masori armour',4,'Masori body'], ['Zaryte crossbow',4], ['Venator ring',4], ['Dizana\'s quiver',4],
@@ -2119,10 +2122,10 @@ const PROG_ITEMS = [
   ...progItems('magic', [
     ['Iban\'s staff (u)',1], ['Ancient staff',1], ['Mage\'s book',1],
     ['Imbued god cape',2,'Imbued Zamorak cape'], ['Ahrim\'s robes',2,'Ahrim\'s robetop'], ['Trident of the seas',2,'Trident of the Seas'],
-    ['Occult necklace',2], ['Bloodbark armour',2,'Bloodbark body'],
+    ['Occult necklace',2], ['Bloodbark armour',2,'Bloodbark body'], ['Blue Moon armour',2,'Blue Moon chestplate'],
     ['Trident of the swamp',3,'Trident of the Swamp'], ['Tormented bracelet',3], ['Virtus robes',3,'Virtus robe top'],
     ['Arcane spirit shield',4], ['Sanguinesti staff',4], ['Kodai wand',4], ['Ancestral robes',4,'Ancestral robe top'],
-    ['Magus ring',4], ['Elidinis\' ward (f)',4],
+    ['Magus ring',4], ['Elidinis\' ward (f)',4], ['Imbued heart',4],
     ['Tumeken\'s shadow',5]
   ]),
   ...progItems('skilling', [
@@ -2139,15 +2142,21 @@ const PROG_ITEMS = [
     ['Log basket',1], ['Bonecrusher',1],
     ['Slayer helmet (i)',2], ['Ash sanctifier',2], ['Book of the Dead',2], ['Eternal teleport crystal',2],
     ['Perfected quetzal whistle',2],
-    ['Desert amulet 4',3], ['Karamja gloves 4',3], ['Bonecrusher necklace',3], ['Explorer\'s ring 4',3],
+    ['Desert amulet 4',3], ['Karamja gloves 4',3], ['Bonecrusher necklace',3], ['Explorer\'s ring 4',3], ['Dragonfire shield',3],
     ['Ardougne cloak 4',4]
   ]),
+  ...progItems('unlock', [
+    ['Piety',1], ['Fairy rings',1,'Dramen staff'], ['Barbarian Training',1,'Barbarian rod'], ['Fossil Island',1,'Digsite pendant'],
+    ['Barrows gloves',2], ['Ancient Magicks',2,'Ancient spellbook'], ['Lunar spellbook',2], ['Kingdom of Miscellania',2,'Royal decree'],
+    ['Deadeye',2], ['Mystic Vigour',2],
+    ['Dragon Slayer II',3,'Mythical cape'], ['Song of the Elves',3,'Teleport crystal'], ['Monkey Madness II',3,'Zenyte shard'],
+    ['While Guthix Sleeps',3,'Tormented synapse'], ['Rigour',3], ['Augury',3],
+    ['Desert Treasure II',4,'Ring of shadows']
+  ]),
   ...progItems('milestone', [
-    ['Piety',1], ['Fairy rings',1,'Dramen staff'],
-    ['Barrows gloves',2], ['Fire cape',2], ['Ancient Magicks',2,'Ancient spellbook'], ['Lunar spellbook',2],
-    ['Dragon Slayer II',3,'Mythical cape'], ['Song of the Elves',3,'Teleport crystal'], ['Rigour',3], ['Augury',3],
-    ['Music cape',3], ['First boss pet',3,'Vorki'],
-    ['Quest point cape',4], ['Desert Treasure II',4,'Ring of shadows'], ['Ghommal\'s hilt 4',4],
+    ['Fire cape',2],
+    ['Music cape',3], ['First boss pet',3,'Vorki'], ['First Chambers of Xeric',3,'Olmlet'], ['First Tombs of Amascut',3,'Tumeken\'s guardian'],
+    ['Quest point cape',4], ['Ghommal\'s hilt 4',4], ['Max house (POH)',4,'Ornate rejuvenation pool icon'], ['First Theatre of Blood',4,'Lil\' Zik'],
     ['Infernal cape',5], ['Achievement diary cape',5]
   ])
 ];
