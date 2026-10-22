@@ -21,12 +21,6 @@ export default {
 
     // everything else falls through to the static site (index.html, etc.)
     return env.ASSETS.fetch(request);
-  },
-
-  // fires on the cron schedule in wrangler.jsonc (Monday mornings) —
-  // separate from fetch(), triggered by Cloudflare's own scheduler
-  async scheduled(event, env, ctx) {
-    ctx.waitUntil(postWeeklyAvailabilityDigest(env));
   }
 };
 
@@ -62,14 +56,6 @@ async function handleDataPost(request, env) {
 
   const body = await request.text();
 
-  if (key === 'clan-events') {
-    await notifyNewEvents(body, env);
-  }
-
-  if (key === 'clan-availability') {
-    await notifyNewAvailability(body, env);
-  }
-
   if (key === 'gimrank-data') {
     await notifyRankChange(body, env);
   }
@@ -78,204 +64,11 @@ async function handleDataPost(request, env) {
   return json({ ok: true });
 }
 
-/* ---------------- Discord "new event" / "attendee joined" announcements ----------------
-   Diffs the incoming calendar events against what's already in KV.
-   Brand new events get the full @everyone announcement; existing events
-   whose attendee list changed get a lighter "X joined" ping instead, so
-   clicking an event and adding yourself pushes an update to Discord too.
-   Other edits (title/time/notes with no attendee change) don't renotify.
-   Needs a DISCORD_EVENTS_WEBHOOK secret set on the Worker — without it,
-   this is a silent no-op and saving events still works normally. */
-
-async function notifyNewEvents(newBodyText, env) {
-  if (!env.DISCORD_EVENTS_WEBHOOK) {
-    console.log('discord notify: skipped — DISCORD_EVENTS_WEBHOOK secret not set');
-    return;
-  }
-
-  const added = [];
-  const attendeeChanges = [];
-  try {
-    const oldRaw = await env.CLAN_KV.get('clan-events');
-    if (oldRaw === null) {
-      console.log('discord notify: skipped — first-ever write to clan-events, nothing to diff against');
-      return;
-    }
-
-    const oldEvents = JSON.parse(oldRaw);
-    const newEvents = JSON.parse(newBodyText || '[]');
-    const oldById = new Map(oldEvents.map(e => [e.id, e]));
-
-    newEvents.forEach(evt => {
-      const old = oldById.get(evt.id);
-      if (!old) {
-        added.push(evt);
-        return;
-      }
-      const oldAttendees = old.attendees || [];
-      const newAttendees = evt.attendees || [];
-      const joined = newAttendees.filter(a => !oldAttendees.includes(a));
-      const left = oldAttendees.filter(a => !newAttendees.includes(a));
-      if (joined.length || left.length) {
-        attendeeChanges.push({ evt, joined, left });
-      }
-    });
-    console.log('discord notify: ' + added.length + ' new, ' + attendeeChanges.length + ' attendee-change event(s)');
-
-    for (const evt of added) {
-      await postDiscordEventNotice(evt, env);
-    }
-    for (const change of attendeeChanges) {
-      await postDiscordAttendeeChangeNotice(change.evt, change.joined, change.left, env);
-    }
-  } catch (e) {
-    console.error('discord notify: failed — ' + e.message);
-  }
-}
-
-async function postDiscordEventNotice(evt, env) {
-  const lines = [
-    '@everyone :calendar_spiral: **New event added: ' + (evt.title || 'Untitled') + '**',
-    (evt.date || '') + (evt.time ? ' at ' + evt.time + ' (BST)' : '')
-  ];
-  await appendEstLine(lines, evt.time, evt.time, env);
-  if (evt.attendees && evt.attendees.length) lines.push("Who's in: " + evt.attendees.join(', '));
-  if (evt.notes) lines.push(evt.notes);
-  await postToDiscord(lines.join('\n'), env, 'event "' + evt.title + '"');
-}
-
-async function postDiscordAttendeeChangeNotice(evt, joined, left, env) {
-  const lines = [':bust_in_silhouette: **' + (evt.title || 'Untitled') + '** — attendees updated'];
-  if (joined.length) lines.push('Joined: ' + joined.join(', '));
-  if (left.length) lines.push('Dropped out: ' + left.join(', '));
-  lines.push((evt.date || '') + (evt.time ? ' at ' + evt.time + ' (BST)' : ''));
-  await appendEstLine(lines, evt.time, evt.time, env);
-  await postToDiscord(lines.join('\n'), env, 'attendee update for "' + evt.title + '"');
-}
-
-/* ---- BST -> EST conversion for Discord messages, mirroring the site's
-   own display logic, plus who it's actually relevant for (any player
-   whose tz starts with "EST") ---- */
-
-function bstToEstTime(time) {
-  const [h, mi] = time.split(':').map(Number);
-  let est = h - 5;
-  let dayShift = '';
-  if (est < 0) { est += 24; dayShift = ' (prev day)'; }
-  const pad = n => String(n).padStart(2, '0');
-  return pad(est) + ':' + pad(mi) + dayShift;
-}
-
-async function getEstPlayerNames(env) {
-  try {
-    const playersRaw = await env.CLAN_KV.get('players-data');
-    const playersData = playersRaw ? JSON.parse(playersRaw) : null;
-    return ((playersData && playersData.players) || [])
-      .filter(p => (p.tz || '').toUpperCase().startsWith('EST'))
-      .map(p => (p.rsn || 'Someone').replace(/^GIM\s*/i, ''));
-  } catch (e) {
-    return [];
-  }
-}
-
-// pushes an "EST for X & Y" line onto `lines` if there are EST-timezone
-// members and at least one of the given times is set; startTime/endTime
-// can be the same value for a single point-in-time event
-async function appendEstLine(lines, startTime, endTime, env) {
-  if (!startTime && !endTime) return;
-  const estNames = await getEstPlayerNames(env);
-  if (!estNames.length) return;
-  const label = startTime === endTime
-    ? bstToEstTime(startTime)
-    : bstToEstTime(startTime) + '–' + bstToEstTime(endTime);
-  lines.push(label + ' EST for ' + estNames.join(' & '));
-}
-
-async function postToDiscord(content, env, label) {
-  try {
-    const res = await fetch(env.DISCORD_EVENTS_WEBHOOK, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ content })
-    });
-    if (!res.ok) {
-      const text = await res.text().catch(() => '');
-      console.error('discord notify: webhook post failed for ' + label + ' — ' + res.status + ' ' + text);
-    } else {
-      console.log('discord notify: posted ' + label + ' ok');
-    }
-  } catch (e) {
-    console.error('discord notify: webhook fetch failed for ' + label + ' — ' + e.message);
-  }
-}
-
-/* ---------------- Discord "new availability" announcements ----------------
-   Same diff-and-notify shape as new events, so people find out when a
-   teammate marks themselves free without having to check the site.
-   Also needs DISCORD_EVENTS_WEBHOOK — reuses the same webhook/channel
-   as event announcements rather than a separate one. */
-
-async function notifyNewAvailability(newBodyText, env) {
-  if (!env.DISCORD_EVENTS_WEBHOOK) {
-    console.log('discord notify: availability skipped — DISCORD_EVENTS_WEBHOOK secret not set');
-    return;
-  }
-
-  let added = [];
-  try {
-    const oldRaw = await env.CLAN_KV.get('clan-availability');
-    if (oldRaw === null) {
-      console.log('discord notify: skipped — first-ever write to clan-availability, nothing to diff against');
-      return;
-    }
-
-    const oldEntries = JSON.parse(oldRaw);
-    const newEntries = JSON.parse(newBodyText || '[]');
-    const oldIds = new Set(oldEntries.map(a => a.id));
-    added = newEntries.filter(a => !oldIds.has(a.id));
-    console.log('discord notify: ' + added.length + ' new availability entr' + (added.length===1?'y':'ies') + ' found');
-  } catch (e) {
-    console.error('discord notify: availability diff failed — ' + e.message);
-    return;
-  }
-  if (!added.length) return;
-
-  let playerNames = {};
-  try {
-    const playersRaw = await env.CLAN_KV.get('players-data');
-    const playersData = playersRaw ? JSON.parse(playersRaw) : null;
-    ((playersData && playersData.players) || []).forEach(p => {
-      playerNames[p.id] = (p.rsn || 'Someone').replace(/^GIM\s*/i, '');
-    });
-  } catch (e) {
-    // best-effort — entries just fall back to "Someone" below
-  }
-
-  for (const a of added) {
-    await postDiscordAvailabilityNotice(a, playerNames[a.pid] || 'Someone', env);
-  }
-}
-
-async function postDiscordAvailabilityNotice(a, name, env) {
-  const dateLabel = formatDiscordDate(a.date);
-  const lines = ['@everyone :clock3: **' + name + '** is free ' + dateLabel + ' — ' + a.start + '–' + a.end + ' (BST)'];
-  await appendEstLine(lines, a.start, a.end, env);
-  await postToDiscord(lines.join('\n'), env, 'availability for "' + name + '"');
-}
-
-function formatDiscordDate(dateStr) {
-  try {
-    return new Date(dateStr + 'T00:00:00Z').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' });
-  } catch (e) {
-    return dateStr;
-  }
-}
-
 /* ---------------- Discord "rank update" announcements ----------------
    Fires whenever the saved GIM rank actually changes — whether from the
    "refresh" button's auto-sync or a manual rank entry, since both save
    through this same gimrank-data key. Uses its own DISCORD_HIGHSCORES_WEBHOOK
-   secret (separate channel from event/availability announcements). */
+   secret. */
 
 async function notifyRankChange(newBodyText, env) {
   if (!env.DISCORD_HIGHSCORES_WEBHOOK) {
@@ -327,103 +120,6 @@ async function notifyRankChange(newBodyText, env) {
   }
 }
 
-/* ---------------- Weekly "week ahead" availability digest ----------------
-   Runs from the cron trigger in wrangler.jsonc (Monday mornings), not from
-   any site visit. Posts one message covering everyone's marked availability
-   for that Monday-to-Sunday week. Needs DISCORD_EVENTS_WEBHOOK — reuses the
-   same webhook as event/availability notifications rather than a new one. */
-
-function isoUTC(d) {
-  const pad = n => String(n).padStart(2, '0');
-  return d.getUTCFullYear() + '-' + pad(d.getUTCMonth() + 1) + '-' + pad(d.getUTCDate());
-}
-
-// the 7 UTC-midnight Dates (Monday..Sunday) for the week containing `now`
-function getWeekDays(now) {
-  const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
-  const day = d.getUTCDay(); // 0=Sun..6=Sat
-  d.setUTCDate(d.getUTCDate() + (day === 0 ? -6 : 1 - day));
-  const days = [];
-  for (let i = 0; i < 7; i++) {
-    const dd = new Date(d);
-    dd.setUTCDate(d.getUTCDate() + i);
-    days.push(dd);
-  }
-  return days;
-}
-
-function shortDayMonth(d) {
-  return d.getUTCDate() + ' ' + d.toLocaleString('en-GB', { month: 'short', timeZone: 'UTC' });
-}
-
-async function postWeeklyAvailabilityDigest(env) {
-  if (!env.DISCORD_EVENTS_WEBHOOK) {
-    console.log('weekly digest: skipped — DISCORD_EVENTS_WEBHOOK secret not set');
-    return;
-  }
-  if (!env.CLAN_KV) {
-    console.log('weekly digest: skipped — CLAN_KV not bound');
-    return;
-  }
-
-  try {
-    const [availRaw, playersRaw] = await Promise.all([
-      env.CLAN_KV.get('clan-availability'),
-      env.CLAN_KV.get('players-data')
-    ]);
-    const availability = availRaw ? JSON.parse(availRaw) : [];
-    const playersData = playersRaw ? JSON.parse(playersRaw) : null;
-    const playerNames = {};
-    const estPlayerIds = new Set();
-    ((playersData && playersData.players) || []).forEach(p => {
-      playerNames[p.id] = (p.rsn || 'Someone').replace(/^GIM\s*/i, '');
-      if ((p.tz || '').toUpperCase().startsWith('EST')) estPlayerIds.add(p.id);
-    });
-    const estNames = [...estPlayerIds].map(id => playerNames[id]);
-
-    const weekDays = getWeekDays(new Date());
-    const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-
-    const lines = [
-      '@everyone :calendar_spiral: **The Week Ahead — ' + shortDayMonth(weekDays[0]) + ' to ' + shortDayMonth(weekDays[6]) + '**',
-      ''
-    ];
-    weekDays.forEach((d, i) => {
-      const iso = isoUTC(d);
-      const dayAvail = availability
-        .filter(a => a.date === iso)
-        .sort((a, b) => a.start.localeCompare(b.start));
-      const dayLabel = '**' + dayNames[i] + ' ' + shortDayMonth(d) + '**';
-      if (dayAvail.length) {
-        const entries = dayAvail.map(a => {
-          const name = playerNames[a.pid] || 'Someone';
-          const bstRange = a.start + '–' + a.end;
-          if (!estNames.length) return name + ' (' + bstRange + ')';
-          const estRange = bstToEstTime(a.start) + '–' + bstToEstTime(a.end);
-          return name + ' (' + bstRange + ' BST / ' + estRange + ' EST)';
-        }).join(', ');
-        lines.push(dayLabel + ': ' + entries);
-      } else {
-        lines.push(dayLabel + ': _no one has marked availability_');
-      }
-    });
-
-    const res = await fetch(env.DISCORD_EVENTS_WEBHOOK, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ content: lines.join('\n') })
-    });
-    if (!res.ok) {
-      const text = await res.text().catch(() => '');
-      console.error('weekly digest: post failed — ' + res.status + ' ' + text);
-    } else {
-      console.log('weekly digest: posted ok');
-    }
-  } catch (e) {
-    console.error('weekly digest: failed — ' + e.message);
-  }
-}
-
 /* ---------------- OSRS hiscores proxy ---------------- */
 
 async function handleHiscores(request) {
@@ -434,7 +130,7 @@ async function handleHiscores(request) {
     return json({ ok: false, error: 'Missing player name' }, 400);
   }
 
-  const target = 'https://secure.runescape.com/m=hiscore_oldschool/index_lite.ws?player=' + encodeURIComponent(player);
+  const target = 'https://secure.runescape.com/m=hiscore_oldschool/index_lite.json?player=' + encodeURIComponent(player);
 
   try {
     const res = await fetch(target);
@@ -446,8 +142,10 @@ async function handleHiscores(request) {
       return json({ ok: false, error });
     }
 
-    const raw = await res.text();
-    return json({ ok: true, raw });
+    // JSON variant names every skill/activity, so callers match by name
+    // instead of by row position (which shifts whenever Jagex adds a boss)
+    const data = await res.json();
+    return json({ ok: true, data });
   } catch (e) {
     return json({ ok: false, error: 'Could not reach the OSRS hiscores service' });
   }
