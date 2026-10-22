@@ -103,11 +103,6 @@
   .stat .label{font-size:.68rem; text-transform:uppercase; letter-spacing:.08em; color:var(--text-dim); margin-bottom:4px;}
   .stat .value{font-size:1.35rem; color:var(--gold); font-family:'JetBrains Mono',monospace;}
   .stat .value small{font-size:.6rem; color:var(--text-dim); display:block; font-family:'Spectral',serif; margin-top:2px;}
-  .rank-badge{display:inline-block; padding:2px 10px; border-radius:20px; font-size:.62rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase; margin:2px 0 6px; font-family:'Cinzel',serif;}
-  .rank-badge.glow{box-shadow:0 0 10px rgba(255,90,40,.65);}
-  .lock-banner{align-items:center; gap:8px; background:rgba(255,59,59,.12); border:1px solid var(--bad); color:#ffd0d0; border-radius:8px; padding:10px 14px; margin-bottom:16px; font-size:.82rem;}
-  .lock-banner::before{content:'🔒'; font-size:.9rem;}
-
   .skill-row td.name{color:var(--text);}
   .bar{height:5px; background:var(--border-dim); border-radius:3px; overflow:hidden; margin-top:3px;}
   .bar > div{height:100%; background:var(--ember);}
@@ -177,33 +172,10 @@
   .filter-tabs button{background:var(--bg-panel); border:1px solid var(--border-dim); color:var(--text-dim); padding:7px 14px; border-radius:6px; font-size:.8rem;}
   .filter-tabs button.active{color:var(--bg); background:var(--ember); border-color:var(--ember); font-weight:600;}
 
-  .gear-tiles{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:12px;}
-  .gear-tile{background:var(--bg-panel); border:1px solid var(--border-dim); border-radius:8px; padding:14px 15px; transition:border-color .15s ease;}
-  .gear-tile:hover{border-color:var(--gold); box-shadow:0 0 14px rgba(255,122,26,.2);}
-  .gear-tile .tile-top{display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:10px;}
-  .gear-tile .item-name{font-size:.88rem; font-weight:600; color:var(--text); line-height:1.25;}
-  .gear-tile .cat-badge{font-size:.6rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:.05em; display:block; margin-top:2px;}
-  .gear-tile .count-badge{font-size:.68rem; color:var(--gold); font-family:'JetBrains Mono',monospace; white-space:nowrap;}
-  .gear-tile .rm{background:none; border:none; color:var(--bad); font-size:.85rem; opacity:.5;}
-  .gear-tile .rm:hover{opacity:1;}
-  .chip-row{display:flex; gap:6px; flex-wrap:wrap;}
-  .chip{width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.62rem; font-weight:700; border:1px solid var(--border-dim); color:var(--text-dim); cursor:pointer; background:var(--bg); transition:all .12s ease;}
-  .chip:hover{border-color:var(--gold);}
-  .chip.owned{background:var(--good); border-color:var(--good); color:#0f1d08;}
-
   .team-art{display:flex; flex-wrap:wrap; justify-content:center; gap:14px; margin-bottom:20px;}
   .team-art svg{width:56px; height:78px; image-rendering:pixelated;}
   .team-art .char-wrap{display:flex; flex-direction:column; align-items:center; gap:6px;}
   .team-art .char-name{font-size:.6rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:.06em;}
-
-  .item-icon-wrap{width:34px; height:34px; flex:none; border:1px solid var(--border-dim); border-radius:6px; background:var(--bg); display:flex; align-items:center; justify-content:center; overflow:hidden;}
-  .item-icon-wrap img.item-icon{width:26px; height:26px; object-fit:contain; image-rendering:pixelated;}
-  .item-icon-fallback{display:none; width:100%; height:100%; align-items:center; justify-content:center; color:var(--ember);}
-  .item-icon-fallback svg{width:19px; height:19px;}
-  .item-icon-wrap.icon-fallback{background:var(--bg-panel-2);}
-  .item-icon-wrap.icon-fallback .item-icon{display:none;}
-  .item-icon-wrap.icon-fallback .item-icon-fallback{display:flex;}
-  .tile-top .name-row{display:flex; gap:10px; align-items:flex-start;}
 
   .total-col{background:rgba(255,176,32,.14); font-weight:700; color:var(--gold); text-align:center;}
   th.total-col{color:var(--gold); background:rgba(255,176,32,.1);}
@@ -393,32 +365,6 @@
     <div class="tiles" id="homeTiles"></div>
   </section>
 
-  <!-- GEAR -->
-  <section class="page" id="page-gear">
-    <div class="page-head"><h2>Gear Progression</h2><button class="back" onclick="go('home')">← Home</button></div>
-
-    <div class="lock-banner" id="gearLockBanner" style="display:none;"><span></span></div>
-
-    <div class="stat-grid" id="gearPlayerStats"></div>
-
-    <div class="row" style="justify-content:space-between; margin-bottom:16px;">
-      <div class="filter-tabs" id="gearFilterTabs"></div>
-    </div>
-
-    <div class="row" style="margin-bottom:18px;">
-      <input id="newItemName" type="text" placeholder="Add an item or grind...">
-      <select id="newItemCategory"></select>
-      <button class="btn small" onclick="addGearItem()">Add</button>
-    </div>
-
-    <div class="gear-tiles" id="gearItemGrid"></div>
-
-    <div class="card" style="margin-top:24px;">
-      <h4>Team Notes &amp; Goals</h4>
-      <textarea id="gearNotes" style="width:100%; min-height:80px; font-family:'Spectral',serif;" placeholder="e.g. Saving for a group ToB attempt, need everyone at fire cape first..." onchange="saveGearNotes()"></textarea>
-    </div>
-  </section>
-
   <!-- IRONMAN PROGRESSION -->
   <section class="page" id="page-progress">
     <div class="page-head"><h2>Ironman Progression</h2><button class="back" onclick="go('home')">← Home</button></div>
@@ -505,7 +451,7 @@
   <!-- SMART GOALS -->
   <section class="page" id="page-goals">
     <div class="page-head"><h2>Smart Goals</h2><button class="back" onclick="go('home')">← Home</button></div>
-    <p style="color:var(--text-dim); font-size:.8rem; margin-top:-14px; margin-bottom:22px;">Generated from each player's skills, boss KCs, gear ownership, and quest/diary progress — updates automatically as data changes.</p>
+    <p style="color:var(--text-dim); font-size:.8rem; margin-top:-14px; margin-bottom:22px;">Generated from each player's skills, boss KCs, progression unlocks, and quest/diary progress — updates automatically as data changes.</p>
     <div class="goals-grid" id="goalsGrid"></div>
   </section>
 
@@ -583,7 +529,6 @@
 <script>
 /* ---------------- DATA MODEL ---------------- */
 const PAGES = [
-  {id:'gear', label:'Gear Progression', desc:'What each of us is wearing and what we\'re grinding towards.', icon:'sword'},
   {id:'progress', label:'Progression', desc:'Your own ironman unlock chart. Tick off gear and milestones to climb the clan ranks.', icon:'chevrons'},
   {id:'bosses', label:'Boss KCs', desc:'Kill counts across the team\'s bossing log.', icon:'skull'},
   {id:'calendar', label:'Calendar', desc:'Plan group sessions — bossing, questing, whatever\'s next.', icon:'calendar'},
@@ -628,10 +573,10 @@ const PIXEL_PALETTES = [
   {H:'#c9a23f', A:'#a8842f', W:'#d8d8d8', name:'Gold'},
   {H:'#8a4fc9', A:'#6a3aa8', W:'#c9b8e6', name:'Purple'}
 ];
-// Fixed team colours: Lestah (Leicester) = blue, Briistol (Bristol) = red
+// Fixed team colours: Allegiance (Leicester) = blue, BristoI (Bristol) = red
 const PLAYER_PALETTE_BY_NAME = {
-  'lestah': 1,   // blue
-  'briistol': 0  // red
+  'allegiance': 1, // blue
+  'bristoi': 0     // red
 };
 function pixelCharSVG(palette){
   const cell = 4;
@@ -684,28 +629,6 @@ function renderTeamArt(){
   }).join('');
 }
 
-/* ---- wiki item icons (best-effort live lookup, falls back to initials) ---- */
-const ICON_OVERRIDES = {
-  'ancestral-robes-set': 'Ancestral robe top',
-  'justiciar-armour-set': 'Justiciar faceguard',
-  'masori-armour-set': 'Masori mask',
-  'torva-armour-set': 'Torva full helm',
-  'graceful-outfit': 'Graceful hood',
-  'angler-outfit': 'Angler hat',
-  'lumberjack-outfit': 'Lumberjack hat',
-  'prospector-outfit': 'Prospector helmet',
-  'farmer-s-outfit': "Farmer's strawhat",
-  'rogue-outfit': 'Rogue mask',
-  'pyromancer-outfit': 'Pyromancer hood',
-  'achievement-diary-cape': 'Max cape'
-};
-function iconFileName(item){
-  return ICON_OVERRIDES[item.id] || item.name.split(' ').map((w,i)=> i===0 ? w : w.toLowerCase()).join(' ');
-}
-function iconUrl(item){
-  return 'https://oldschool.runescape.wiki/w/Special:FilePath/' + encodeURIComponent(iconFileName(item)) + '.png';
-}
-
 /* ---- wiki boss portraits (best-effort live lookup, falls back to a skull icon) ---- */
 const BOSS_ICON_OVERRIDES = {
   'Zulrah': 'Zulrah (serpentine)'
@@ -715,7 +638,7 @@ function bossIconUrl(boss){
 }
 
 /* ---- staggered icon loading ----
-   Pages like Gear Progression can have 100+ wiki icons at once. Loading them
+   Pages like Boss KCs and Yearly Goals can have lots of wiki icons at once. Loading them
    all in a burst is what was triggering the wiki's rate limiting (429s), so
    instead of setting src directly we set data-src and trickle real loads out
    one at a time, only once an icon actually scrolls near the viewport. */
@@ -747,45 +670,7 @@ function lazyLoadIcons(container){
   container.querySelectorAll('img[data-src]').forEach(img=> iconLazyObserver.observe(img));
 }
 
-const CATEGORY_GLYPH = {
-  'PVM Gear': '<path d="M5 25 L23 7 M19 5 L25 11" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/><path d="M25 25 L7 7 M11 5 L5 11" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/>',
-  'Skilling Gear': '<path d="M6 26 L18 14 M15 6 C19 6 23 10 23 14 C19 14 15 10 15 6 Z" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
-  'Misc / QoL': '<path d="M9 12 H21 L23 24 C23 26.2 21 27.5 19 27.5 H11 C9 27.5 7 26.2 7 24 Z M12 12 C12 8.5 14 6 15 6 C16 6 18 8.5 18 12" stroke="currentColor" stroke-width="2.1" fill="none" stroke-linejoin="round"/>'
-};
-
-const GEAR_CATEGORIES = ['PVM Gear','Skilling Gear','Misc / QoL'];
-
 function slugify(name){ return name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,''); }
-function makeItems(list, category){ return list.map(name=>({id:slugify(name), name, category})); }
-
-const DEFAULT_GEAR_ITEMS = [
-  ...makeItems(['Fire Cape','Infernal Cape','Dragon Defender','Avernic Defender','Barrows Gloves',
-    'Berserker Ring (i)','Ring of Suffering (i)','Amulet of Torture','Necklace of Anguish','Occult Necklace',
-    'Bandos Chestplate','Bandos Tassets','Armadyl Chestplate','Armadyl Chainskirt','Ancestral Robes (Set)',
-    'Justiciar Armour (Set)','Masori Armour (Set)','Torva Armour (Set)','Toxic Blowpipe','Dragon Warhammer',
-    'Bandos Godsword','Ghrazi Rapier','Twisted Bow','Scythe of Vitur','Tumeken\'s Shadow'], 'PVM Gear'),
-  // Ironman progression staples (via ladlorchart.com) not already covered above
-  ...makeItems(['Amulet of Strength','Iban\'s Staff (u)','Ancient Staff','Fighter Torso','Granite Body',
-    'Dragon Scimitar','Dragon Dagger','Helm of Neitiznot','Salve Amulet(ei)','Imbued Zamorak Cape',
-    'Infinity Boots','Mage\'s Book','Arkan Blade','Black Mask (i)','Slayer Helmet (i)',
-    'Void Knight Top','Void Knight Robe','Void Ranger Helm','Void Knight Gloves','Elite Void Top','Elite Void Robe',
-    'Crystal Halberd','Crystal Body','Crystal Legs','Crystal Helm','Bow of Faerdhinen (c)',
-    'Bloodbark Body','Bloodbark Legs','Bloodbark Helm','Zamorakian Hasta','Voidwaker',
-    'Necklace of Rupture','Thread of Elidinis','Lightbearer','Abyssal Whip','Abyssal Tentacle',
-    'Emberlight','Dragon Boots','Scorching Bow','Tormented Bracelet','Burning Claws','Avernic Treads',
-    'Desert Amulet 4','Rada\'s Blessing 4','Primordial Boots','Amulet of Rancour','Eternal Boots',
-    'Confliction Gauntlets','Osmumten\'s Fang','Ferocious Gloves','Oathplate Chest','Oathplate Legs','Oathplate Helm',
-    'Ultor Ring','Dizana\'s Quiver','Magus Ring','Dragon Claws','Elder Maul','Elidinis\' Ward',
-    'Alchemist\'s Amulet','Eye of Ayak','Arclight'], 'PVM Gear'),
-  ...makeItems(['Graceful Outfit','Crystal Axe','Crystal Pickaxe','Infernal Axe','Infernal Harpoon',
-    'Dragon Pickaxe','Motherlode Maul','Angler Outfit','Lumberjack Outfit','Prospector Outfit',
-    'Farmer\'s Outfit','Rogue Outfit','Pyromancer Outfit','Rune Pouch','Dragon Harpoon'], 'Skilling Gear'),
-  ...makeItems(['Ava\'s Assembler','Ring of Dueling','Games Necklace','Amulet of Glory','Combat Bracelet',
-    'Skills Necklace','Explorer\'s Ring 4','Bonecrusher','Herb Sack','Seed Box','Looting Bag','Coal Bag',
-    'Gem Bag','Log Basket','Ring of Wealth','Quest Point Cape','Music Cape','Achievement Diary Cape',
-    'Karamja Gloves 4','Ghommal\'s Hilt 4','Pharaoh\'s Sceptre','Ash Sanctifier','Book of the Dead'], 'Misc / QoL')
-];
-
 const DEFAULT_BOSSES = ['Vorkath','Zulrah','General Graardor','Kree\'Arra','K\'ril Tsutsaroth','Commander Zilyana',
   'Kraken','Cerberus','Thermonuclear Smoke Devil','Alchemical Hydra','Chambers of Xeric','Theatre of Blood',
   'Tombs of Amascut','Nex','Nightmare','The Whisperer','Duke Sucellus','The Leviathan','Vardorvis','Yama',
@@ -805,16 +690,24 @@ const DIARY_REGIONS = ['Ardougne','Desert','Falador','Fremennik','Kandarin','Kar
   'Lumbridge & Draynor','Morytania','Varrock','Western Provinces','Wilderness'];
 const DIARY_TIERS = ['Easy','Medium','Hard','Elite'];
 
+// name changes — applied to the saved roster on load so hiscores syncs look
+// up the new names. Must match the hiscores exactly (no "GIM " where the
+// account doesn't have one), checked against index_lite before adding.
+const RSN_RENAMES = {
+  'GIM Lestah': 'Allegiance',
+  'GIM Briistol': 'BristoI',
+  'GIM PhatMatt': 'GIM Diplomat'
+};
+
 function defaultState(){
   return {
     players: [
-      {id:'p1', rsn:'GIM Lestah', tz:'BST'},
-      {id:'p2', rsn:'GIM Briistol', tz:'BST'},
+      {id:'p1', rsn:'Allegiance', tz:'BST'},
+      {id:'p2', rsn:'BristoI', tz:'BST'},
       {id:'p3', rsn:'GIM Drink', tz:'BST'},
-      {id:'p4', rsn:'GIM PhatMatt', tz:'EST (UTC-5)'},
+      {id:'p4', rsn:'GIM Diplomat', tz:'EST (UTC-5)'},
       {id:'p5', rsn:'Seaworthsbag', tz:'EST (UTC-5)'}
     ],
-    items: DEFAULT_GEAR_ITEMS.slice(), ownership: {}, gearNotes: '',
     bosses: DEFAULT_BOSSES.slice(),
     bossKc: {},
     skills: {},
@@ -829,11 +722,10 @@ let state = defaultState();
 let events = [];
 let availability = [];
 let activePlayer = {quests:'p1', skills:'p1', yeargoals:'p1', progress:'p1'};
-let gearFilter = 'All';
 let calCursor = new Date();
 
 /* ---------------- STORAGE (backed by Cloudflare Worker + KV) ----------------
-   Data is split into independent per-topic KV keys (gear, bosses, skills,
+   Data is split into independent per-topic KV keys (progression, bosses, skills,
    quests/diaries, players, gim rank) instead of one big blob. Every save does
    a fetch-merge-write: pull the latest server copy, apply only the specific
    ids that actually changed locally, and write that back. This means two
@@ -843,7 +735,6 @@ let calCursor = new Date();
 
 const SECTION_KEYS = {
   players: 'players-data',
-  gear:    'gear-data',
   bosses:  'boss-data',
   skills:  'skills-data',
   quests:  'quests-diaries-data',
@@ -855,7 +746,6 @@ const SECTION_KEYS = {
 function sectionSlice(section){
   switch(section){
     case 'players': return { players: state.players };
-    case 'gear':    return { items: state.items, ownership: state.ownership, gearNotes: state.gearNotes };
     case 'bosses':  return { bosses: state.bosses, bossKc: state.bossKc };
     case 'skills':  return { skills: state.skills };
     case 'quests':  return { quests: state.quests, diaries: state.diaries };
@@ -866,7 +756,7 @@ function sectionSlice(section){
 }
 
 // ids that changed locally since the last successful save, per section
-const dirty = { players:new Set(), gear:new Set(), bosses:new Set(), skills:new Set(), quests:new Set(), yeargoals:new Set(), progress:new Set() };
+const dirty = { players:new Set(), bosses:new Set(), skills:new Set(), quests:new Set(), yeargoals:new Set(), progress:new Set() };
 
 async function apiGet(key){
   try{
@@ -889,14 +779,14 @@ async function apiSet(key, value){
 
 async function loadState(){
   state = defaultState();
-  const [players, gear, bosses, skills, quests, gimrank, yeargoals, progress, ev, av] = await Promise.all([
-    apiGet(SECTION_KEYS.players), apiGet(SECTION_KEYS.gear), apiGet(SECTION_KEYS.bosses),
+  const [players, bosses, skills, quests, gimrank, yeargoals, progress, ev, av] = await Promise.all([
+    apiGet(SECTION_KEYS.players), apiGet(SECTION_KEYS.bosses),
     apiGet(SECTION_KEYS.skills), apiGet(SECTION_KEYS.quests), apiGet(SECTION_KEYS.gimrank),
     apiGet(SECTION_KEYS.yeargoals), apiGet(SECTION_KEYS.progress),
     apiGet('clan-events'), apiGet('clan-availability')
   ]);
-  if(players||gear||bosses||skills||quests||gimrank||yeargoals||progress){
-    Object.assign(state, players||{}, gear||{}, bosses||{}, skills||{}, quests||{}, gimrank||{}, yeargoals||{}, progress||{});
+  if(players||bosses||skills||quests||gimrank||yeargoals||progress){
+    Object.assign(state, players||{}, bosses||{}, skills||{}, quests||{}, gimrank||{}, yeargoals||{}, progress||{});
   } else {
     // one-time migration: nothing in the new split keys yet, so fall back to
     // the old single 'clan-data' blob if it exists, then re-save split so
@@ -908,14 +798,19 @@ async function loadState(){
     }
   }
 
-  // backfill: add any new default gear items that aren't in the saved list yet,
-  // so shipping new checklist entries doesn't require touching KV by hand
-  const existingItemIds = new Set(state.items.map(it=>it.id));
-  const missingItems = DEFAULT_GEAR_ITEMS.filter(it=>!existingItemIds.has(it.id));
-  if(missingItems.length){
-    state.items = state.items.concat(missingItems);
-    await apiSet(SECTION_KEYS.gear, sectionSlice('gear'));
+  // the old Gear Progression page was retired in favour of Progression; the
+  // first time there's no progress-data yet, carry its ticks over (gear-data
+  // itself is left untouched in KV)
+  if(!progress){
+    const gear = await apiGet('gear-data');
+    if(gear && importGearIntoProgress(gear)) await apiSet(SECTION_KEYS.progress, sectionSlice('progress'));
   }
+
+  // player ids (and everything keyed by them) stay the same across a name
+  // change, so only the saved RSN needs updating
+  const renamed = state.players.filter(p=> RSN_RENAMES[p.rsn]);
+  renamed.forEach(p=>{ p.rsn = RSN_RENAMES[p.rsn]; });
+  if(renamed.length) saveState('players', renamed.map(p=>p.id));
 
   if(ev) events = ev;
   if(av) availability = av;
@@ -958,16 +853,6 @@ function mergeSection(section, server, local, ids){
   if(section==='players'){
     return { players: (server.players||local.players).map(sp=>
       ids.has(sp.id) ? (local.players.find(p=>p.id===sp.id) || sp) : sp) };
-  }
-  if(section==='gear'){
-    const merged = { items: server.items, ownership: Object.assign({}, server.ownership), gearNotes: server.gearNotes };
-    ids.forEach(id=>{
-      if(id==='__items__') merged.items = local.items;
-      else if(id==='__notes__') merged.gearNotes = local.gearNotes;
-      else if(local.ownership[id]) merged.ownership[id] = local.ownership[id];
-      else delete merged.ownership[id];
-    });
-    return merged;
   }
   if(section==='bosses'){
     const merged = { bosses: server.bosses, bossKc: Object.assign({}, server.bossKc) };
@@ -1051,7 +936,6 @@ function go(pageId){
   document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
   document.getElementById('page-'+pageId).classList.add('active');
   document.querySelectorAll('#navLinks button').forEach(b=>b.classList.toggle('active', b.dataset.p===pageId));
-  if(pageId==='gear') renderGear();
   if(pageId==='bosses') renderBosses();
   if(pageId==='calendar') renderCalendar();
   if(pageId==='quests') renderQuests();
@@ -1061,12 +945,6 @@ function go(pageId){
   if(pageId==='progress') renderProgress();
   else if(location.hash.startsWith('#progress')) history.replaceState(null, '', location.pathname + location.search);
   window.scrollTo({top:0, behavior:'smooth'});
-
-  clearInterval(gearLockPollTimer);
-  if(pageId==='gear'){
-    checkGearLock();
-    gearLockPollTimer = setInterval(checkGearLock, 20000);
-  }
 }
 
 function buildHomeTiles(){
@@ -1103,195 +981,6 @@ function selectPlayer(key, id){
   if(key==='quests') renderQuests();
   if(key==='skills') renderSkills();
   if(key==='yeargoals') renderYearGoals();
-}
-
-/* ---------------- GEAR ---------------- */
-function initials(rsn){ return rsn.replace(/^GIM\s*/i,'').trim().slice(0,2).toUpperCase(); }
-
-function itemsForFilter(){
-  return gearFilter==='All' ? state.items : state.items.filter(it=>it.category===gearFilter);
-}
-
-function playerCompletion(pid){
-  const items = itemsForFilter();
-  if(items.length===0) return 0;
-  const owned = items.filter(it=> state.ownership[it.id] && state.ownership[it.id][pid]).length;
-  return Math.round((owned/items.length)*100);
-}
-
-// rank badge always reflects total gear ownership, independent of the active category filter
-function playerOverallCompletion(pid){
-  const items = state.items;
-  if(items.length===0) return 0;
-  const owned = items.filter(it=> state.ownership[it.id] && state.ownership[it.id][pid]).length;
-  return Math.round((owned/items.length)*100);
-}
-
-const GEAR_RANK_TIERS = [
-  {name:'Bronze',  min:0,   bg:'#7a4a25', fg:'#f6ddc0'},
-  {name:'Iron',    min:10,  bg:'#6e6e6e', fg:'#f2f2f2'},
-  {name:'Steel',   min:25,  bg:'#8fa7b3', fg:'#10171b'},
-  {name:'Black',   min:40,  bg:'#1a1a1a', fg:'#e6a3a3', border:'#7a1f1f'},
-  {name:'Mithril', min:55,  bg:'#3d4fc9', fg:'#e9ecff'},
-  {name:'Adamant', min:70,  bg:'#3a8a4a', fg:'#eafff0'},
-  {name:'Rune',    min:85,  bg:'#3fc7d9', fg:'#062226'},
-  {name:'Dragon',  min:100, bg:'#c9302f', fg:'#ffe9d9', glow:true}
-];
-function gearRankFor(pct){
-  let tier = GEAR_RANK_TIERS[0];
-  for(const t of GEAR_RANK_TIERS){ if(pct>=t.min) tier=t; }
-  return tier;
-}
-
-function renderGear(){
-  const players = activePlayers();
-
-  // filter tabs
-  document.getElementById('gearFilterTabs').innerHTML = ['All', ...GEAR_CATEGORIES].map(cat=>
-    `<button class="${gearFilter===cat?'active':''}" onclick="setGearFilter('${cat}')">${cat}</button>`).join('');
-
-  // category select for adding new items
-  const sel = document.getElementById('newItemCategory');
-  sel.innerHTML = GEAR_CATEGORIES.map(c=>`<option value="${c}">${c}</option>`).join('');
-
-  // per-player completion stats (respects current filter)
-  document.getElementById('gearPlayerStats').innerHTML = players.map(p=>{
-    const pct = playerCompletion(p.id);
-    const tier = gearRankFor(playerOverallCompletion(p.id));
-    return `<div class="stat">
-      <div class="label">${p.rsn}</div>
-      <div class="rank-badge${tier.glow?' glow':''}" style="background:${tier.bg}; color:${tier.fg};${tier.border?` border:1px solid ${tier.border};`:''}">${tier.name}</div>
-      <div class="value">${pct}%</div>
-      <div class="bar"><div style="width:${pct}%"></div></div>
-    </div>`;
-  }).join('') || '<p style="color:var(--text-dim); font-size:.85rem;">Add team members to see completion stats.</p>';
-
-  // item tiles
-  const items = itemsForFilter();
-  document.getElementById('gearItemGrid').innerHTML = items.map(it=>{
-    const ownedCount = players.filter(p=> state.ownership[it.id] && state.ownership[it.id][p.id]).length;
-    const chips = players.map(p=>{
-      const owned = !!(state.ownership[it.id] && state.ownership[it.id][p.id]);
-      return `<div class="chip ${owned?'owned':''}" title="${p.rsn}" onclick="toggleOwnership('${it.id}','${p.id}')">${initials(p.rsn)}</div>`;
-    }).join('');
-    return `<div class="gear-tile">
-      <div class="tile-top">
-        <div class="name-row">
-          <div class="item-icon-wrap">
-            <img class="item-icon" data-src="${iconUrl(it)}" alt="" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('icon-fallback')">
-            <div class="item-icon-fallback"><svg viewBox="0 0 30 30">${CATEGORY_GLYPH[it.category] || CATEGORY_GLYPH['Misc / QoL']}</svg></div>
-          </div>
-          <div>
-            <div class="item-name">${it.name}</div>
-            <span class="cat-badge">${it.category}</span>
-          </div>
-        </div>
-        <div style="text-align:right">
-          <div class="count-badge">${ownedCount}/${players.length||0}</div>
-          <button class="rm" title="Remove item" onclick="removeGearItem('${it.id}')">✕</button>
-        </div>
-      </div>
-      <div class="chip-row">${chips || '<span style="color:var(--text-dim); font-size:.75rem;">Add team members first</span>'}</div>
-    </div>`;
-  }).join('') || '<p style="color:var(--text-dim);">No items in this category yet — add one above.</p>';
-  lazyLoadIcons(document.getElementById('gearItemGrid'));
-
-  document.getElementById('gearNotes').value = state.gearNotes || '';
-}
-function setGearFilter(cat){ gearFilter = cat; renderGear(); }
-async function toggleOwnership(itemId, pid){
-  if(!(await requireGearUnlock())) return;
-  if(!state.ownership[itemId]) state.ownership[itemId] = {};
-  state.ownership[itemId][pid] = !state.ownership[itemId][pid];
-  saveState('gear', itemId); renderGear();
-  refreshGearLock();
-}
-async function addGearItem(){
-  if(!(await requireGearUnlock())) return;
-  const input = document.getElementById('newItemName');
-  const name = input.value.trim();
-  if(!name) return;
-  const category = document.getElementById('newItemCategory').value;
-  const id = slugify(name) + '-' + Date.now().toString(36);
-  state.items.push({id, name, category});
-  input.value='';
-  saveState('gear', '__items__'); renderGear();
-  refreshGearLock();
-}
-async function removeGearItem(id){
-  if(!(await requireGearUnlock())) return;
-  state.items = state.items.filter(it=>it.id!==id);
-  delete state.ownership[id];
-  saveState('gear', ['__items__', id]); renderGear();
-  refreshGearLock();
-}
-async function saveGearNotes(){
-  if(!(await requireGearUnlock())) return;
-  state.gearNotes = document.getElementById('gearNotes').value;
-  saveState('gear', '__notes__');
-  refreshGearLock();
-}
-
-/* ---------------- gear-edit password gate + "someone's editing" indicator ----------------
-   Unlocking is per browser-session (in-memory only, resets on reload) so people
-   aren't re-prompted for every single click once they've entered it once. The
-   lock in KV is advisory, not exclusive — it warns other viewers, it doesn't
-   block them, since a stale lock from a closed tab shouldn't lock everyone out. */
-let gearUnlocked = false;
-let gearEditorName = localStorage.getItem('gearEditorName') || '';
-let gearLockPollTimer = null;
-
-async function requireGearUnlock(){
-  if(gearUnlocked) return true;
-  let pw;
-  try{
-    pw = prompt('Enter the gear-edit password:');
-  }catch(e){
-    alert('This browser is blocking password prompts, so gear can\'t be unlocked here.');
-    return false;
-  }
-  if(pw===null) return false;
-  let data;
-  try{
-    const res = await fetch('/api/verify-gear-pw', {
-      method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({password: pw})
-    });
-    data = await res.json();
-  }catch(e){
-    alert('Could not reach the password check — try again.');
-    return false;
-  }
-  if(!data.ok){
-    alert(data.error==='not_configured'
-      ? 'The gear-edit password hasn\'t been set up on the server yet.'
-      : 'Wrong password.');
-    return false;
-  }
-  gearUnlocked = true;
-  if(!gearEditorName){
-    let name = 'Someone';
-    try{ name = (prompt('What name should show up if someone sees you editing? (e.g. your RSN)') || 'Someone').trim() || 'Someone'; }catch(e){}
-    gearEditorName = name;
-    localStorage.setItem('gearEditorName', gearEditorName);
-  }
-  refreshGearLock();
-  return true;
-}
-function refreshGearLock(){
-  if(!gearUnlocked) return;
-  apiSet('gear-edit-lock', {name: gearEditorName, ts: Date.now()});
-}
-async function checkGearLock(){
-  const banner = document.getElementById('gearLockBanner');
-  if(!banner) return;
-  const lock = await apiGet('gear-edit-lock');
-  const stale = !lock || !lock.ts || (Date.now() - lock.ts) > 120000;
-  if(!stale && lock.name && lock.name !== gearEditorName){
-    banner.style.display = 'flex';
-    banner.querySelector('span').textContent = 'Locked out by ' + lock.name + ' — they\'re currently editing gear. Your changes could conflict.';
-  } else {
-    banner.style.display = 'none';
-  }
 }
 
 /* ---------------- BOSSES ---------------- */
@@ -1787,7 +1476,7 @@ function generateSmartGoals(pid, allPlayers){
   const goals = [];
   const otherPids = allPlayers.filter(p=>p.id!==pid).map(p=>p.id);
   const hasAnyData = state.skills[pid] || state.bossKc[pid] ||
-    (state.ownership && Object.values(state.ownership).some(o=>o[pid])) || state.quests[pid];
+    Object.keys(progOwned(pid)).length || state.quests[pid];
 
   // Skills: lowest-level trainable skills
   const skills = state.skills[pid] || {};
@@ -1806,14 +1495,15 @@ function generateSmartGoals(pid, allPlayers){
     }
   });
 
-  // Gear: items teammates already own that this player doesn't
-  const gaps = state.items.map(it=>{
-    const ownedByOthers = otherPids.filter(op=> state.ownership[it.id] && state.ownership[it.id][op]).length;
-    const ownedBySelf = !!(state.ownership[it.id] && state.ownership[it.id][pid]);
+  // Progression: unlocks teammates already have that this player doesn't
+  // (pets left out, nobody needs telling to go get luckier)
+  const gaps = PROG_ITEMS.filter(it=>it.cat!=='pet').map(it=>{
+    const ownedByOthers = otherPids.filter(op=> progOwned(op)[it.id]).length;
+    const ownedBySelf = !!progOwned(pid)[it.id];
     return {item:it, ownedByOthers, ownedBySelf};
-  }).filter(g=>!g.ownedBySelf && g.ownedByOthers>0).sort((a,b)=>b.ownedByOthers-a.ownedByOthers);
+  }).filter(g=>!g.ownedBySelf && g.ownedByOthers>0).sort((a,b)=>b.ownedByOthers-a.ownedByOthers || a.item.tier-b.item.tier);
   gaps.slice(0,2).forEach(g=>{
-    goals.push({icon:'gear', text:`Still no ${g.item.name}? ${g.ownedByOthers}/${otherPids.length} of the team already have one. Catch up.`});
+    goals.push({icon:'gear', text:`Still no ${g.item.name}? ${g.ownedByOthers}/${otherPids.length} of the team already have it. Catch up.`});
   });
 
   // Bosses: notably behind the team average
@@ -1911,8 +1601,8 @@ function guessGoalIconKind(query){
   const bossPool = Array.from(new Set([...(state.bosses||[]), ...DEFAULT_BOSSES]));
   const bossMatch = bossPool.find(b => q.includes(b.toLowerCase()));
   if(bossMatch) return {kind:'boss', name:bossMatch};
-  const itemMatch = state.items.find(it => q.includes(it.name.toLowerCase()));
-  if(itemMatch) return {kind:'item', name:itemMatch.name};
+  const itemMatch = PROG_ITEMS.find(it => q.includes(it.name.toLowerCase()));
+  if(itemMatch) return {kind:'item', name:itemMatch.name, icon:itemMatch.icon};
   return {kind:'wiki', name:query};
 }
 function yearGoalIconUrl(goal){
@@ -1921,7 +1611,7 @@ function yearGoalIconUrl(goal){
   const guess = guessGoalIconKind(q);
   if(guess.kind==='skill') return skillIconUrl(guess.name);
   if(guess.kind==='boss') return bossIconUrl(guess.name);
-  if(guess.kind==='item') return iconUrl({id:slugify(guess.name), name:guess.name});
+  if(guess.kind==='item') return wikiImageUrl(guess.icon);
   return genericWikiIconUrl(guess.name);
 }
 
@@ -2065,7 +1755,7 @@ function playGoalUndoSound(){
 }
 
 /* ---------------- IRONMAN PROGRESSION ----------------
-   A personal unlock chart per player (separate from the shared Gear
+   A personal unlock chart per player (replaced the old shared Gear
    Progression checklist). Every unlock has a difficulty tier worth 1-5
    points, and total points map onto the in-game clan rank ladder. Rank
    thresholds are percentages of the total so adding items later doesn't
@@ -2090,10 +1780,21 @@ const PROG_CATEGORIES = [
   {id:'melee',     label:'Melee',      icon:'Attack icon'},
   {id:'ranged',    label:'Ranged',     icon:'Ranged icon'},
   {id:'magic',     label:'Magic',      icon:'Magic icon'},
-  {id:'skilling',  label:'Skilling',   icon:'Stats icon'},
+  {id:'skilling',  label:'Skilling',   icon:'Woodcutting icon'},
   {id:'utility',   label:'Utility',    icon:'Bank icon'},
   {id:'unlock',    label:'Unlocks',    icon:'Quest point icon'},
-  {id:'milestone', label:'Milestones', icon:'Achievement Diaries icon'}
+  {id:'milestone', label:'Milestones', icon:'Fire cape'},
+  {id:'skills',    label:'99s',        icon:'Stats icon'},
+  {id:'diary',     label:'Diaries',    icon:'Achievement Diaries icon'},
+  {id:'pet',       label:'Pets',       icon:'Pet rock'}
+];
+
+// same region order as DIARY_REGIONS, paired with each diary's reward item
+const DIARY_REWARDS = [
+  ['Ardougne','Ardougne cloak'], ['Desert','Desert amulet'], ['Falador','Falador shield'], ['Fremennik','Fremennik sea boots'],
+  ['Kandarin','Kandarin headgear'], ['Karamja','Karamja gloves'], ['Kourend & Kebos','Rada\'s blessing'],
+  ['Lumbridge & Draynor','Explorer\'s ring'], ['Morytania','Morytania legs'], ['Varrock','Varrock armour'],
+  ['Western Provinces','Western banner'], ['Wilderness','Wilderness sword']
 ];
 
 // [name, tier, wiki icon file if it differs from the name]
@@ -2106,8 +1807,11 @@ const PROG_ITEMS = [
     ['Berserker ring (i)',2], ['Abyssal whip',2], ['Dragon boots',2], ['Salve amulet (ei)',2,'Salve amulet(ei)'],
     ['Blood Moon armour',2,'Blood Moon chestplate'],
     ['Abyssal tentacle',3], ['Bandos armour',3,'Bandos chestplate'], ['Amulet of torture',3], ['Primordial boots',3],
-    ['Dragon warhammer',3], ['Osmumten\'s fang',3], ['Ferocious gloves',3],
+    ['Dragon warhammer',3], ['Osmumten\'s fang',3], ['Ferocious gloves',3], ['Zamorakian hasta',3],
     ['Avernic defender',4], ['Ghrazi rapier',4], ['Torva armour',4,'Torva platebody'], ['Ultor ring',4], ['Amulet of rancour',4],
+    ['Dragon claws',4], ['Elder maul',4], ['Dinh\'s bulwark',4],
+    ['Justiciar faceguard',4], ['Justiciar chestguard',4], ['Justiciar legguards',4],
+    ['Rondache',4], ['Obligator',4],
     ['Scythe of Vitur',5]
   ]),
   ...progItems('ranged', [
@@ -2116,7 +1820,8 @@ const PROG_ITEMS = [
     ['Eclipse Moon armour',2,'Eclipse Moon chestplate'],
     ['Dragon hunter crossbow',3], ['Armadyl crossbow',3], ['Necklace of anguish',3], ['Armadyl armour',3,'Armadyl chestplate'],
     ['Bow of Faerdhinen',3,'Bow of Faerdhinen (c)'], ['Crystal armour',3,'Crystal body'], ['Zaryte vambraces',3],
-    ['Masori armour',4,'Masori body'], ['Zaryte crossbow',4], ['Venator ring',4], ['Dizana\'s quiver',4],
+    ['Masori mask',4], ['Masori body',4], ['Masori chaps',4],
+    ['Zaryte crossbow',4], ['Venator ring',4], ['Dizana\'s quiver',4], ['Twisted buckler',4], ['Ascension crossbows',4],
     ['Twisted bow',5]
   ]),
   ...progItems('magic', [
@@ -2124,8 +1829,10 @@ const PROG_ITEMS = [
     ['Imbued god cape',2,'Imbued Zamorak cape'], ['Ahrim\'s robes',2,'Ahrim\'s robetop'], ['Trident of the seas',2,'Trident of the Seas'],
     ['Occult necklace',2], ['Bloodbark armour',2,'Bloodbark body'], ['Blue Moon armour',2,'Blue Moon chestplate'],
     ['Trident of the swamp',3,'Trident of the Swamp'], ['Tormented bracelet',3], ['Virtus robes',3,'Virtus robe top'],
-    ['Arcane spirit shield',4], ['Sanguinesti staff',4], ['Kodai wand',4], ['Ancestral robes',4,'Ancestral robe top'],
-    ['Magus ring',4], ['Elidinis\' ward (f)',4], ['Imbued heart',4],
+    ['Fragment of whispering wind',3], ['Fragment of deep water',3], ['Fragment of living earth',3], ['Fragment of burning fire',3],
+    ['Arcane spirit shield',4], ['Spectral spirit shield',4], ['Sanguinesti staff',4], ['Kodai wand',4],
+    ['Ancestral hat',4], ['Ancestral robe top',4], ['Ancestral robe bottom',4],
+    ['Magus ring',4], ['Elidinis\' ward (f)',4], ['Imbued heart',4], ['Zorya\'s tome',4],
     ['Tumeken\'s shadow',5]
   ]),
   ...progItems('skilling', [
@@ -2133,17 +1840,16 @@ const PROG_ITEMS = [
     ['Prospector kit',1,'Prospector helmet'], ['Farmer\'s outfit',1,'Farmer\'s strawhat'], ['Imcando hammer',1],
     ['Rogue outfit',2,'Rogue mask'], ['Pyromancer outfit',2,'Pyromancer hood'], ['Raiments of the Eye',2,'Hat of the Eye'],
     ['Dragon pickaxe',2], ['Dragon axe',2], ['Dragon harpoon',2], ['Bottomless compost bucket',2],
-    ['Crystal tools',3,'Crystal pickaxe'], ['Infernal tools',3,'Infernal axe'],
-    ['First 99',4,'Hitpoints cape'],
-    ['Max cape',5]
+    ['Crystal tools',3,'Crystal pickaxe'], ['Infernal tools',3,'Infernal axe']
   ]),
   ...progItems('utility', [
     ['Rune pouch',1], ['Looting bag',1], ['Herb sack',1], ['Seed box',1], ['Coal bag',1], ['Gem bag',1],
     ['Log basket',1], ['Bonecrusher',1],
     ['Slayer helmet (i)',2], ['Ash sanctifier',2], ['Book of the Dead',2], ['Eternal teleport crystal',2],
     ['Perfected quetzal whistle',2],
-    ['Desert amulet 4',3], ['Karamja gloves 4',3], ['Bonecrusher necklace',3], ['Explorer\'s ring 4',3], ['Dragonfire shield',3],
-    ['Ardougne cloak 4',4]
+    ['Bonecrusher necklace',3], ['Dragonfire shield',3], ['Ring of suffering (i)',3], ['Lightbearer',3],
+    ['Blessed spirit shield',3], ['Archivist\'s folio',3],
+    ['Elysian spirit shield',5]
   ]),
   ...progItems('unlock', [
     ['Piety',1], ['Fairy rings',1,'Dramen staff'], ['Barbarian Training',1,'Barbarian rod'], ['Fossil Island',1,'Digsite pendant'],
@@ -2151,13 +1857,47 @@ const PROG_ITEMS = [
     ['Deadeye',2], ['Mystic Vigour',2],
     ['Dragon Slayer II',3,'Mythical cape'], ['Song of the Elves',3,'Teleport crystal'], ['Monkey Madness II',3,'Zenyte shard'],
     ['While Guthix Sleeps',3,'Tormented synapse'], ['Rigour',3], ['Augury',3],
-    ['Desert Treasure II',4,'Ring of shadows']
+    ['Desert Treasure II',4,'Ring of shadows'], ['Zeal',4,'Horn of Bran']
   ]),
   ...progItems('milestone', [
-    ['Fire cape',2],
-    ['Music cape',3], ['First boss pet',3,'Vorki'], ['First Chambers of Xeric',3,'Olmlet'], ['First Tombs of Amascut',3,'Tumeken\'s guardian'],
-    ['Quest point cape',4], ['Ghommal\'s hilt 4',4], ['Max house (POH)',4,'Ornate rejuvenation pool icon'], ['First Theatre of Blood',4,'Lil\' Zik'],
-    ['Infernal cape',5], ['Achievement diary cape',5]
+    ['Fire cape',2], ['Ghommal\'s hilt 2',2],
+    ['Music cape',3], ['Ghommal\'s hilt 3',3], ['First Chambers of Xeric',3,'Raids icon'], ['First Tombs of Amascut',3,'Tombs of Amascut - Normal Mode icon'],
+    ['Quest point cape',4], ['Ghommal\'s hilt 4',4], ['Max house (POH)',4,'Ornate rejuvenation pool icon'],
+    ['First Theatre of Blood',4,'Vial of blood'], ['First Fractured Archive',4,'The Fractured Archive icon'],
+    ['Ghommal\'s hilt 5',5], ['Infernal cape',5], ['Achievement diary cape',5]
+  ]),
+  // weighted by how painful each skill is to 99 on an ironman, not by xp
+  ...progItems('skills', [
+    ['99 Hitpoints',2,'Hitpoints cape'], ['99 Ranged',2,'Ranging cape'], ['99 Cooking',2,'Cooking cape'],
+    ['99 Firemaking',2,'Firemaking cape'], ['99 Thieving',2,'Thieving cape'],
+    ['99 Attack',3,'Attack cape'], ['99 Strength',3,'Strength cape'], ['99 Defence',3,'Defence cape'], ['99 Magic',3,'Magic cape'],
+    ['99 Woodcutting',3,'Woodcutting cape'], ['99 Fletching',3,'Fletching cape'], ['99 Fishing',3,'Fishing cape'],
+    ['99 Farming',3,'Farming cape'], ['99 Hunter',3,'Hunter cape'],
+    ['99 Prayer',4,'Prayer cape'], ['99 Crafting',4,'Crafting cape'], ['99 Smithing',4,'Smithing cape'], ['99 Mining',4,'Mining cape'],
+    ['99 Agility',4,'Agility cape'], ['99 Slayer',4,'Slayer cape'], ['99 Runecraft',4,'Runecraft cape'],
+    ['99 Construction',4,'Construct. cape'], ['99 Sailing',4,'Sailing cape'],
+    ['99 Herblore',5,'Herblore cape'], ['Max cape',5]
+  ]),
+  ...progItems('diary', DIARY_REWARDS.flatMap(([region, reward])=>[
+    [region + ' hard', 3, reward + ' 3'], [region + ' elite', 4, reward + ' 4']
+  ])),
+  // tier is a rough mix of drop rate and how hard the source is for an iron
+  ...progItems('pet', [
+    ['Pet chaos elemental',2], ['Huberte',2], ['Skotos',2], ['Chompy chick',2],
+    ['Abyssal orphan',3], ['Aggy',3], ['Baby Mole',3], ['Bran',3], ['Beef',3], ['Callisto cub',3], ['Gull',3,'Gull (pet)'],
+    ['Hellpuppy',3], ['Kalphite Princess',3], ['Maggot marquess',3], ['Moxi',3], ['Muphin',3,'Muphin (ranged)'], ['Noon',3],
+    ['Pet kraken',3,'Pet Kraken'], ['Pet smoke devil',3,'Pet Smoke Devil'], ['Pet snakeling',3,'Pet Snakeling'],
+    ['Prince Black Dragon',3], ['Scorpia\'s offspring',3], ['Scurry',3], ['Smolcano',3], ['Sraracha',3],
+    ['Tiny tempor',3], ['Venenatis spiderling',3], ['Vet\'ion Jr.',3], ['Vorki',3], ['Phoenix',3],
+    ['Abyssal protector',3], ['Herbi',3], ['Lil\' Creator',3], ['Pet Penance Queen',3], ['Quetzin',3], ['Mr McGroot',3],
+    ['Baron',4], ['Butch',4], ['Lil\'viathan',4], ['Wisp',4], ['Ikkle Hydra',4,'Ikkle Hydra (serpentine)'], ['Nid',4],
+    ['Nexling',4], ['Dom',4], ['Yami',4], ['Youngllef',4], ['Orion',4],
+    ['Pet Dagannoth Prime',4], ['Pet Dagannoth Rex',4], ['Pet Dagannoth Supreme',4],
+    ['Pet General Graardor',4], ['Pet K\'ril Tsutsaroth',4], ['Pet Kree\'arra',4], ['Pet Zilyana',4],
+    ['TzRek-Jad',4], ['Smol Heredit',4], ['Bloodhound',4],
+    ['Baby chinchompa',4,'Baby chinchompa (grey)'], ['Beaver',4], ['Giant squirrel',4,'Giant Squirrel'], ['Heron',4],
+    ['Rift guardian',4,'Rift guardian (fire)'], ['Rock golem',4], ['Rocky',4], ['Soup',4], ['Tangleroot',4],
+    ['Jal-Nib-Rek',5], ['Olmlet',5], ['Lil\' Zik',5], ['Tumeken\'s guardian',5], ['Little Nightmare',5], ['Pet dark core',5]
   ])
 ];
 const PROG_TOTAL_POINTS = PROG_ITEMS.reduce((sum, it)=> sum + PROG_TIERS[it.tier-1].pts, 0);
@@ -2168,6 +1908,38 @@ const PROG_RANKS = [
   {name:'Lieutenant', pct:22}, {name:'Captain', pct:30}, {name:'Major', pct:39}, {name:'Colonel', pct:49},
   {name:'Brigadier', pct:60}, {name:'General', pct:72}, {name:'Marshal', pct:85}, {name:'TzKal', pct:100}
 ].map(r=>({...r, pts: Math.ceil(PROG_TOTAL_POINTS * r.pct / 100), icon: wikiImageUrl('Clan icon - ' + r.name)}));
+
+// ticks carried over from the retired Gear Progression page get this
+// placeholder timestamp, so they don't flood "Recent Team Unlocks"
+const PROG_IMPORTED_TS = 1;
+// old gear item names (slugified) -> progression ids, where they differ
+const GEAR_IMPORT_ALIASES = {
+  'bandos-chestplate': ['bandos-armour'], 'armadyl-chestplate': ['armadyl-armour'], 'torva-armour-set': ['torva-armour'],
+  'ancestral-robes-set': ['ancestral-hat','ancestral-robe-top','ancestral-robe-bottom'],
+  'justiciar-armour-set': ['justiciar-faceguard','justiciar-chestguard','justiciar-legguards'],
+  'masori-armour-set': ['masori-mask','masori-body','masori-chaps'],
+  'void-knight-top': ['void-knight-set'], 'elite-void-top': ['elite-void'], 'imbued-zamorak-cape': ['imbued-god-cape'],
+  'prospector-outfit': ['prospector-kit'], 'crystal-axe': ['crystal-tools'], 'crystal-pickaxe': ['crystal-tools'],
+  'infernal-axe': ['infernal-tools'], 'infernal-harpoon': ['infernal-tools'], 'crystal-body': ['crystal-armour'],
+  'bow-of-faerdhinen-c': ['bow-of-faerdhinen'], 'bloodbark-body': ['bloodbark-armour'],
+  'desert-amulet-4': ['desert-elite'], 'karamja-gloves-4': ['karamja-elite'],
+  'explorer-s-ring-4': ['lumbridge-draynor-elite'], 'rada-s-blessing-4': ['kourend-kebos-elite']
+};
+function importGearIntoProgress(gear){
+  const progIds = new Set(PROG_ITEMS.map(it=>it.id));
+  let count = 0;
+  (gear.items || []).forEach(it=>{
+    const owners = (gear.ownership || {})[it.id];
+    if(!owners) return;
+    const key = slugify(it.name);
+    const targets = GEAR_IMPORT_ALIASES[key] || (progIds.has(key) ? [key] : []);
+    Object.keys(owners).filter(pid=>owners[pid]).forEach(pid=>{
+      const row = state.progress[pid] || (state.progress[pid] = {});
+      targets.forEach(t=>{ if(!row[t]){ row[t] = PROG_IMPORTED_TS; count++; } });
+    });
+  });
+  return count;
+}
 
 let progFilter = 'all';
 let progHideOwned = false;
@@ -2306,7 +2078,7 @@ function renderProgressFeed(players){
   const byId = Object.fromEntries(PROG_ITEMS.map(it=>[it.id, it]));
   const rows = [];
   players.forEach(p=> Object.entries(progOwned(p.id)).forEach(([itemId, ts])=>{
-    if(byId[itemId]) rows.push({p, it: byId[itemId], ts});
+    if(byId[itemId] && ts > PROG_IMPORTED_TS) rows.push({p, it: byId[itemId], ts});
   }));
   rows.sort((a,b)=> b.ts - a.ts);
   document.getElementById('progFeed').innerHTML = rows.slice(0,8).map(r=>`
@@ -2520,7 +2292,7 @@ function playClickSound(){
   setTimeout(()=>playTone(820, 0.09, 'triangle', 0.06), 50);
 }
 
-const TILE_SOUND_SELECTOR = '.tile, .gear-tile, .boss-tile, .goal-card, .prog-pcard';
+const TILE_SOUND_SELECTOR = '.tile, .boss-tile, .goal-card, .prog-pcard';
 let hoverSoundEl = null;
 document.addEventListener('mouseover', (e)=>{
   const tile = e.target.closest(TILE_SOUND_SELECTOR);
@@ -2540,7 +2312,7 @@ async function init(){
   await loadState();
   renderTeamArt();
   renderGimRank();
-  renderGear(); renderBosses(); renderCalendar(); renderQuests(); renderSkills();
+  renderBosses(); renderCalendar(); renderQuests(); renderSkills();
 
   // #progress/<name> links open straight onto that member's chart
   if(location.hash.startsWith('#progress')){
