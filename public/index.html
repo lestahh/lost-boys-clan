@@ -456,14 +456,15 @@ const PIXEL_GRID = [
 const PIXEL_PALETTES = [
   {H:'#c94b3f', A:'#a83730', W:'#d8b24a', name:'Red'},
   {H:'#3f7fc9', A:'#2f5da3', W:'#e6d98a', name:'Blue'},
-  {H:'#4f9d5c', A:'#3a7a46', W:'#8a6a3f', name:'Green'},
+  {H:'#d0569a', A:'#a83d7a', W:'#f0d0e0', name:'Pink'},
   {H:'#c9a23f', A:'#a8842f', W:'#d8d8d8', name:'Gold'},
   {H:'#8a4fc9', A:'#6a3aa8', W:'#c9b8e6', name:'Purple'}
 ];
-// Fixed team colours: Allegiance (Leicester) = blue, BristoI (Bristol) = red
+// Fixed team colours: Allegiance (Leicester) = blue, BristoI (Bristol) = red, Drink = pink (not a fan of green)
 const PLAYER_PALETTE_BY_NAME = {
   'allegiance': 1, // blue
-  'bristoi': 0     // red
+  'bristoi': 0,    // red
+  'drink': 2       // pink
 };
 function pixelCharSVG(palette){
   const cell = 4;
