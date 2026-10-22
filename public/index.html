@@ -268,10 +268,100 @@
   .ygoal-tile.done .ygoal-icon-wrap{opacity:.5;}
   .ygoal-add-row select{max-width:150px;}
 
+  /* ---- ironman progression ---- */
+  .prog-board{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:10px; margin-bottom:18px;}
+  .prog-pcard{display:flex; gap:10px; align-items:center; text-align:left; background:var(--bg-panel); border:1px solid var(--border-dim); border-radius:8px; padding:10px 12px; color:var(--text); transition:border-color .15s ease, transform .15s ease;}
+  .prog-pcard:hover{border-color:var(--gold); transform:translateY(-2px);}
+  .prog-pcard.active{border-color:var(--gold); background:linear-gradient(160deg, var(--bg-panel-2), var(--bg-panel)); box-shadow:0 0 14px rgba(255,122,26,.3);}
+  .prog-pcard img{width:26px; height:26px; object-fit:contain; image-rendering:pixelated; flex:none;}
+  .prog-pcard .pc-body{flex:1; min-width:0;}
+  .prog-pcard .pc-name{font-size:.82rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .prog-pcard .pc-rank{font-size:.66rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:.05em;}
+  .prog-pcard .pc-pts{font-family:'JetBrains Mono',monospace; font-size:.7rem; color:var(--gold);}
+
+  .prog-hero{display:flex; gap:20px; align-items:center; flex-wrap:wrap;}
+  .prog-emblem{width:92px; height:92px; flex:none; border-radius:50%; border:2px solid var(--gold); background:radial-gradient(circle at 50% 40%, var(--bg-panel-2), var(--bg)); display:flex; align-items:center; justify-content:center; box-shadow:0 0 22px rgba(255,122,26,.35);}
+  .prog-emblem img{width:46px; height:46px; object-fit:contain; image-rendering:pixelated;}
+  .prog-hero-main{flex:1; min-width:220px;}
+  .prog-hero-name{font-size:.72rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:.12em;}
+  .prog-hero-rank{font-family:'Cinzel',serif; font-size:1.7rem; color:var(--gold); font-weight:700; line-height:1.15; text-shadow:0 0 16px rgba(255,122,26,.4);}
+  .prog-hero-rank small{font-family:'JetBrains Mono',monospace; font-size:.7rem; color:var(--text-dim); font-weight:400; text-shadow:none; margin-left:8px;}
+  .prog-next-bar{height:10px; border-radius:5px; background:var(--bg); border:1px solid var(--border-dim); overflow:hidden; margin:10px 0 6px;}
+  .prog-next-bar div{height:100%; background:linear-gradient(90deg, var(--ember), var(--gold)); transition:width .35s ease;}
+  .prog-next-label{display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:.78rem; color:var(--text-dim);}
+  .prog-next-label img{width:16px; height:16px; object-fit:contain; image-rendering:pixelated;}
+  .prog-next-label strong{color:var(--text);}
+  .prog-meta{display:flex; gap:14px; flex-wrap:wrap; align-items:center; margin-top:10px; font-size:.75rem; color:var(--text-dim);}
+  .prog-meta .mono{color:var(--gold);}
+
+  .prog-ladder{display:grid; grid-template-columns:repeat(auto-fit,minmax(66px,1fr)); gap:6px; margin-top:18px; padding-top:14px; border-top:1px solid var(--border-dim);}
+  .prog-step{display:flex; flex-direction:column; align-items:center; gap:3px; padding:6px 2px; border-radius:6px; border:1px solid transparent; text-align:center;}
+  .prog-step img{width:22px; height:22px; object-fit:contain; image-rendering:pixelated; filter:grayscale(1) brightness(.55); opacity:.6;}
+  .prog-step span{font-size:.58rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:.04em; line-height:1.2;}
+  .prog-step em{font-style:normal; font-family:'JetBrains Mono',monospace; font-size:.56rem; color:var(--text-dim); opacity:.7;}
+  .prog-step.reached img{filter:none; opacity:1;}
+  .prog-step.reached span{color:var(--text);}
+  .prog-step.current{border-color:var(--gold); background:rgba(255,122,26,.1);}
+  .prog-step.current span{color:var(--gold); font-weight:700;}
+
+  .prog-cats{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;}
+  .prog-cat-btn{display:flex; align-items:center; gap:8px; background:var(--bg-panel); border:1px solid var(--border-dim); color:var(--text-dim); padding:6px 12px 6px 6px; border-radius:22px; font-size:.78rem;}
+  .prog-cat-btn:hover{border-color:var(--gold); color:var(--text);}
+  .prog-cat-btn.active{border-color:var(--ember); color:var(--text); background:rgba(255,176,32,.12);}
+  .prog-ring{width:30px; height:30px; border-radius:50%; flex:none; display:flex; align-items:center; justify-content:center;}
+  .prog-ring > span{width:24px; height:24px; border-radius:50%; background:var(--bg); display:flex; align-items:center; justify-content:center;}
+  .prog-ring img{width:15px; height:15px; object-fit:contain; image-rendering:pixelated;}
+  .prog-cat-btn .pct{font-family:'JetBrains Mono',monospace; font-size:.68rem; color:var(--gold);}
+  .prog-controls{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:16px; font-size:.78rem; color:var(--text-dim);}
+  .prog-controls label{display:flex; align-items:center; gap:6px; cursor:pointer;}
+  .prog-controls input{width:auto;}
+
+  .prog-lane{margin-bottom:22px;}
+  .prog-lane-head{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px;}
+  .prog-tier-pill{font-family:'Cinzel',serif; font-size:.78rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; padding:3px 12px; border-radius:20px; border:1px solid var(--tier); color:var(--tier); background:rgba(0,0,0,.25);}
+  .prog-lane-count{font-family:'JetBrains Mono',monospace; font-size:.72rem; color:var(--text-dim);}
+  .prog-lane-line{flex:1; height:1px; background:var(--border-dim); min-width:20px;}
+  .prog-here{font-size:.62rem; text-transform:uppercase; letter-spacing:.08em; color:#1a0a02; background:var(--ember); padding:2px 8px; border-radius:10px; font-weight:700;}
+  .prog-lane-done{font-size:.78rem; color:var(--good); padding:4px 2px;}
+
+  .prog-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(112px,1fr)); gap:10px;}
+  .prog-tile{position:relative; background:var(--bg-panel); border:1px solid var(--border-dim); border-radius:8px; padding:12px 8px 10px; text-align:center; cursor:pointer; user-select:none; transition:border-color .15s ease, transform .15s ease, background .2s ease;}
+  .prog-tile:hover{border-color:var(--gold); transform:translateY(-2px);}
+  .prog-tile:focus-visible{outline:2px solid var(--gold); outline-offset:2px;}
+  .prog-icon{width:52px; height:52px; margin:4px auto 8px; display:flex; align-items:center; justify-content:center;}
+  .prog-icon img{max-width:48px; max-height:48px; width:auto; height:auto; min-width:28px; object-fit:contain; image-rendering:pixelated; filter:grayscale(1) brightness(.8); opacity:.6; transition:filter .25s ease, opacity .25s ease;}
+  .prog-icon.icon-fallback img{display:none;}
+  .prog-icon.icon-fallback::after{content:'?'; font-family:'Cinzel',serif; font-size:1.3rem; color:var(--border);}
+  .prog-name{font-size:.74rem; line-height:1.25; color:var(--text-dim);}
+  .prog-cat{font-size:.56rem; text-transform:uppercase; letter-spacing:.05em; color:var(--border); margin-top:3px;}
+  .prog-pips{position:absolute; top:6px; right:7px; display:flex; gap:2px;}
+  .prog-pips i{width:5px; height:5px; border-radius:50%; background:var(--tier);}
+  .prog-check{position:absolute; top:5px; left:6px; width:16px; height:16px; border-radius:50%; background:var(--good); color:#0f1d08; font-size:.62rem; font-weight:700; display:none; align-items:center; justify-content:center;}
+  .prog-dots{display:flex; justify-content:center; gap:3px; margin-top:6px; min-height:7px;}
+  .prog-dots i{width:7px; height:7px; border-radius:50%; border:1px solid rgba(0,0,0,.5);}
+  .prog-tile.owned{border-color:rgba(127,174,79,.7); background:linear-gradient(180deg, rgba(127,174,79,.16), var(--bg-panel));}
+  .prog-tile.owned .prog-icon img{filter:drop-shadow(0 2px 4px rgba(0,0,0,.5)); opacity:1;}
+  .prog-tile.owned .prog-name{color:var(--text);}
+  .prog-tile.owned .prog-check{display:flex;}
+  .prog-tile.pop{animation:progPop .45s cubic-bezier(.34,1.56,.64,1);}
+  @keyframes progPop{0%{transform:scale(.88);} 60%{transform:scale(1.06);} 100%{transform:scale(1);}}
+
+  .prog-feed{display:flex; flex-direction:column; gap:8px;}
+  .prog-feed-row{display:flex; align-items:center; gap:10px; font-size:.82rem;}
+  .prog-feed-row img{width:24px; height:24px; object-fit:contain; image-rendering:pixelated; flex:none;}
+  .prog-feed-row .who{font-weight:600;}
+  .prog-feed-row .when{margin-left:auto; color:var(--text-dim); font-family:'JetBrains Mono',monospace; font-size:.68rem; white-space:nowrap;}
+
+  .prog-toast{position:fixed; left:50%; bottom:28px; transform:translate(-50%, 140%); display:flex; align-items:center; gap:14px; background:linear-gradient(160deg, var(--bg-panel-2), var(--bg-panel)); border:2px solid var(--gold); border-radius:12px; padding:14px 22px; box-shadow:var(--shadow), 0 0 30px rgba(255,122,26,.45); z-index:60; transition:transform .4s cubic-bezier(.34,1.56,.64,1); max-width:calc(100% - 32px);}
+  .prog-toast.show{transform:translate(-50%, 0);}
+  .prog-toast img{width:40px; height:40px; object-fit:contain; image-rendering:pixelated;}
+  .prog-toast .t1{font-size:.66rem; text-transform:uppercase; letter-spacing:.14em; color:var(--ember);}
+  .prog-toast .t2{font-family:'Cinzel',serif; font-size:1.1rem; color:var(--gold); font-weight:700;}
+
   .save-note{font-size:.72rem; color:var(--text-dim); text-align:center; margin-top:30px;}
   .empty-slot{opacity:.55; font-style:italic;}
   ::placeholder{color:#6b5c40;}
-  @media(max-width:640px){ .diary-grid{grid-template-columns:repeat(2,1fr);} .cal-grid{grid-template-columns:repeat(7,1fr); font-size:.6rem;} .cal-cell{min-height:56px;} }
+  @media(max-width:640px){ .prog-grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr));} .prog-hero-rank{font-size:1.35rem;} .diary-grid{grid-template-columns:repeat(2,1fr);} .cal-grid{grid-template-columns:repeat(7,1fr); font-size:.6rem;} .cal-cell{min-height:56px;} }
 </style>
 </head>
 <body>
@@ -326,6 +416,24 @@
     <div class="card" style="margin-top:24px;">
       <h4>Team Notes &amp; Goals</h4>
       <textarea id="gearNotes" style="width:100%; min-height:80px; font-family:'Spectral',serif;" placeholder="e.g. Saving for a group ToB attempt, need everyone at fire cape first..." onchange="saveGearNotes()"></textarea>
+    </div>
+  </section>
+
+  <!-- IRONMAN PROGRESSION -->
+  <section class="page" id="page-progress">
+    <div class="page-head"><h2>Ironman Progression</h2><button class="back" onclick="go('home')">← Home</button></div>
+    <p style="color:var(--text-dim); font-size:.8rem; margin-top:-10px; margin-bottom:18px;">Everyone gets their own unlock chart. Pick your name, then click anything you've got to light it up. Each unlock is worth 1–5 points depending on how hard it is, and points climb you through the clan ranks.</p>
+    <div class="prog-board" id="progBoard"></div>
+    <div class="card" id="progHero"></div>
+    <div class="prog-cats" id="progCats"></div>
+    <div class="prog-controls">
+      <span id="progFilterNote"></span>
+      <label><input type="checkbox" id="progHideOwned" onchange="setProgHideOwned(this.checked)"> Hide unlocked</label>
+    </div>
+    <div id="progTrack"></div>
+    <div class="card">
+      <h4>Recent Team Unlocks</h4>
+      <div class="prog-feed" id="progFeed"></div>
     </div>
   </section>
 
@@ -429,6 +537,8 @@
 
 <div class="save-note">Data is shared and editable by anyone with this link — it saves automatically for the whole clan.</div>
 
+<div class="prog-toast" id="progToast"></div>
+
 <!-- Event Modal -->
 <div class="modal-bg" id="eventModal">
   <div class="modal">
@@ -474,6 +584,7 @@
 /* ---------------- DATA MODEL ---------------- */
 const PAGES = [
   {id:'gear', label:'Gear Progression', desc:'What each of us is wearing and what we\'re grinding towards.', icon:'sword'},
+  {id:'progress', label:'Progression', desc:'Your own ironman unlock chart. Tick off gear and milestones to climb the clan ranks.', icon:'chevrons'},
   {id:'bosses', label:'Boss KCs', desc:'Kill counts across the team\'s bossing log.', icon:'skull'},
   {id:'calendar', label:'Calendar', desc:'Plan group sessions — bossing, questing, whatever\'s next.', icon:'calendar'},
   {id:'quests', label:'Quests & Diaries', desc:'Quest completion and achievement diary tiers.', icon:'scroll'},
@@ -489,7 +600,8 @@ const ICONS = {
   scroll:'<path d="M10 8 H34 V34 H16 C12 34 10 36 10 40 C10 36 12 34 16 34 M10 8 C10 8 10 12 14 12 M34 34 C34 38 36 40 40 40 C36 40 34 38 34 34 V8" stroke="currentColor" stroke-width="2.1" fill="none" stroke-linejoin="round"/><path d="M16 15 H30 M16 21 H30 M16 27 H26" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
   star:'<path d="M24 4 L29.5 18 L44 19.5 L33 29.5 L36.5 44 L24 36 L11.5 44 L15 29.5 L4 19.5 L18.5 18 Z" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linejoin="round"/>',
   target:'<circle cx="24" cy="24" r="18" stroke="currentColor" stroke-width="2.2" fill="none"/><circle cx="24" cy="24" r="10.5" stroke="currentColor" stroke-width="2.2" fill="none"/><circle cx="24" cy="24" r="3.5" fill="currentColor"/>',
-  flag:'<path d="M12 5 V43" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M12 7 C20 2 26 12 36 7 V25 C26 30 20 20 12 25 Z" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linejoin="round"/>'
+  flag:'<path d="M12 5 V43" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M12 7 C20 2 26 12 36 7 V25 C26 30 20 20 12 25 Z" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linejoin="round"/>',
+  chevrons:'<path d="M9 19 L24 9 L39 19 M9 30 L24 20 L39 30 M9 41 L24 31 L39 41" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>'
 };
 
 /* ---- pixel-art team header (original chibi sprites, not game assets) ---- */
@@ -708,6 +820,7 @@ function defaultState(){
     skills: {},
     quests: {}, diaries: {},
     yearGoals: {},
+    progress: {},
     gimRank: null, gimRankManual: '', gimRankTrend: null, gimRankHistory: []
   };
 }
@@ -715,7 +828,7 @@ function defaultState(){
 let state = defaultState();
 let events = [];
 let availability = [];
-let activePlayer = {quests:'p1', skills:'p1', yeargoals:'p1'};
+let activePlayer = {quests:'p1', skills:'p1', yeargoals:'p1', progress:'p1'};
 let gearFilter = 'All';
 let calCursor = new Date();
 
@@ -735,7 +848,8 @@ const SECTION_KEYS = {
   skills:  'skills-data',
   quests:  'quests-diaries-data',
   gimrank: 'gimrank-data',
-  yeargoals: 'yeargoals-data'
+  yeargoals: 'yeargoals-data',
+  progress: 'progress-data'
 };
 
 function sectionSlice(section){
@@ -747,11 +861,12 @@ function sectionSlice(section){
     case 'quests':  return { quests: state.quests, diaries: state.diaries };
     case 'gimrank': return { gimRank: state.gimRank, gimRankManual: state.gimRankManual, gimRankTrend: state.gimRankTrend, gimRankHistory: state.gimRankHistory };
     case 'yeargoals': return { yearGoals: state.yearGoals };
+    case 'progress': return { progress: state.progress };
   }
 }
 
 // ids that changed locally since the last successful save, per section
-const dirty = { players:new Set(), gear:new Set(), bosses:new Set(), skills:new Set(), quests:new Set(), yeargoals:new Set() };
+const dirty = { players:new Set(), gear:new Set(), bosses:new Set(), skills:new Set(), quests:new Set(), yeargoals:new Set(), progress:new Set() };
 
 async function apiGet(key){
   try{
@@ -774,14 +889,14 @@ async function apiSet(key, value){
 
 async function loadState(){
   state = defaultState();
-  const [players, gear, bosses, skills, quests, gimrank, yeargoals, ev, av] = await Promise.all([
+  const [players, gear, bosses, skills, quests, gimrank, yeargoals, progress, ev, av] = await Promise.all([
     apiGet(SECTION_KEYS.players), apiGet(SECTION_KEYS.gear), apiGet(SECTION_KEYS.bosses),
     apiGet(SECTION_KEYS.skills), apiGet(SECTION_KEYS.quests), apiGet(SECTION_KEYS.gimrank),
-    apiGet(SECTION_KEYS.yeargoals),
+    apiGet(SECTION_KEYS.yeargoals), apiGet(SECTION_KEYS.progress),
     apiGet('clan-events'), apiGet('clan-availability')
   ]);
-  if(players||gear||bosses||skills||quests||gimrank||yeargoals){
-    Object.assign(state, players||{}, gear||{}, bosses||{}, skills||{}, quests||{}, gimrank||{}, yeargoals||{});
+  if(players||gear||bosses||skills||quests||gimrank||yeargoals||progress){
+    Object.assign(state, players||{}, gear||{}, bosses||{}, skills||{}, quests||{}, gimrank||{}, yeargoals||{}, progress||{});
   } else {
     // one-time migration: nothing in the new split keys yet, so fall back to
     // the old single 'clan-data' blob if it exists, then re-save split so
@@ -880,6 +995,20 @@ function mergeSection(section, server, local, ids){
     ids.forEach(id=>{ merged.yearGoals[id] = local.yearGoals[id] || []; });
     return merged;
   }
+  if(section==='progress'){
+    // dirty ids are "pid|itemId", so two people ticking different unlocks
+    // on the same player's chart at once still merge cleanly
+    const merged = { progress: Object.assign({}, server.progress) };
+    ids.forEach(key=>{
+      const [pid, itemId] = key.split('|');
+      const mine = local.progress[pid] || {};
+      const row = Object.assign({}, merged.progress[pid]);
+      if(mine[itemId]) row[itemId] = mine[itemId];
+      else delete row[itemId];
+      merged.progress[pid] = row;
+    });
+    return merged;
+  }
   return local;
 }
 
@@ -929,6 +1058,8 @@ function go(pageId){
   if(pageId==='skills') renderSkills();
   if(pageId==='goals') renderGoals();
   if(pageId==='yeargoals'){ renderYearGoalsControls(); renderYearGoals(); }
+  if(pageId==='progress') renderProgress();
+  else if(location.hash.startsWith('#progress')) history.replaceState(null, '', location.pathname + location.search);
   window.scrollTo({top:0, behavior:'smooth'});
 
   clearInterval(gearLockPollTimer);
@@ -1933,6 +2064,313 @@ function playGoalUndoSound(){
   setTimeout(()=>playTone(330, 0.12, 'sine', 0.06), 70);
 }
 
+/* ---------------- IRONMAN PROGRESSION ----------------
+   A personal unlock chart per player (separate from the shared Gear
+   Progression checklist). Every unlock has a difficulty tier worth 1-5
+   points, and total points map onto the in-game clan rank ladder. Rank
+   thresholds are percentages of the total so adding items later doesn't
+   need the ladder rebalancing by hand.
+   Icons point straight at the wiki's static /images/ path rather than
+   Special:FilePath, since those are plain CDN files and don't go through
+   the wiki's rate-limited page renderer. */
+
+function wikiImageUrl(file){
+  return 'https://oldschool.runescape.wiki/images/' + encodeURIComponent(file.replace(/ /g,'_')) + '.png';
+}
+
+const PROG_TIERS = [
+  {id:1, name:'Easy',   pts:1, color:'#7fae4f'},
+  {id:2, name:'Medium', pts:2, color:'#3fc7d9'},
+  {id:3, name:'Hard',   pts:3, color:'#b77dff'},
+  {id:4, name:'Elite',  pts:4, color:'#ffb020'},
+  {id:5, name:'Master', pts:5, color:'#ff3b3b'}
+];
+
+const PROG_CATEGORIES = [
+  {id:'melee',     label:'Melee',      icon:'Attack icon'},
+  {id:'ranged',    label:'Ranged',     icon:'Ranged icon'},
+  {id:'magic',     label:'Magic',      icon:'Magic icon'},
+  {id:'skilling',  label:'Skilling',   icon:'Stats icon'},
+  {id:'utility',   label:'Utility',    icon:'Bank icon'},
+  {id:'milestone', label:'Milestones', icon:'Quest point icon'}
+];
+
+// [name, tier, wiki icon file if it differs from the name]
+function progItems(cat, list){
+  return list.map(([name, tier, icon])=>({id:slugify(name), name, cat, tier, icon: icon || name}));
+}
+const PROG_ITEMS = [
+  ...progItems('melee', [
+    ['Dragon scimitar',1], ['Dragon defender',1], ['Fighter torso',1], ['Helm of Neitiznot',1],
+    ['Berserker ring (i)',2], ['Abyssal whip',2], ['Dragon boots',2], ['Salve amulet (ei)',2,'Salve amulet(ei)'],
+    ['Abyssal tentacle',3], ['Bandos armour',3,'Bandos chestplate'], ['Amulet of torture',3], ['Primordial boots',3],
+    ['Dragon warhammer',3], ['Osmumten\'s fang',3], ['Ferocious gloves',3],
+    ['Avernic defender',4], ['Ghrazi rapier',4], ['Torva armour',4,'Torva platebody'], ['Ultor ring',4], ['Amulet of rancour',4],
+    ['Scythe of Vitur',5]
+  ]),
+  ...progItems('ranged', [
+    ['Ava\'s accumulator',1], ['Rune crossbow',1], ['Void knight set',1,'Void knight top'],
+    ['Toxic blowpipe',2], ['Ava\'s assembler',2], ['Archers ring (i)',2], ['Elite void',2,'Elite void top'],
+    ['Dragon hunter crossbow',3], ['Armadyl crossbow',3], ['Necklace of anguish',3], ['Armadyl armour',3,'Armadyl chestplate'],
+    ['Bow of Faerdhinen',3,'Bow of Faerdhinen (c)'], ['Crystal armour',3,'Crystal body'], ['Zaryte vambraces',3],
+    ['Masori armour',4,'Masori body'], ['Zaryte crossbow',4], ['Venator ring',4], ['Dizana\'s quiver',4],
+    ['Twisted bow',5]
+  ]),
+  ...progItems('magic', [
+    ['Iban\'s staff (u)',1], ['Ancient staff',1], ['Mage\'s book',1],
+    ['Imbued god cape',2,'Imbued Zamorak cape'], ['Ahrim\'s robes',2,'Ahrim\'s robetop'], ['Trident of the seas',2,'Trident of the Seas'],
+    ['Occult necklace',2], ['Bloodbark armour',2,'Bloodbark body'],
+    ['Trident of the swamp',3,'Trident of the Swamp'], ['Tormented bracelet',3], ['Virtus robes',3,'Virtus robe top'],
+    ['Arcane spirit shield',4], ['Sanguinesti staff',4], ['Kodai wand',4], ['Ancestral robes',4,'Ancestral robe top'],
+    ['Magus ring',4], ['Elidinis\' ward (f)',4],
+    ['Tumeken\'s shadow',5]
+  ]),
+  ...progItems('skilling', [
+    ['Graceful outfit',1,'Graceful hood'], ['Angler outfit',1,'Angler hat'], ['Lumberjack outfit',1,'Lumberjack hat'],
+    ['Prospector kit',1,'Prospector helmet'], ['Farmer\'s outfit',1,'Farmer\'s strawhat'], ['Imcando hammer',1],
+    ['Rogue outfit',2,'Rogue mask'], ['Pyromancer outfit',2,'Pyromancer hood'], ['Raiments of the Eye',2,'Hat of the Eye'],
+    ['Dragon pickaxe',2], ['Dragon axe',2], ['Dragon harpoon',2], ['Bottomless compost bucket',2],
+    ['Crystal tools',3,'Crystal pickaxe'], ['Infernal tools',3,'Infernal axe'],
+    ['First 99',4,'Hitpoints cape'],
+    ['Max cape',5]
+  ]),
+  ...progItems('utility', [
+    ['Rune pouch',1], ['Looting bag',1], ['Herb sack',1], ['Seed box',1], ['Coal bag',1], ['Gem bag',1],
+    ['Log basket',1], ['Bonecrusher',1],
+    ['Slayer helmet (i)',2], ['Ash sanctifier',2], ['Book of the Dead',2], ['Eternal teleport crystal',2],
+    ['Perfected quetzal whistle',2],
+    ['Desert amulet 4',3], ['Karamja gloves 4',3], ['Bonecrusher necklace',3], ['Explorer\'s ring 4',3],
+    ['Ardougne cloak 4',4]
+  ]),
+  ...progItems('milestone', [
+    ['Piety',1], ['Fairy rings',1,'Dramen staff'],
+    ['Barrows gloves',2], ['Fire cape',2], ['Ancient Magicks',2,'Ancient spellbook'], ['Lunar spellbook',2],
+    ['Dragon Slayer II',3,'Mythical cape'], ['Song of the Elves',3,'Teleport crystal'], ['Rigour',3], ['Augury',3],
+    ['Music cape',3], ['First boss pet',3,'Vorki'],
+    ['Quest point cape',4], ['Desert Treasure II',4,'Ring of shadows'], ['Ghommal\'s hilt 4',4],
+    ['Infernal cape',5], ['Achievement diary cape',5]
+  ])
+];
+const PROG_TOTAL_POINTS = PROG_ITEMS.reduce((sum, it)=> sum + PROG_TIERS[it.tier-1].pts, 0);
+
+// in-game clan rank icons, bottom to top; pct = share of total points needed
+const PROG_RANKS = [
+  {name:'Recruit', pct:0}, {name:'Private', pct:4}, {name:'Corporal', pct:9}, {name:'Sergeant', pct:15},
+  {name:'Lieutenant', pct:22}, {name:'Captain', pct:30}, {name:'Major', pct:39}, {name:'Colonel', pct:49},
+  {name:'Brigadier', pct:60}, {name:'General', pct:72}, {name:'Marshal', pct:85}, {name:'TzKal', pct:100}
+].map(r=>({...r, pts: Math.ceil(PROG_TOTAL_POINTS * r.pct / 100), icon: wikiImageUrl('Clan icon - ' + r.name)}));
+
+let progFilter = 'all';
+let progHideOwned = false;
+
+function progOwned(pid){ return state.progress[pid] || {}; }
+function progPoints(pid, items){
+  const owned = progOwned(pid);
+  return (items || PROG_ITEMS).reduce((sum, it)=> sum + (owned[it.id] ? PROG_TIERS[it.tier-1].pts : 0), 0);
+}
+function progRankIndex(points){
+  let idx = 0;
+  PROG_RANKS.forEach((r,i)=>{ if(points >= r.pts) idx = i; });
+  return idx;
+}
+function progShortName(p){ return p.rsn.replace(/^GIM\s*/i,'').trim(); }
+function progPlayerFromHash(){
+  const m = location.hash.match(/^#progress\/(.+)$/);
+  if(!m) return null;
+  const want = decodeURIComponent(m[1]).toLowerCase();
+  return activePlayers().find(p=> slugify(progShortName(p)) === want) || null;
+}
+
+function renderProgress(){
+  const players = activePlayers();
+  if(!players.length){
+    document.getElementById('progBoard').innerHTML = '<p style="color:var(--text-dim);">Add team members to start tracking.</p>';
+    return;
+  }
+  if(!players.some(p=>p.id===activePlayer.progress)) activePlayer.progress = players[0].id;
+  const pid = activePlayer.progress;
+  const me = players.find(p=>p.id===pid);
+  const owned = progOwned(pid);
+  const colors = playerColorMap(state.players);
+
+  // leaderboard doubles as the player picker
+  document.getElementById('progBoard').innerHTML = players
+    .map(p=>({p, pts: progPoints(p.id)}))
+    .sort((a,b)=> b.pts - a.pts)
+    .map(({p, pts})=>{
+      const rank = PROG_RANKS[progRankIndex(pts)];
+      return `<button class="prog-pcard ${p.id===pid?'active':''}" onclick="selectProgressPlayer('${p.id}')">
+        <img src="${rank.icon}" alt="" referrerpolicy="no-referrer">
+        <div class="pc-body">
+          <div class="pc-name">${escapeHtml(progShortName(p))}</div>
+          <div class="pc-rank">${rank.name}</div>
+          <div class="bar"><div style="width:${Math.round(pts/PROG_TOTAL_POINTS*100)}%; background:${colors[p.id]||'var(--ember)'}"></div></div>
+        </div>
+        <div class="pc-pts">${pts}</div>
+      </button>`;
+    }).join('');
+
+  // hero: current rank, progress to the next one, and the full ladder
+  const pts = progPoints(pid);
+  const ri = progRankIndex(pts);
+  const rank = PROG_RANKS[ri];
+  const next = PROG_RANKS[ri+1];
+  const ownedCount = PROG_ITEMS.filter(it=>owned[it.id]).length;
+  const toNextPct = next ? Math.round((pts - rank.pts) / (next.pts - rank.pts) * 100) : 100;
+  document.getElementById('progHero').innerHTML = `
+    <div class="prog-hero">
+      <div class="prog-emblem"><img src="${rank.icon}" alt="${rank.name}" referrerpolicy="no-referrer"></div>
+      <div class="prog-hero-main">
+        <div class="prog-hero-name">${escapeHtml(progShortName(me))}</div>
+        <div class="prog-hero-rank">${rank.name}<small>rank ${ri+1} / ${PROG_RANKS.length}</small></div>
+        <div class="prog-next-bar"><div style="width:${toNextPct}%"></div></div>
+        <div class="prog-next-label">${next
+          ? `<strong>${next.pts - pts} pts</strong> to <img src="${next.icon}" alt="" referrerpolicy="no-referrer"> <strong>${next.name}</strong>`
+          : '<strong>Every unlock done. Absolute legend.</strong>'}</div>
+        <div class="prog-meta">
+          <span><span class="mono">${pts}</span> / ${PROG_TOTAL_POINTS} pts</span>
+          <span><span class="mono">${ownedCount}</span> / ${PROG_ITEMS.length} unlocked</span>
+          <button class="btn ghost small" onclick="copyProgressLink()">🔗 Copy link to this chart</button>
+        </div>
+      </div>
+    </div>
+    <div class="prog-ladder">${PROG_RANKS.map((r,i)=>`
+      <div class="prog-step ${i<=ri?'reached':''} ${i===ri?'current':''}" title="${r.name}: ${r.pts} pts">
+        <img src="${r.icon}" alt="" referrerpolicy="no-referrer">
+        <span>${r.name}</span><em>${r.pts}</em>
+      </div>`).join('')}
+    </div>`;
+
+  // category filter with a completion ring each
+  const catBtn = (id, label, icon, items)=>{
+    const pct = items.length ? Math.round(items.filter(it=>owned[it.id]).length / items.length * 100) : 0;
+    return `<button class="prog-cat-btn ${progFilter===id?'active':''}" onclick="setProgFilter('${id}')">
+      <span class="prog-ring" style="background:conic-gradient(var(--gold) ${pct}%, var(--border-dim) 0)"><span><img src="${wikiImageUrl(icon)}" alt="" referrerpolicy="no-referrer"></span></span>
+      ${label} <span class="pct">${pct}%</span>
+    </button>`;
+  };
+  document.getElementById('progCats').innerHTML =
+    catBtn('all', 'All', 'Collection log', PROG_ITEMS) +
+    PROG_CATEGORIES.map(c=> catBtn(c.id, c.label, c.icon, PROG_ITEMS.filter(it=>it.cat===c.id))).join('');
+
+  const items = progFilter==='all' ? PROG_ITEMS : PROG_ITEMS.filter(it=>it.cat===progFilter);
+  document.getElementById('progFilterNote').textContent =
+    `${items.filter(it=>owned[it.id]).length}/${items.length} unlocked · ${progPoints(pid, items)} pts in this view`;
+  document.getElementById('progHideOwned').checked = progHideOwned;
+
+  // one lane per difficulty tier; the lowest unfinished one is flagged as "you are here"
+  const currentTier = (PROG_TIERS.find(t=> items.some(it=>it.tier===t.id && !owned[it.id])) || {}).id;
+  const catLabel = Object.fromEntries(PROG_CATEGORIES.map(c=>[c.id, c.label]));
+  document.getElementById('progTrack').innerHTML = PROG_TIERS.map(t=>{
+    const laneItems = items.filter(it=>it.tier===t.id);
+    if(!laneItems.length) return '';
+    const laneOwned = laneItems.filter(it=>owned[it.id]).length;
+    const shown = progHideOwned ? laneItems.filter(it=>!owned[it.id]) : laneItems;
+    const tiles = shown.map(it=>{
+      const others = players.filter(p=> p.id!==pid && progOwned(p.id)[it.id]);
+      return `<div class="prog-tile ${owned[it.id]?'owned':''}" data-item="${it.id}" role="button" tabindex="0"
+          title="${escapeHtml(it.name)} (${t.name}, ${t.pts} pt${t.pts>1?'s':''})${others.length ? ' · also unlocked by ' + escapeHtml(others.map(progShortName).join(', ')) : ''}"
+          onclick="toggleProgress('${it.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); toggleProgress('${it.id}');}">
+        <span class="prog-check">✓</span>
+        <span class="prog-pips" style="--tier:${t.color}">${'<i></i>'.repeat(t.pts)}</span>
+        <div class="prog-icon"><img src="${wikiImageUrl(it.icon)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('icon-fallback')"></div>
+        <div class="prog-name">${escapeHtml(it.name)}</div>
+        ${progFilter==='all' ? `<div class="prog-cat">${catLabel[it.cat]}</div>` : ''}
+        <div class="prog-dots">${others.map(p=>`<i style="background:${colors[p.id]||'var(--ember)'}"></i>`).join('')}</div>
+      </div>`;
+    }).join('');
+    return `<div class="prog-lane">
+      <div class="prog-lane-head" style="--tier:${t.color}">
+        <span class="prog-tier-pill">${t.name}</span>
+        <span class="prog-lane-count">${laneOwned}/${laneItems.length} · ${t.pts} pt${t.pts>1?'s':''} each</span>
+        ${t.id===currentTier ? '<span class="prog-here">You are here</span>' : ''}
+        <span class="prog-lane-line"></span>
+      </div>
+      ${tiles ? `<div class="prog-grid">${tiles}</div>` : `<div class="prog-lane-done">✓ Every ${t.name.toLowerCase()} unlock done</div>`}
+    </div>`;
+  }).join('');
+
+  renderProgressFeed(players);
+}
+
+function renderProgressFeed(players){
+  const byId = Object.fromEntries(PROG_ITEMS.map(it=>[it.id, it]));
+  const rows = [];
+  players.forEach(p=> Object.entries(progOwned(p.id)).forEach(([itemId, ts])=>{
+    if(byId[itemId]) rows.push({p, it: byId[itemId], ts});
+  }));
+  rows.sort((a,b)=> b.ts - a.ts);
+  document.getElementById('progFeed').innerHTML = rows.slice(0,8).map(r=>`
+    <div class="prog-feed-row">
+      <img src="${wikiImageUrl(r.it.icon)}" alt="" loading="lazy" referrerpolicy="no-referrer">
+      <span><span class="who">${escapeHtml(progShortName(r.p))}</span> unlocked ${escapeHtml(r.it.name)}</span>
+      <span class="when">${timeAgo(r.ts)}</span>
+    </div>`).join('') || '<p style="color:var(--text-dim); font-size:.82rem; margin:0;">Nothing unlocked yet. Be the first.</p>';
+}
+
+function timeAgo(ts){
+  const mins = Math.floor((Date.now() - ts) / 60000);
+  if(mins < 1) return 'just now';
+  if(mins < 60) return mins + 'm ago';
+  const hrs = Math.floor(mins / 60);
+  if(hrs < 24) return hrs + 'h ago';
+  const days = Math.floor(hrs / 24);
+  if(days < 30) return days + 'd ago';
+  return new Date(ts).toLocaleDateString('en-GB', {day:'numeric', month:'short'});
+}
+
+function selectProgressPlayer(id){
+  activePlayer.progress = id;
+  const p = state.players.find(x=>x.id===id);
+  if(p) history.replaceState(null, '', '#progress/' + slugify(progShortName(p)));
+  renderProgress();
+}
+function setProgFilter(id){ progFilter = id; renderProgress(); }
+function setProgHideOwned(v){ progHideOwned = v; renderProgress(); }
+
+function toggleProgress(itemId){
+  const pid = activePlayer.progress;
+  const p = state.players.find(x=>x.id===pid);
+  const before = progRankIndex(progPoints(pid));
+  const row = state.progress[pid] || (state.progress[pid] = {});
+  const unlocking = !row[itemId];
+  if(unlocking) row[itemId] = Date.now();
+  else delete row[itemId];
+  saveState('progress', pid + '|' + itemId);
+  const after = progRankIndex(progPoints(pid));
+  renderProgress();
+
+  const tile = document.querySelector(`.prog-tile[data-item="${itemId}"]`);
+  if(tile && unlocking) tile.classList.add('pop');
+
+  ensureAudio();
+  if(after > before) showRankUp(p, PROG_RANKS[after]);
+  else if(unlocking) playGoalCompleteSound();
+  else playGoalUndoSound();
+}
+
+let progToastTimer = null;
+function showRankUp(p, rank){
+  const el = document.getElementById('progToast');
+  el.innerHTML = `<img src="${rank.icon}" alt="" referrerpolicy="no-referrer">
+    <div><div class="t1">Rank up!</div><div class="t2">${escapeHtml(progShortName(p))} is now ${/^[AEIOU]/.test(rank.name)?'an':'a'} ${rank.name}</div></div>`;
+  el.classList.add('show');
+  clearTimeout(progToastTimer);
+  progToastTimer = setTimeout(()=> el.classList.remove('show'), 3500);
+  [523, 659, 784, 1047].forEach((f,i)=> setTimeout(()=> playTone(f, i===3 ? 0.35 : 0.12, 'triangle', 0.09), i*110));
+}
+
+async function copyProgressLink(){
+  const p = state.players.find(x=>x.id===activePlayer.progress);
+  const url = location.origin + location.pathname + '#progress/' + slugify(progShortName(p));
+  try{
+    await navigator.clipboard.writeText(url);
+    alert('Link copied. Bookmark it to jump straight to ' + progShortName(p) + '\'s chart.');
+  }catch(e){
+    try{ prompt('Copy this link:', url); }catch(err){}
+  }
+}
+
 /* ---------------- GROUP IRONMAN RANK ---------------- */
 function renderGimRank(){
   const el = document.getElementById('gimRankBadge');
@@ -2073,7 +2511,7 @@ function playClickSound(){
   setTimeout(()=>playTone(820, 0.09, 'triangle', 0.06), 50);
 }
 
-const TILE_SOUND_SELECTOR = '.tile, .gear-tile, .boss-tile, .goal-card';
+const TILE_SOUND_SELECTOR = '.tile, .gear-tile, .boss-tile, .goal-card, .prog-pcard';
 let hoverSoundEl = null;
 document.addEventListener('mouseover', (e)=>{
   const tile = e.target.closest(TILE_SOUND_SELECTOR);
@@ -2094,6 +2532,13 @@ async function init(){
   renderTeamArt();
   renderGimRank();
   renderGear(); renderBosses(); renderCalendar(); renderQuests(); renderSkills();
+
+  // #progress/<name> links open straight onto that member's chart
+  if(location.hash.startsWith('#progress')){
+    const p = progPlayerFromHash();
+    if(p) activePlayer.progress = p.id;
+    go('progress');
+  }
 }
 init();
 </script>
