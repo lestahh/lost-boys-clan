@@ -312,6 +312,82 @@
   .prog-toast .t1{font-family:'Pixelify Sans',monospace; font-size:.85rem; color:var(--yellow); text-shadow:var(--ts);}
   .prog-toast .t2{font-family:'Cinzel',serif; font-size:1.15rem; color:var(--gold); font-weight:900; text-shadow:var(--ts);}
 
+  /* ---- weekly content wheels ---- */
+  .cw-week{font-family:'Pixelify Sans',monospace; font-size:.95rem; color:var(--yellow); text-shadow:var(--ts); margin:-6px 0 14px;}
+  .cw-week span{color:var(--text-dim);}
+  .cw-who{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:10px;}
+  .cw-stats-note{display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:.84rem; color:var(--text-dim); text-shadow:var(--ts); margin-bottom:18px;}
+  .cw-afk{font-family:'Pixelify Sans',monospace; font-size:.8rem; color:var(--yellow); text-shadow:var(--ts); margin-top:3px;}
+  .cw-note{font-size:.84rem; color:var(--text); text-shadow:var(--ts); margin-top:4px; line-height:1.35;}
+  .cw-ruled{width:100%; font-size:.8rem; color:var(--text-dim); text-shadow:var(--ts);}
+  .cw-ruled summary{cursor:pointer; text-align:center; font-family:'Pixelify Sans',monospace;}
+  .cw-ruled summary:hover{color:var(--text);}
+  .cw-ruled ul{list-style:none; margin:8px 0 0; padding:8px 10px; max-height:220px; overflow-y:auto; border:2px solid var(--edge); border-radius:3px; background:var(--bg-deep); display:grid; grid-template-columns:1fr 1fr; gap:0 18px;}
+  .cw-ruled li{display:flex; justify-content:space-between; gap:8px; padding:2px 0;}
+  .cw-ruled li em{font-style:normal; color:#c98a6a; white-space:nowrap;}
+  .cw-ruled-none{font-size:.8rem; color:var(--text-dim); font-family:'Pixelify Sans',monospace; text-shadow:var(--ts);}
+  .cw-who > span{font-family:'Cinzel',serif; font-weight:700; color:var(--gold); text-shadow:var(--ts);}
+  .cw-who .player-tabs{margin:0;}
+  .cw-who .player-tabs button{display:flex; align-items:center; gap:7px;}
+  .cw-who .player-tabs button:disabled{cursor:wait; filter:brightness(.8);}
+  .cw-dot{width:10px; height:10px; border-radius:2px; border:1px solid #000; flex:none; display:inline-block;}
+  .cw-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(min(330px,100%),1fr)); gap:20px; margin-bottom:4px;}
+  .cw-card{display:flex; flex-direction:column; align-items:center; gap:10px; padding:18px 20px 20px;}
+  .cw-card h3{margin:0; color:var(--gold); font-size:1.3rem; font-weight:900; display:flex; align-items:center; gap:10px;}
+  .cw-card h3 img{width:26px; height:26px; object-fit:contain; image-rendering:pixelated; filter:drop-shadow(1px 1px 0 #000);}
+  .cw-sub{margin-top:-6px; font-size:.82rem; color:var(--text-dim); text-shadow:var(--ts); text-align:center;}
+  .cw-wheel-wrap{position:relative; width:100%; max-width:520px;}
+  .cw-wheel{width:100%; height:auto; display:block; filter:drop-shadow(0 5px 0 rgba(0,0,0,.5));}
+  .cw-wheel text{fill:#f3e8cc; font-family:'Pixelify Sans',monospace; paint-order:stroke; stroke:#000; stroke-width:2.4px; stroke-linejoin:round;}
+  .cw-wheel-wrap.spinning .cw-wheel{filter:drop-shadow(0 5px 0 rgba(0,0,0,.5)) drop-shadow(0 0 18px rgba(255,152,31,.45));}
+  .cw-wheel-empty{padding:40px 0; color:var(--text-dim); text-align:center;}
+  .cw-live{min-height:1.5em; font-family:'Pixelify Sans',monospace; font-size:1.05rem; color:var(--yellow); text-shadow:var(--ts); text-align:center;}
+  .cw-actions{display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:center;}
+  .cw-actions .btn{font-size:1rem; padding:9px 24px;}
+  .cw-actions .btn.ghost{font-size:.85rem; padding:7px 16px;}
+  .cw-result{width:100%; display:flex; align-items:center; gap:12px; padding:12px 16px; border:2px solid var(--edge); border-radius:4px; background:var(--bg-deep); box-shadow:inset 0 0 10px rgba(0,0,0,.6);}
+  .cw-result.fresh{animation:progPop .5s cubic-bezier(.34,1.56,.64,1);}
+  .cw-icon{width:40px; height:40px; flex:none; display:flex; align-items:center; justify-content:center;}
+  .cw-icon img{max-width:36px; max-height:36px; object-fit:contain; image-rendering:pixelated; filter:drop-shadow(2px 2px 0 rgba(0,0,0,.6));}
+  .cw-icon.icon-fallback img{display:none;}
+  .cw-icon.icon-fallback::after{content:'?'; font-family:'Cinzel',serif; font-size:1.3rem; color:var(--border);}
+  .cw-icon.small{width:26px; height:26px;}
+  .cw-icon.small img{max-width:24px; max-height:24px;}
+  .cw-kicker{font-size:.68rem; text-transform:uppercase; letter-spacing:.08em; color:var(--text-dim); text-shadow:var(--ts);}
+  .cw-pick-name{font-family:'Cinzel',serif; font-size:1.25rem; font-weight:900; color:var(--gold); line-height:1.15; text-shadow:var(--ts);}
+  .cw-hint{font-size:.85rem; color:var(--text-dim); text-align:center; text-shadow:var(--ts);}
+
+  /* assignment board: one row per member, a column per wheel */
+  .cw-board{display:flex; flex-direction:column; gap:8px;}
+  .cw-brow{display:grid; grid-template-columns:150px minmax(0,1fr) minmax(0,1fr); gap:12px; align-items:center;}
+  .cw-brow.head{font-size:.68rem; text-transform:uppercase; letter-spacing:.08em; color:var(--text-dim); text-shadow:var(--ts);}
+  .cw-bname{display:flex; align-items:center; gap:8px; font-weight:700; text-shadow:var(--ts); min-width:0;}
+  .cw-bname span:last-child{white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .cw-bcell{display:flex; align-items:center; gap:8px; min-width:0; padding:4px 6px; border:2px solid var(--edge); border-radius:3px; background:var(--bg-deep);}
+  .cw-bcell select{flex:1; min-width:0; border:none; box-shadow:none; background:transparent; padding:4px 2px; font-size:.85rem; cursor:pointer;}
+  .cw-bcell.empty select{color:var(--text-dim); font-style:italic;}
+  .cw-bcell .spin-mini{background:none; border:none; color:var(--gold); font-size:.95rem; padding:2px 4px; text-shadow:var(--ts);}
+  .cw-bcell .spin-mini:hover{color:#fff;}
+  .cw-bcell .spin-mini:disabled{opacity:.4; cursor:wait;}
+
+  .cw-history{display:flex; flex-direction:column;}
+  .cw-hrow{display:grid; grid-template-columns:130px 1fr; gap:10px; align-items:start; padding:8px; border-top:1px solid var(--border-dim); font-size:.84rem; text-shadow:var(--ts);}
+  .cw-hrow .when{font-family:'Pixelify Sans',monospace; font-size:.78rem; color:var(--text-dim); padding-top:3px;}
+  .cw-hmembers{display:flex; flex-wrap:wrap; gap:6px 18px;}
+  .cw-hmember{display:flex; align-items:center; gap:6px;}
+  .cw-hmember b{color:var(--yellow); font-weight:600;}
+  .cw-hmember img{width:20px; height:20px; object-fit:contain; image-rendering:pixelated;}
+  .cw-hmember .none{color:var(--text-dim); font-style:italic;}
+
+  .cw-editor summary{cursor:pointer; color:var(--gold); font-family:'Cinzel',serif; font-weight:700; text-shadow:var(--ts);}
+  .cw-editor-cols{display:grid; grid-template-columns:1fr; gap:22px; margin-top:14px;}
+  .cw-editor h4{margin:0 0 8px;}
+  .cw-erow{display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,1.2fr) minmax(0,1fr) 26px; gap:6px; margin-bottom:6px;}
+  .cw-erow input{min-width:0; padding:5px 7px; font-size:.82rem;}
+  .cw-erow.head{font-size:.68rem; text-transform:uppercase; letter-spacing:.06em; color:var(--text-dim); margin-bottom:4px;}
+  .cw-erow .rm{background:none; border:none; color:var(--bad); opacity:.6; font-size:.85rem;}
+  .cw-erow .rm:hover{opacity:1;}
+
   .save-note{font-size:.78rem; color:var(--text-dim); text-align:center; margin:10px 0 30px; text-shadow:var(--ts);}
 
   @media(max-width:720px){
@@ -324,6 +400,12 @@
     .tile-art img{max-height:140px;}
     .prog-grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr));}
     .prog-hero-rank{font-size:1.5rem;}
+    .cw-brow{grid-template-columns:1fr; gap:6px; padding-bottom:6px; border-bottom:1px solid var(--border-dim);}
+    .cw-brow.head{display:none;}
+    .cw-hrow{grid-template-columns:1fr; gap:4px;}
+    .cw-erow{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) 26px;}
+    .cw-erow .icon-in{display:none;}
+    .cw-ruled ul{grid-template-columns:1fr;}
   }
 </style>
 </head>
@@ -416,6 +498,28 @@
     <div class="ygoal-grid" id="yearGoalsGrid"></div>
   </section>
 
+  <!-- WEEKLY CONTENT -->
+  <section class="page" id="page-content">
+    <div class="page-head"><h2>Weekly Content</h2><button class="back" onclick="go('home')">← Home</button></div>
+    <p class="page-intro">Two wheels for the week: a true-AFK task for when you're at work, and an active or bossing task for proper play time. Pick a name and spin, and it's theirs until Monday. The wheels only show what's viable for that member's levels, so nothing that needs stats they don't have or trains a skill they've already 99'd. You can also hand out or swap tasks by hand on the board below.</p>
+    <div class="cw-week" id="contentWeekLabel"></div>
+    <div class="cw-who"><span>Spinning for</span><div class="player-tabs" id="contentPlayerTabs"></div></div>
+    <div class="cw-stats-note" id="contentStatsNote"></div>
+    <div class="cw-grid" id="contentWheels"></div>
+    <div class="card" style="margin-top:20px;">
+      <h4>This Week's Tasks</h4>
+      <div class="cw-board" id="contentBoard"></div>
+    </div>
+    <div class="card">
+      <h4>Past Weeks</h4>
+      <div class="cw-history" id="contentHistory"></div>
+    </div>
+    <details class="card cw-editor" id="contentEditor">
+      <summary>Edit wheel entries</summary>
+      <div class="cw-editor-cols" id="contentEditorCols"></div>
+    </details>
+  </section>
+
 </main>
 
 <div class="save-note">Data is shared and editable by anyone with this link — it saves automatically for the whole clan.</div>
@@ -429,6 +533,7 @@ const PAGES = [
   {id:'progress', label:'Progression', desc:'Your own ironman unlock chart. Tick off gear, pets, 99s and milestones to climb the clan ranks.', art:'Infernal cape detail'},
   {id:'bosses', label:'Boss KCs', desc:'Kill counts across the team\'s bossing log, synced straight from the hiscores.', art:'Vorkath'},
   {id:'yeargoals', label:'Yearly Goals', desc:'Pick your own grinds for the year and cross them off as you go.', art:'Quest point cape detail'},
+  {id:'content', label:'Weekly Content', desc:'Spin for your weekly tasks: one AFK pick for while you\'re at work, and one active or bossing pick for proper play time.', art:'Mystery box detail'},
 ];
 
 const ICONS = {
@@ -591,6 +696,7 @@ function defaultState(){
     bossKc: {},
     yearGoals: {},
     progress: {},
+    content: {entries:{}, weeks:{}},
     gimRank: null, gimRankManual: '', gimRankTrend: null, gimRankHistory: []
   };
 }
@@ -612,7 +718,8 @@ const SECTION_KEYS = {
   bosses:  'boss-data',
   gimrank: 'gimrank-data',
   yeargoals: 'yeargoals-data',
-  progress: 'progress-data'
+  progress: 'progress-data',
+  content: 'content-data'
 };
 
 function sectionSlice(section){
@@ -622,11 +729,12 @@ function sectionSlice(section){
     case 'gimrank': return { gimRank: state.gimRank, gimRankManual: state.gimRankManual, gimRankTrend: state.gimRankTrend, gimRankHistory: state.gimRankHistory };
     case 'yeargoals': return { yearGoals: state.yearGoals };
     case 'progress': return { progress: state.progress };
+    case 'content': return { content: state.content };
   }
 }
 
 // ids that changed locally since the last successful save, per section
-const dirty = { players:new Set(), bosses:new Set(), yeargoals:new Set(), progress:new Set() };
+const dirty = { players:new Set(), bosses:new Set(), yeargoals:new Set(), progress:new Set(), content:new Set() };
 
 async function apiGet(key){
   try{
@@ -649,12 +757,12 @@ async function apiSet(key, value){
 
 async function loadState(){
   state = defaultState();
-  const [players, bosses, gimrank, yeargoals, progress] = await Promise.all([
+  const [players, bosses, gimrank, yeargoals, progress, content] = await Promise.all([
     apiGet(SECTION_KEYS.players), apiGet(SECTION_KEYS.bosses), apiGet(SECTION_KEYS.gimrank),
-    apiGet(SECTION_KEYS.yeargoals), apiGet(SECTION_KEYS.progress)
+    apiGet(SECTION_KEYS.yeargoals), apiGet(SECTION_KEYS.progress), apiGet(SECTION_KEYS.content)
   ]);
   if(players||bosses||gimrank||yeargoals||progress){
-    Object.assign(state, players||{}, bosses||{}, gimrank||{}, yeargoals||{}, progress||{});
+    Object.assign(state, players||{}, bosses||{}, gimrank||{}, yeargoals||{}, progress||{}, content||{});
   } else {
     // one-time migration: nothing in the new split keys yet, so fall back to
     // the old single 'clan-data' blob if it exists, then re-save split so
@@ -747,6 +855,37 @@ function mergeSection(section, server, local, ids){
     });
     return merged;
   }
+  if(section==='content'){
+    // dirty ids: 'entries|<wheel>' (the wheel's whole entry list),
+    // 'stats|<pid>' (a member's last hiscores levels) and
+    // 'assign|<week>|<pid>|<wheel>' (one member's task on one wheel)
+    const sc = server.content || {};
+    const lc = local.content;
+    const merged = { content: { entries: Object.assign({}, sc.entries), stats: Object.assign({}, sc.stats), weeks: Object.assign({}, sc.weeks) } };
+    ids.forEach(key=>{
+      const [kind, a, b, c] = key.split('|');
+      if(kind==='entries'){
+        if(lc.entries[a]) merged.content.entries[a] = lc.entries[a];
+        else delete merged.content.entries[a];
+        return;
+      }
+      if(kind==='stats'){
+        if(lc.stats && lc.stats[a]) merged.content.stats[a] = lc.stats[a];
+        return;
+      }
+      if(kind==='assign'){
+        const lw = lc.weeks[a] || {assign:{}};
+        const wk = Object.assign({assign:{}}, merged.content.weeks[a]);
+        wk.assign = Object.assign({}, wk.assign);
+        const row = Object.assign({}, wk.assign[b]);
+        const mine = lw.assign && lw.assign[b] && lw.assign[b][c];
+        if(mine) row[c] = mine; else delete row[c];
+        wk.assign[b] = row;
+        merged.content.weeks[a] = wk;
+      }
+    });
+    return merged;
+  }
   return local;
 }
 
@@ -762,6 +901,7 @@ function go(pageId){
   if(pageId==='home') buildHomeTiles();
   if(pageId==='bosses') renderBosses();
   if(pageId==='yeargoals'){ renderYearGoalsControls(); renderYearGoals(); }
+  if(pageId==='content') renderContent();
   if(pageId==='progress') renderProgress();
   else if(location.hash.startsWith('#progress')) history.replaceState(null, '', location.pathname + location.search);
   window.scrollTo({top:0, behavior:'smooth'});
@@ -785,6 +925,11 @@ function homeTileStat(pageId){
     const year = new Date().getFullYear();
     const goals = players.flatMap(p=> (state.yearGoals[p.id]||[]).filter(g=>g.year===year));
     return goals.length ? `<b>${goals.filter(g=>g.done).length}/${goals.length}</b> goals crossed off in ${year}` : `No goals set for ${year} yet`;
+  }
+  if(pageId==='content'){
+    const wk = weekKey();
+    const withTasks = players.filter(p=> CONTENT_WHEELS.some(w=> contentAssigned(wk, p.id, w.id))).length;
+    return withTasks ? `<b>${withTasks}/${players.length}</b> members have tasks this week` : 'No tasks spun yet this week';
   }
   return '';
 }
@@ -1719,6 +1864,640 @@ async function syncGimRank(btn){
     btn.textContent = original;
     renderGimRank();
   }
+}
+
+/* ---------------- WEEKLY CONTENT WHEELS ----------------
+   Two wheels: a true-AFK one for while you're at work (every method gives
+   at least a minute between clicks, from the wiki's AFK skilling guide)
+   and an active one covering bossing and click-intensive skilling. Pick a
+   member and spin, and the result is that member's task for the week;
+   tasks can also be handed out by hand from the board.
+
+   Each member's levels come from the hiscores, and the wheel only shows
+   what's viable for them: requirements met, the skill it trains isn't 99
+   yet, and it hasn't been outgrown by a better method on the same wheel.
+   Weeks run Monday to Sunday in local time, keyed by the Monday's date.
+   An assignment keeps its own copy of the entry, so editing the wheel
+   later doesn't rewrite history. */
+const CONTENT_WHEELS = [
+  {id:'afk', label:'AFK', sub:'True AFK for while you\'re at work: a minute or more between clicks', icon:'Stats icon', colors:['#2f5a6b','#1f3f4c','#3f5a4a']},
+  {id:'active', label:'Active & Bossing', sub:'Bossing and hands-on skilling for proper play time', icon:'Combat icon', colors:['#7a2c1c','#521a10','#6b4a1c']}
+];
+
+const MELEE = ['Attack','Strength','Defence'];
+// trains: skills it gives XP in (ruled out once they're all 99)
+// req: minimum levels ('Combat' = combat level)
+// outgrow: ruled out once the first trained skill reaches this level
+// afk, xph: longest AFK stretch and xp/hr per the wiki guide (AFK wheel only)
+// note: shown on the result card, for catch-all entries
+function E(name, icon, trains, req, extra){
+  return Object.assign({id:slugify(name), name, icon, trains:[].concat(trains||[]), req:req||{}}, extra||{});
+}
+const DEFAULT_CONTENT_ENTRIES = {
+  // anything under ~20k xp/h on the wiki guide is left out (guardian
+  // fragments, Duke mining, pedals, the pump and so on), and the AFK combat
+  // spots are one catch-all since they're all much of a muchness
+  afk: [
+    E('Rosewood trees', 'Rosewood logs', 'Woodcutting', {Woodcutting:92}, {afk:'4:35', xph:'85k'}),
+    E('Redwood trees', 'Redwood logs', 'Woodcutting', {Woodcutting:90}, {afk:'4:24', xph:'85k'}),
+    E('Ironwood trees', 'Ironwood logs', 'Woodcutting', {Woodcutting:80}, {afk:'4:00', xph:'100k'}),
+    E('Engorged bloodwood', 'Woodcutting icon', 'Woodcutting', {Woodcutting:77}, {afk:'1:50', xph:'70k'}),
+    E('Magic trees', 'Magic logs', 'Woodcutting', {Woodcutting:75}, {afk:'3:54', xph:'27k', outgrow:80}),
+    E('Camphor trees', 'Camphor logs', 'Woodcutting', {Woodcutting:66}, {afk:'2:00', xph:'70k', outgrow:80}),
+    E('Yew trees', 'Yew logs', 'Woodcutting', {Woodcutting:60}, {afk:'1:54', xph:'47k', outgrow:66}),
+    E('Mahogany trees', 'Mahogany logs', 'Woodcutting', {Woodcutting:50}, {afk:'1:00', xph:'46k', outgrow:66}),
+    E('Maple trees', 'Maple logs', 'Woodcutting', {Woodcutting:45}, {afk:'1:00', xph:'53k', outgrow:60}),
+    E('Shooting stars', 'Stardust 175', 'Mining', {Mining:10}, {afk:'7:00', xph:'31k'}),
+    E('Amethyst', 'Amethyst', 'Mining', {Mining:92}, {afk:'1:57', xph:'24k'}),
+    E('Cooking fish', 'Raw anglerfish', 'Cooking', {}, {afk:'1:07', xph:'310k'}),
+    E('Wealthy citizens', 'Thieving icon', 'Thieving', {Thieving:50}, {afk:'1:32', xph:'58k'}),
+    E('Smithing nails', 'Mithril nails', 'Smithing', {}, {afk:'1:07', xph:'65k'}),
+    E('Cannonballs', 'Steel cannonball', 'Smithing', {Smithing:35}, {afk:'1:02', xph:'31k'}),
+    E('Forester\'s campfire', 'Firemaking icon', 'Firemaking', {}, {afk:'2:31', xph:'239k'}),
+    E('Dark crabs', 'Raw dark crab', 'Fishing', {Fishing:85}, {afk:'7:32', xph:'40k'}),
+    E('Karambwans', 'Raw karambwan', 'Fishing', {Fishing:65}, {afk:'4:13', xph:'40k'}),
+    E('Fly fishing', 'Raw trout', 'Fishing', {Fishing:20}, {afk:'1:57', xph:'50k', outgrow:48}),
+    E('Barbarian fishing', 'Leaping sturgeon', ['Fishing','Agility','Strength'], {Fishing:48, Agility:15, Strength:15}, {afk:'1:57', xph:'57k'}),
+    E('Sacred eels', 'Sacred eel', ['Fishing','Cooking'], {Fishing:87}, {afk:'1:00', xph:'27k'}),
+    E('Infernal eels', 'Infernal eel', 'Fishing', {Fishing:80}, {afk:'1:00', xph:'37k'}),
+    E('Enchanting jewellery', 'Skills necklace', 'Magic', {Magic:7}, {afk:'1:53', xph:'63k'}),
+    E('Plank Make', 'Mahogany plank', 'Magic', {Magic:86}, {afk:'1:30', xph:'86k'}),
+    E('Building the temple', 'Crafting icon', 'Crafting', {Crafting:20}, {afk:'2:00', xph:'22k'}),
+    E('Crewmate salvaging', 'Sailing icon', 'Sailing', {Sailing:40}, {afk:'30:00', xph:'30k', outgrow:64}),
+    E('Merchant shipwrecks', 'Sailing icon', 'Sailing', {Sailing:87}, {afk:'4:00', xph:'85k'}),
+    E('Fremennik shipwrecks', 'Sailing icon', 'Sailing', {Sailing:80}, {afk:'3:38', xph:'80k'}),
+    E('Mercenary shipwrecks', 'Sailing icon', 'Sailing', {Sailing:73}, {afk:'3:15', xph:'70k', outgrow:87}),
+    E('Pirate shipwrecks', 'Sailing icon', 'Sailing', {Sailing:64}, {afk:'2:38', xph:'47k', outgrow:80}),
+    E('Large shipwrecks', 'Sailing icon', 'Sailing', {Sailing:53}, {afk:'2:31', xph:'30k', outgrow:73}),
+    E('Gilded altar', 'Superior dragon bones', 'Prayer', {}, {afk:'1:02', xph:'630k'}),
+    E('Repair kits', 'Construction icon', 'Construction', {}, {afk:'1:02', xph:'261k'}),
+    E('AFK combat', 'Ammonite Crab', ['Attack','Strength','Defence','Ranged','Magic'], {}, {afk:'10:00+', xph:'100k+',
+      note:'Your pick: sand, ammonite or gemstone crabs, NMZ, desert bandits, sulphur naguas, or Maniacal monkeys (melee, chinning or barraging) if you have MM2 done.'})
+  ],
+  active: [
+    E('Vorkath', 'Vorkath\'s head', [], {Combat:100}),
+    E('Zulrah', 'Tanzanite fang', [], {Combat:90}),
+    E('Barrows', 'Dharok\'s helm', [], {Combat:70}),
+    E('God Wars', 'Bandos chestplate', [], {Combat:100}),
+    E('Chambers of Xeric', 'Olmlet', [], {Combat:100}),
+    E('Theatre of Blood', 'Lil\' Zik', [], {Combat:115}),
+    E('Tombs of Amascut', 'Tumeken\'s guardian', [], {Combat:95}),
+    E('DT2 bosses', 'Virtus mask', [], {Combat:115}),
+    E('Corrupted Gauntlet', 'Youngllef', [], {Combat:90}),
+    E('Moons of Peril', 'Eclipse atlatl', [], {Combat:80}),
+    E('Royal Titans', 'Bran', [], {Combat:90}),
+    E('Wildy bosses', 'Callisto cub', [], {Combat:90}),
+    E('Nex', 'Nexling', [], {Combat:115}),
+    E('Phantom Muspah', 'Muphin (ranged)', [], {Combat:105}),
+    E('Fortis Colosseum', 'Dizana\'s quiver', [], {Combat:115}),
+    E('Yama', 'Yami', [], {Combat:115}),
+    E('Doom of Mokhaiotl', 'Dom', [], {Combat:110}),
+    E('Sarachnis', 'Sraracha', [], {Combat:70}),
+    E('Kalphite Queen', 'Kq head', [], {Combat:100}),
+    E('Corporeal Beast', 'Pet dark core', [], {Combat:110}),
+    E('Hueycoatl', 'Huberte', [], {Combat:85}),
+    E('Amoxliatl', 'Moxi', [], {Combat:80}),
+    E('Dagannoth Kings', 'Berserker ring', [], {Combat:100}),
+    E('Giant Mole', 'Mole claw', [], {Combat:60}),
+    E('King Black Dragon', 'Kbd heads', [], {Combat:70}),
+    E('Phosani\'s Nightmare', 'Inquisitor\'s mace', [], {Combat:115}),
+    E('Scurrius', 'Scurry', [], {Combat:40}),
+    E('Fight Caves', 'Fire cape', [], {Combat:80}),
+    E('Inferno', 'Infernal cape', [], {Combat:120}),
+    E('Grotesque Guardians', 'Noon', [], {Slayer:75}),
+    E('Abyssal Sire', 'Abyssal orphan', [], {Slayer:85}),
+    E('Kraken', 'Kraken tentacle', [], {Slayer:87}),
+    E('Cerberus', 'Hellpuppy', [], {Slayer:91}),
+    E('Araxxor', 'Nid', [], {Slayer:92}),
+    E('Thermonuclear Smoke Devil', 'Occult necklace', [], {Slayer:93}),
+    E('Alchemical Hydra', 'Hydra leather', [], {Slayer:95}),
+    E('Slayer tasks', 'Slayer icon', 'Slayer', {}),
+    E('Burst/barrage tasks', 'Ancient staff', 'Magic', {Magic:62}),
+    E('Clue scrolls', 'Clue scroll (hard)', [], {}),
+    E('Green logging', 'Collection log', [], {}),
+    E('Tempoross', 'Tiny tempor', 'Fishing', {Fishing:35}),
+    E('Wintertodt', 'Phoenix', 'Firemaking', {Firemaking:50}),
+    E('Zalcano', 'Smolcano', ['Mining','Smithing'], {Mining:70, Smithing:70}),
+    E('Guardians of the Rift', 'Abyssal protector', 'Runecraft', {Runecraft:27}),
+    E('Lava runes', 'Lava rune', 'Runecraft', {Runecraft:23}),
+    E('Ourania altar', 'Pure essence', 'Runecraft', {}),
+    E('Zeah blood runes', 'Dark essence block', 'Runecraft', {Runecraft:77}),
+    E('True blood altar', 'Blood rune', 'Runecraft', {Runecraft:77}),
+    E('Rooftop agility', 'Graceful hood', 'Agility', {Agility:40}),
+    E('Prifddinas agility', 'Crystal shard 5', 'Agility', {Agility:75}),
+    E('Colossal Wyrm agility', 'Amylase crystal 5', 'Agility', {Agility:50}),
+    E('Hallowed Sepulchre', 'Hallowed mark 25', 'Agility', {Agility:52}),
+    E('Herbiboar', 'Herbi', ['Hunter','Herblore'], {Hunter:80, Herblore:31}),
+    E('Black chinchompas', 'Black chinchompa', 'Hunter', {Hunter:73}),
+    E('Red chinchompas', 'Red chinchompa', 'Hunter', {Hunter:63}, {outgrow:73}),
+    E('Hunter rumours', 'Hunter icon', 'Hunter', {Hunter:46}),
+    E('Motherlode Mine', 'Pay-dirt', 'Mining', {Mining:30}),
+    E('Volcanic Mine', 'Numulite 25', 'Mining', {Mining:50}),
+    E('Gem rocks', 'Uncut ruby', 'Mining', {Mining:40}),
+    E('Blast Furnace', 'Gold bar', 'Smithing', {}),
+    E('Giants\' Foundry', 'Smiths gloves (i)', 'Smithing', {Smithing:15}),
+    E('Mahogany Homes', 'Carpenter\'s helmet', 'Construction', {}),
+    E('Building furniture', 'Teak plank', 'Construction', {Construction:50}),
+    E('Tithe Farm', 'Gricoller\'s can', 'Farming', {Farming:34}),
+    E('Farm runs', 'Farming icon', 'Farming', {}),
+    E('Ardougne knights', 'Coin pouch (man & woman)', 'Thieving', {Thieving:55}),
+    E('Blackjacking', 'Oak blackjack', 'Thieving', {Thieving:45}),
+    E('Pyramid Plunder', 'Pharaoh\'s sceptre (uncharged)', 'Thieving', {Thieving:21}),
+    E('Vyres', 'Blood shard', 'Thieving', {Thieving:82}),
+    E('Elves', 'Crystal shard 5', 'Thieving', {Thieving:85}),
+    E('Aerial fishing', 'Cormorant\'s glove', ['Fishing','Hunter'], {Fishing:43, Hunter:35}),
+    E('Drift net fishing', 'Drift net', ['Fishing','Hunter'], {Fishing:47, Hunter:44}),
+    E('1-tick karambwans', 'Cooked karambwan', 'Cooking', {Cooking:30}),
+    E('Wines', 'Jug of wine', 'Cooking', {Cooking:35}),
+    E('Superglass Make', 'Molten glass', 'Crafting', {Magic:77}),
+    E('Dragonhide bodies', 'Green d\'hide body', 'Crafting', {Crafting:63}),
+    E('Battlestaves', 'Air battlestaff', 'Crafting', {Crafting:66}),
+    E('Darts', 'Rune dart', 'Fletching', {Fletching:10}),
+    E('Potion making', 'Ranarr weed', 'Herblore', {}),
+    E('Chaos altar', 'Dragon bones', 'Prayer', {}),
+    E('Sailing', 'Sailing icon', 'Sailing', {})
+  ]
+};
+
+function weekKey(date){
+  const d = new Date(date || Date.now());
+  d.setHours(0,0,0,0);
+  d.setDate(d.getDate() - ((d.getDay()+6) % 7)); // back to Monday
+  return localISO(d);
+}
+function weekLabel(key){
+  const [y,m,day] = key.split('-').map(Number);
+  const start = new Date(y, m-1, day), end = new Date(y, m-1, day+6);
+  return `${start.getDate()} ${MONTH_NAMES[start.getMonth()]} – ${end.getDate()} ${MONTH_NAMES[end.getMonth()]}`;
+}
+function previousWeekKey(key){
+  const [y,m,day] = key.split('-').map(Number);
+  return localISO(new Date(y, m-1, day-7));
+}
+function contentEntries(wheelId){
+  return (state.content.entries && state.content.entries[wheelId]) || DEFAULT_CONTENT_ENTRIES[wheelId];
+}
+function contentAssigned(wk, pid, wheelId){
+  const week = (state.content.weeks || {})[wk];
+  return (week && week.assign && week.assign[pid] && week.assign[pid][wheelId]) || null;
+}
+function setContentAssigned(wk, pid, wheelId, entry){
+  const weeks = state.content.weeks || (state.content.weeks = {});
+  const week = weeks[wk] || (weeks[wk] = {});
+  const assign = week.assign || (week.assign = {});
+  const row = assign[pid] || (assign[pid] = {});
+  if(entry){
+    row[wheelId] = {entryId:entry.id, name:entry.name, icon:entry.icon||'', ts:Date.now()};
+    ['afk','xph','note'].forEach(k=>{ if(entry[k]) row[wheelId][k] = entry[k]; });
+  }
+  else delete row[wheelId];
+  saveState('content', `assign|${wk}|${pid}|${wheelId}`);
+}
+function contentPlayer(){
+  const players = activePlayers();
+  if(!players.some(p=> p.id===activePlayer.content)) activePlayer.content = players.length ? players[0].id : null;
+  return players.find(p=> p.id===activePlayer.content) || null;
+}
+
+/* ---- member stats, for ruling out what isn't viable ----
+   The last levels pulled from the hiscores are kept in content-data so the
+   wheels can filter straight away; they're refreshed in the background
+   once they're a few hours old. */
+const CONTENT_STATS_MAX_AGE = 6 * 3600 * 1000;
+const contentStatsStatus = {}; // pid -> 'loading' | 'error'
+function contentStats(pid){
+  return (state.content.stats && state.content.stats[pid]) || null;
+}
+function combatLevel(lv){
+  const base = 0.25 * (lv.Defence + lv.Hitpoints + Math.floor(lv.Prayer/2));
+  const melee = 0.325 * (lv.Attack + lv.Strength);
+  const range = 0.325 * Math.floor(lv.Ranged * 1.5);
+  const mage = 0.325 * Math.floor(lv.Magic * 1.5);
+  return Math.floor(base + Math.max(melee, range, mage));
+}
+function contentLevel(levels, skill){
+  if(skill==='Combat') return combatLevel(new Proxy(levels, {get:(o,k)=> Math.max(k==='Hitpoints'?10:1, o[k]||1)}));
+  return Math.max(1, levels[skill] || 1);
+}
+// why an entry isn't viable for these levels, or '' if it is
+function contentRuledOut(entry, levels){
+  if(!levels) return '';
+  for(const [skill, lvl] of Object.entries(entry.req || {})){
+    if(contentLevel(levels, skill) < lvl) return `needs ${lvl} ${skill}`;
+  }
+  const trains = entry.trains || [];
+  if(trains.length && trains.every(s=> contentLevel(levels, s) >= 99)) return trains.length===1 ? `${trains[0]} is 99` : `${trains.join(', ')} all 99`;
+  if(entry.outgrow && trains.length && contentLevel(levels, trains[0]) >= entry.outgrow) return `outgrown at ${contentLevel(levels, trains[0])} ${trains[0]}`;
+  return '';
+}
+function contentViable(wheelId, pid){
+  const stats = pid && contentStats(pid);
+  const levels = stats && stats.levels;
+  const ok = [], out = [];
+  contentEntries(wheelId).forEach(e=>{
+    const why = contentRuledOut(e, levels);
+    if(why) out.push({e, why}); else ok.push(e);
+  });
+  return {ok, out};
+}
+async function refreshContentStats(pid){
+  const p = state.players.find(x=> x.id===pid);
+  if(!p || !p.rsn.trim() || contentStatsStatus[pid]==='loading') return;
+  contentStatsStatus[pid] = 'loading';
+  renderContentStatsNote();
+  try{
+    const res = await fetch('/api/hiscores?player=' + encodeURIComponent(p.rsn));
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || 'lookup failed');
+    const levels = {};
+    (data.data.skills || []).forEach(s=>{ if(s.name!=='Overall') levels[s.name] = s.level > 0 ? s.level : 1; });
+    if(!state.content.stats) state.content.stats = {};
+    state.content.stats[pid] = {levels, ts:Date.now()};
+    saveState('content', 'stats|'+pid);
+    delete contentStatsStatus[pid];
+  }catch(e){
+    contentStatsStatus[pid] = 'error';
+  }
+  if(document.getElementById('page-content').classList.contains('active')){
+    if(pid===activePlayer.content) CONTENT_WHEELS.forEach(w=>{ if(!wheelSpinning[w.id]) delete wheelRotation[w.id]; });
+    renderContentStatsNote();
+    renderContentWheels();
+    renderContentBoard();
+  }
+}
+// one at a time, so a page open doesn't fire five hiscores lookups at once
+async function refreshStaleContentStats(){
+  for(const p of activePlayers()){
+    const s = contentStats(p.id);
+    if(!s || Date.now() - s.ts > CONTENT_STATS_MAX_AGE) await refreshContentStats(p.id);
+  }
+}
+function timeAgo(ts){
+  const mins = Math.round((Date.now() - ts) / 60000);
+  if(mins < 1) return 'just now';
+  if(mins < 60) return `${mins} min ago`;
+  const hrs = Math.round(mins / 60);
+  return hrs < 48 ? `${hrs}h ago` : `${Math.round(hrs/24)} days ago`;
+}
+function renderContentStatsNote(){
+  const el = document.getElementById('contentStatsNote');
+  const p = contentPlayer();
+  if(!el || !p) return;
+  const s = contentStats(p.id);
+  const status = contentStatsStatus[p.id];
+  const name = escapeHtml(progShortName(p));
+  let text;
+  if(status==='loading') text = `Pulling ${name}'s levels from the hiscores…`;
+  else if(status==='error' && !s) text = `Couldn't load ${name}'s levels from the hiscores, so the wheels are showing everything.`;
+  else if(s) text = `Wheels filtered to ${name}'s levels from the hiscores, updated ${timeAgo(s.ts)}${status==='error' ? ' (latest refresh failed)' : ''}.`;
+  else text = `No levels for ${name} yet, so the wheels are showing everything.`;
+  el.innerHTML = `${text} <button class="btn ghost small" onclick="refreshContentStats('${p.id}')" ${status==='loading'?'disabled':''}>⟳ Refresh</button>`;
+}
+
+// wheel angles: 0° is the pointer at the top, increasing clockwise
+const wheelRotation = {};
+const wheelSpinning = {};
+const spinList = {}; // the slice list a wheel is spinning with, frozen until it stops
+const freshPick = {};
+const ruledOpen = {}; // keeps the "ruled out" list open across re-renders
+function anyWheelSpinning(){ return Object.values(wheelSpinning).some(Boolean); }
+function wheelList(wheelId){
+  return spinList[wheelId] || contentViable(wheelId, activePlayer.content).ok;
+}
+function wheelSliceAt(rotation, n){
+  const a = ((360 - (rotation % 360)) % 360 + 360) % 360;
+  return Math.floor(a / (360/n)) % n;
+}
+// at rest the wheel shows the selected member's current task under the pointer
+function wheelRestRotation(wheelId){
+  const p = contentPlayer();
+  const pick = p && contentAssigned(weekKey(), p.id, wheelId);
+  const entries = wheelList(wheelId);
+  const idx = pick ? entries.findIndex(e=> e.id===pick.entryId) : -1;
+  if(idx < 0) return 0;
+  return 360 - (idx + 0.5) * (360/entries.length);
+}
+
+function wheelSVG(wheel, entries){
+  const n = entries.length, R = 150, seg = 360/n;
+  const pt = (deg, r)=>{ const a = (deg-90)*Math.PI/180; return [(r*Math.cos(a)).toFixed(2), (r*Math.sin(a)).toFixed(2)]; };
+  const fontSize = n > 60 ? 6.2 : n > 45 ? 7 : n > 30 ? 8 : n > 18 ? 9.5 : 12;
+  const maxChars = n > 30 ? 24 : 19;
+  const slices = entries.map((e,i)=>{
+    // an odd count would put two same-coloured slices side by side at the seam
+    const fill = (n % 2 && i===n-1 && n>1) ? wheel.colors[2] : wheel.colors[i % 2];
+    const mid = i*seg + seg/2;
+    const label = e.name.length > maxChars ? e.name.slice(0, maxChars-1) + '…' : e.name;
+    const shape = n===1
+      ? `<circle r="${R}" fill="${fill}"/>`
+      : (()=>{ const [x0,y0] = pt(i*seg, R), [x1,y1] = pt((i+1)*seg, R);
+          return `<path d="M0 0 L${x0} ${y0} A${R} ${R} 0 0 1 ${x1} ${y1} Z" fill="${fill}" stroke="#0b0907" stroke-width="${n>45?1:1.5}"/>`; })();
+    return shape + `<text transform="rotate(${mid-90}) translate(${R-10} 0)" text-anchor="end" dominant-baseline="central" font-size="${fontSize}">${escapeHtml(label)}</text>`;
+  }).join('');
+  const studs = n > 40 ? '' : entries.map((e,i)=>{ const [x,y] = pt(i*seg, R+5); return `<circle cx="${x}" cy="${y}" r="3" fill="#c9a23f" stroke="#000" stroke-width="1"/>`; }).join('');
+  const rot = wheelRotation[wheel.id] ?? (wheelRotation[wheel.id] = wheelRestRotation(wheel.id));
+  return `<svg class="cw-wheel" viewBox="-172 -178 344 350" xmlns="http://www.w3.org/2000/svg">
+    <circle r="${R+11}" fill="#2a231b" stroke="#000" stroke-width="3"/>
+    <circle r="${R+8}" fill="none" stroke="#66573f" stroke-width="1.5"/>
+    <g id="wheelRot-${wheel.id}" transform="rotate(${rot})">${slices}</g>
+    ${studs}
+    <circle r="27" fill="#3e3529" stroke="#000" stroke-width="3"/>
+    <circle r="23" fill="none" stroke="#66573f" stroke-width="1.5"/>
+    <image href="${wikiImageUrl(wheel.icon)}" x="-14" y="-14" width="28" height="28" style="image-rendering:pixelated"/>
+    <path d="M-13 -176 L13 -176 L0 -146 Z" fill="#ffff00" stroke="#000" stroke-width="3" stroke-linejoin="round"/>
+  </svg>`;
+}
+
+function contentIconHtml(icon, small){
+  return `<div class="cw-icon${small?' small':''}${icon?'':' icon-fallback'}">${icon ? `<img src="${wikiImageUrl(icon)}" alt="" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('icon-fallback')">` : ''}</div>`;
+}
+
+function renderContentPlayerTabs(){
+  const sel = contentPlayer();
+  const colors = playerColorMap(activePlayers());
+  const busy = anyWheelSpinning();
+  document.getElementById('contentPlayerTabs').innerHTML = activePlayers().map(p=>
+    `<button class="${sel && sel.id===p.id ? 'active' : ''}" onclick="selectContentPlayer('${p.id}')" ${busy?'disabled':''}><i class="cw-dot" style="background:${colors[p.id]}"></i>${escapeHtml(progShortName(p))}</button>`
+  ).join('') || '<span class="cw-hint">Add team members first</span>';
+  renderContentStatsNote();
+}
+function selectContentPlayer(pid){
+  if(anyWheelSpinning()) return;
+  activePlayer.content = pid;
+  CONTENT_WHEELS.forEach(w=>{ delete wheelRotation[w.id]; });
+  renderContentPlayerTabs();
+  renderContentWheels();
+}
+
+function renderContentWheels(){
+  const wk = weekKey();
+  const p = contentPlayer();
+  const who = p ? escapeHtml(progShortName(p)) : '';
+  document.getElementById('contentWeekLabel').innerHTML = `Week of ${weekLabel(wk)} <span>· resets Monday</span>`;
+  document.getElementById('contentWheels').innerHTML = CONTENT_WHEELS.map(wheel=>{
+    const entries = wheelList(wheel.id);
+    const ruledOut = p ? contentViable(wheel.id, p.id).out : [];
+    const pick = p && contentAssigned(wk, p.id, wheel.id);
+    const spinning = !!wheelSpinning[wheel.id];
+    const actions = !p || !entries.length ? ''
+      : spinning ? `<button class="btn" disabled>Spinning…</button>`
+      : pick ? `<button class="btn ghost" onclick="spinWheel('${wheel.id}')">Re-spin for ${who}</button>`
+      : `<button class="btn" onclick="spinWheel('${wheel.id}')">Spin for ${who}</button>`;
+    const result = spinning || !p ? ''
+      : pick ? `<div class="cw-result${freshPick[wheel.id]?' fresh':''}">
+          ${contentIconHtml(pick.icon)}
+          <div><div class="cw-kicker">${who}'s ${escapeHtml(wheel.label)} task</div><div class="cw-pick-name">${escapeHtml(pick.name)}</div>${pick.afk || pick.xph ? `<div class="cw-afk">${[pick.afk && `Up to ${escapeHtml(pick.afk)} between clicks`, pick.xph && `~${escapeHtml(pick.xph)} xp/hr`].filter(Boolean).join(' · ')}</div>` : ''}${pick.note ? `<div class="cw-note">${escapeHtml(pick.note)}</div>` : ''}</div>
+        </div>`
+      : `<div class="cw-hint">${who} has no ${escapeHtml(wheel.label)} task yet this week.</div>`;
+    const ruled = ruledOut.length
+      ? `<details class="cw-ruled" ${ruledOpen[wheel.id]?'open':''} ontoggle="ruledOpen['${wheel.id}']=this.open"><summary>${entries.length} options for ${who} · ${ruledOut.length} ruled out</summary>
+          <ul>${ruledOut.map(r=>`<li><span>${escapeHtml(r.e.name)}</span><em>${escapeHtml(r.why)}</em></li>`).join('')}</ul>
+        </details>`
+      : (p ? `<div class="cw-ruled-none">${entries.length} options for ${who}</div>` : '');
+    return `<div class="card cw-card">
+      <h3><img src="${wikiImageUrl(wheel.icon)}" alt="" referrerpolicy="no-referrer">${wheel.label}</h3>
+      <div class="cw-sub">${wheel.sub}</div>
+      <div class="cw-wheel-wrap${spinning?' spinning':''}">
+        ${entries.length ? wheelSVG(wheel, entries) : `<div class="cw-wheel-empty">Nothing on this wheel is viable${p?` for ${who}`:''} right now.</div>`}
+      </div>
+      <div class="cw-live" id="wheelLive-${wheel.id}"></div>
+      <div class="cw-actions">${actions}</div>
+      <div style="width:100%">${result}</div>
+      ${ruled}
+    </div>`;
+  }).join('');
+  CONTENT_WHEELS.forEach(w=>{ freshPick[w.id] = false; });
+}
+
+function renderContentBoard(){
+  const wk = weekKey();
+  const colors = playerColorMap(activePlayers());
+  const busy = anyWheelSpinning();
+  const rows = activePlayers().map(p=>{
+    const cells = CONTENT_WHEELS.map(wheel=>{
+      const pick = contentAssigned(wk, p.id, wheel.id);
+      const {ok, out} = contentViable(wheel.id, p.id);
+      const opt = e=> `<option value="${escapeHtml(e.id)}"${pick && pick.entryId===e.id ? ' selected' : ''}>${escapeHtml(e.name)}</option>`;
+      // keep a task that's since been edited off the wheel selectable
+      const orphan = pick && !contentEntries(wheel.id).some(e=> e.id===pick.entryId)
+        ? `<option value="${escapeHtml(pick.entryId)}" selected>${escapeHtml(pick.name)}</option>` : '';
+      const outGroup = out.length ? `<optgroup label="Not viable for ${escapeHtml(progShortName(p))}">${out.map(r=> opt(r.e)).join('')}</optgroup>` : '';
+      return `<div class="cw-bcell${pick?'':' empty'}">
+        ${contentIconHtml(pick && pick.icon, true)}
+        <select onchange="assignContentTask('${p.id}','${wheel.id}',this.value)" ${busy?'disabled':''} aria-label="${escapeHtml(progShortName(p))}'s ${escapeHtml(wheel.label)} task">
+          <option value="">Unassigned</option>${orphan}${ok.map(opt).join('')}${outGroup}
+        </select>
+        <button class="spin-mini" title="Spin the ${escapeHtml(wheel.label)} wheel for ${escapeHtml(progShortName(p))}" onclick="spinWheelFor('${p.id}','${wheel.id}')" ${busy?'disabled':''}>🎲</button>
+      </div>`;
+    }).join('');
+    return `<div class="cw-brow"><div class="cw-bname"><i class="cw-dot" style="background:${colors[p.id]}"></i><span>${escapeHtml(progShortName(p))}</span></div>${cells}</div>`;
+  }).join('');
+  document.getElementById('contentBoard').innerHTML = rows
+    ? `<div class="cw-brow head"><span></span>${CONTENT_WHEELS.map(w=>`<span>${w.label}</span>`).join('')}</div>${rows}`
+    : '<p class="cw-hint">Add team members first.</p>';
+}
+
+function renderContentHistory(){
+  const current = weekKey();
+  const players = activePlayers();
+  const weeks = Object.keys(state.content.weeks || {}).filter(k=> k < current &&
+    players.some(p=> CONTENT_WHEELS.some(w=> contentAssigned(k, p.id, w.id)))).sort().reverse();
+  document.getElementById('contentHistory').innerHTML = weeks.slice(0, 16).map(k=>{
+    const members = players.map(p=>{
+      const tasks = CONTENT_WHEELS.map(w=> contentAssigned(k, p.id, w.id)).filter(Boolean);
+      if(!tasks.length) return '';
+      return `<div class="cw-hmember"><b>${escapeHtml(progShortName(p))}</b>${tasks.map(t=>
+        `${t.icon?`<img src="${wikiImageUrl(t.icon)}" alt="" referrerpolicy="no-referrer" onerror="this.style.display='none'">`:''}<span>${escapeHtml(t.name)}</span>`).join('<span class="none">·</span>')}</div>`;
+    }).join('');
+    return `<div class="cw-hrow"><div class="when">${weekLabel(k)}</div><div class="cw-hmembers">${members}</div></div>`;
+  }).join('') || '<p style="margin:0; color:var(--text-dim); font-size:.85rem;">Nothing yet. Once a week ends, everyone\'s tasks from it show up here.</p>';
+}
+
+// requirements are edited as plain text, e.g. "Woodcutting 90, Sailing 62"
+function formatContentReq(req){
+  return Object.entries(req || {}).map(([s,l])=> `${s} ${l}`).join(', ');
+}
+const SKILL_SHORTHAND = {cb:'Combat', combat:'Combat', att:'Attack', str:'Strength', def:'Defence', hp:'Hitpoints', range:'Ranged', mage:'Magic',
+  wc:'Woodcutting', fm:'Firemaking', rc:'Runecraft', rcing:'Runecraft', herb:'Herblore', con:'Construction', cons:'Construction', thiev:'Thieving', slay:'Slayer'};
+function contentSkillName(text){
+  const t = text.trim().toLowerCase();
+  if(SKILL_SHORTHAND[t]) return SKILL_SHORTHAND[t];
+  return SKILLS.find(s=> s.toLowerCase()===t || (t.length>=3 && s.toLowerCase().startsWith(t))) || null;
+}
+function parseContentReq(text){
+  const req = {};
+  text.split(',').forEach(part=>{
+    const m = part.trim().match(/^(.+?)\s+(\d+)$/) || part.trim().match(/^(\d+)\s+(.+)$/);
+    if(!m) return;
+    const [name, lvl] = /^\d+$/.test(m[1]) ? [m[2], m[1]] : [m[1], m[2]];
+    const skill = contentSkillName(name);
+    if(skill) req[skill] = Math.min(126, parseInt(lvl, 10));
+  });
+  return req;
+}
+function parseContentTrains(text){
+  return text.split(',').map(contentSkillName).filter(s=> s && s!=='Combat');
+}
+
+function renderContentEditor(){
+  document.getElementById('contentEditorCols').innerHTML = CONTENT_WHEELS.map(wheel=>{
+    const rows = contentEntries(wheel.id).map((e,i)=>`<div class="cw-erow">
+      <input value="${escapeHtml(e.name)}" onchange="editContentEntry('${wheel.id}',${i},'name',this.value)" placeholder="Name">
+      <input value="${escapeHtml((e.trains||[]).join(', '))}" onchange="editContentEntry('${wheel.id}',${i},'trains',this.value)" placeholder="Trains (e.g. Mining)">
+      <input value="${escapeHtml(formatContentReq(e.req))}" onchange="editContentEntry('${wheel.id}',${i},'req',this.value)" placeholder="Needs (e.g. Mining 72)">
+      <input class="icon-in" value="${escapeHtml(e.icon||'')}" onchange="editContentEntry('${wheel.id}',${i},'icon',this.value)" placeholder="Wiki icon file">
+      <button class="rm" title="Remove" onclick="removeContentEntry('${wheel.id}',${i})">✕</button>
+    </div>`).join('');
+    return `<div>
+      <h4>${wheel.label} <span class="mono" style="color:var(--text-dim); font-size:.8rem;">(${contentEntries(wheel.id).length})</span></h4>
+      <div class="cw-erow head"><span>Name</span><span>Trains</span><span>Needs</span><span class="icon-in">Icon (wiki file)</span><span></span></div>
+      ${rows}
+      <div class="row" style="margin-top:10px;">
+        <button class="btn small" onclick="addContentEntry('${wheel.id}')">+ Add entry</button>
+        <button class="btn ghost small" onclick="resetContentEntries('${wheel.id}')">Reset to defaults</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderContent(){
+  renderContentPlayerTabs();
+  renderContentWheels();
+  renderContentBoard();
+  renderContentHistory();
+  renderContentEditor();
+  refreshStaleContentStats();
+}
+
+function assignContentTask(pid, wheelId, entryId){
+  const wk = weekKey();
+  const current = contentAssigned(wk, pid, wheelId);
+  if(current && current.entryId===entryId) return;
+  const entry = entryId ? contentEntries(wheelId).find(e=> e.id===entryId) : null;
+  setContentAssigned(wk, pid, wheelId, entry);
+  if(pid===activePlayer.content) delete wheelRotation[wheelId];
+  renderContentWheels();
+  renderContentBoard();
+}
+
+// the first edit copies the defaults into saved state, so from then on the
+// wheel is whatever the clan has made it
+function editableEntries(wheelId){
+  if(!state.content.entries) state.content.entries = {};
+  if(!state.content.entries[wheelId]) state.content.entries[wheelId] = JSON.parse(JSON.stringify(DEFAULT_CONTENT_ENTRIES[wheelId]));
+  return state.content.entries[wheelId];
+}
+function contentEntriesChanged(wheelId, rerenderEditor){
+  if(!wheelSpinning[wheelId]) delete wheelRotation[wheelId];
+  saveState('content', 'entries|'+wheelId);
+  renderContentWheels();
+  renderContentBoard();
+  if(rerenderEditor) renderContentEditor();
+}
+function editContentEntry(wheelId, i, field, value){
+  if(wheelSpinning[wheelId]) return renderContentEditor();
+  const list = editableEntries(wheelId);
+  const e = list[i];
+  if(!e) return;
+  if(field==='req') e.req = parseContentReq(value);
+  else if(field==='trains') e.trains = parseContentTrains(value);
+  else e[field] = value.trim();
+  if(field==='name' && !e.name) e.name = 'Untitled';
+  contentEntriesChanged(wheelId, field==='req' || field==='trains'); // show the cleaned-up text
+}
+function addContentEntry(wheelId){
+  if(wheelSpinning[wheelId]) return;
+  editableEntries(wheelId).push({id: 'e' + Date.now().toString(36), name:'New entry', icon:'', trains:[], req:{}});
+  contentEntriesChanged(wheelId, true);
+}
+function removeContentEntry(wheelId, i){
+  if(wheelSpinning[wheelId]) return;
+  editableEntries(wheelId).splice(i, 1);
+  contentEntriesChanged(wheelId, true);
+}
+function resetContentEntries(wheelId){
+  if(wheelSpinning[wheelId]) return;
+  if(!confirm('Put the ' + CONTENT_WHEELS.find(w=>w.id===wheelId).label + ' wheel back to its default entries?')) return;
+  state.content.entries[wheelId] = JSON.parse(JSON.stringify(DEFAULT_CONTENT_ENTRIES[wheelId]));
+  contentEntriesChanged(wheelId, true);
+}
+
+function playSpinTick(){ playTone(1150, 0.03, 'square', 0.025); }
+function playSpinWin(){
+  [523, 659, 784, 1047].forEach((f,i)=> setTimeout(()=> playTone(f, 0.18, 'triangle', 0.07), i*90));
+}
+
+// the dice on the board: switch to that member, bring the wheel into view, spin
+function spinWheelFor(pid, wheelId){
+  if(anyWheelSpinning()) return;
+  selectContentPlayer(pid);
+  document.getElementById('contentWheels').scrollIntoView({behavior:'smooth', block:'start'});
+  setTimeout(()=> spinWheel(wheelId), 350);
+}
+
+async function spinWheel(wheelId){
+  const p = contentPlayer();
+  if(wheelSpinning[wheelId] || !p) return;
+  const pid = p.id;
+  const wk = weekKey();
+  const entries = contentViable(wheelId, pid).ok;
+  if(!entries.length) return;
+
+  // don't hand someone last week's task, or the one they're re-spinning away from, if there's any choice
+  const avoid = new Set();
+  const lastWeek = contentAssigned(previousWeekKey(wk), pid, wheelId);
+  if(lastWeek) avoid.add(lastWeek.entryId);
+  const current = contentAssigned(wk, pid, wheelId);
+  if(current) avoid.add(current.entryId);
+  let pool = entries.map((e,i)=>i).filter(i=> !avoid.has(entries[i].id));
+  if(!pool.length) pool = entries.map((e,i)=>i);
+  const target = pool[Math.floor(Math.random()*pool.length)];
+
+  const n = entries.length, seg = 360/n;
+  // the slice list may have changed since the wheel was last drawn, so
+  // start from wherever it's showing now rather than a stale angle
+  const start = wheelRotation[wheelId] || 0;
+  const landing = 360 - (target*seg + (0.15 + Math.random()*0.7)*seg); // somewhere inside the slice, not on a line
+  const end = start - (start % 360) + 360*6 + ((landing % 360) + 360) % 360;
+
+  wheelSpinning[wheelId] = true;
+  spinList[wheelId] = entries;
+  renderContentPlayerTabs();
+  renderContentWheels();
+  renderContentBoard();
+  const duration = 5200;
+  const t0 = performance.now();
+  let lastSlice = -1;
+  await new Promise(resolve=>{
+    const frame = now=>{
+      const t = Math.min(1, (now - t0) / duration);
+      const eased = 1 - Math.pow(1 - t, 4);
+      const rot = start + (end - start) * eased;
+      wheelRotation[wheelId] = rot;
+      // looked up each frame: the other wheel finishing re-renders both cards
+      const g = document.getElementById('wheelRot-'+wheelId);
+      const live = document.getElementById('wheelLive-'+wheelId);
+      if(g) g.setAttribute('transform', `rotate(${rot})`);
+      const slice = wheelSliceAt(rot, n);
+      if(slice !== lastSlice){
+        lastSlice = slice;
+        if(live) live.textContent = '▸ ' + entries[slice].name;
+        playSpinTick();
+      }
+      else if(live && !live.textContent) live.textContent = '▸ ' + entries[slice].name;
+      if(t < 1) requestAnimationFrame(frame); else resolve();
+    };
+    requestAnimationFrame(frame);
+  });
+
+  setContentAssigned(wk, pid, wheelId, entries[wheelSliceAt(end, n)]);
+  wheelSpinning[wheelId] = false;
+  delete spinList[wheelId];
+  freshPick[wheelId] = true;
+  playSpinWin();
+  renderContentPlayerTabs();
+  renderContentWheels();
+  renderContentBoard();
 }
 
 /* ---------------- UI SOUNDS (dashboard-style hover/click blips) ----------------
