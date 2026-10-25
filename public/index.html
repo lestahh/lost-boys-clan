@@ -315,8 +315,6 @@
   /* ---- weekly content wheels ---- */
   .cw-week{font-family:'Pixelify Sans',monospace; font-size:.95rem; color:var(--yellow); text-shadow:var(--ts); margin:-6px 0 14px;}
   .cw-week span{color:var(--text-dim);}
-  .cw-who{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:10px;}
-  .cw-stats-note{display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:.84rem; color:var(--text-dim); text-shadow:var(--ts); margin-bottom:18px;}
   .cw-afk{font-family:'Pixelify Sans',monospace; font-size:.8rem; color:var(--yellow); text-shadow:var(--ts); margin-top:3px;}
   .cw-group-body{display:grid; grid-template-columns:minmax(0,520px) minmax(0,1fr); gap:24px; align-items:center; width:100%;}
   .cw-group-side{display:flex; flex-direction:column; gap:12px; align-items:stretch;}
@@ -331,8 +329,6 @@
   .cw-mate i{width:14px; height:14px; border:1px solid #000; border-radius:2px; background:#1a1510; display:flex; align-items:center; justify-content:center; font-style:normal; font-size:.6rem; color:#062006; font-weight:900;}
   .cw-mate.done{color:var(--text); box-shadow:inset 0 1px 0 #5a4c39, 0 0 0 1px var(--good);}
   .cw-mate.done i{background:var(--good);}
-  .cw-hteam b{color:var(--gold);}
-  .cw-note{font-size:.84rem; color:var(--text); text-shadow:var(--ts); margin-top:4px; line-height:1.35;}
   .cw-ruled{width:100%; font-size:.8rem; color:var(--text-dim); text-shadow:var(--ts);}
   .cw-ruled summary{cursor:pointer; text-align:center; font-family:'Pixelify Sans',monospace;}
   .cw-ruled summary:hover{color:var(--text);}
@@ -340,12 +336,7 @@
   .cw-ruled li{display:flex; justify-content:space-between; gap:8px; padding:2px 0;}
   .cw-ruled li em{font-style:normal; color:#c98a6a; white-space:nowrap;}
   .cw-ruled-none{font-size:.8rem; color:var(--text-dim); font-family:'Pixelify Sans',monospace; text-shadow:var(--ts);}
-  .cw-who > span{font-family:'Cinzel',serif; font-weight:700; color:var(--gold); text-shadow:var(--ts);}
-  .cw-who .player-tabs{margin:0;}
-  .cw-who .player-tabs button{display:flex; align-items:center; gap:7px;}
-  .cw-who .player-tabs button:disabled{cursor:wait; filter:brightness(.8);}
   .cw-dot{width:10px; height:10px; border-radius:2px; border:1px solid #000; flex:none; display:inline-block;}
-  .cw-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(min(330px,100%),1fr)); gap:20px; margin-bottom:4px;}
   .cw-card{display:flex; flex-direction:column; align-items:center; gap:10px; padding:18px 20px 20px;}
   .cw-card h3{margin:0; color:var(--gold); font-size:1.3rem; font-weight:900; display:flex; align-items:center; gap:10px;}
   .cw-card h3 img{width:26px; height:26px; object-fit:contain; image-rendering:pixelated; filter:drop-shadow(1px 1px 0 #000);}
@@ -371,18 +362,25 @@
   .cw-pick-name{font-family:'Cinzel',serif; font-size:1.25rem; font-weight:900; color:var(--gold); line-height:1.15; text-shadow:var(--ts);}
   .cw-hint{font-size:.85rem; color:var(--text-dim); text-align:center; text-shadow:var(--ts);}
 
-  /* assignment board: one row per member, a column per wheel */
-  .cw-board{display:flex; flex-direction:column; gap:8px;}
-  .cw-brow{display:grid; grid-template-columns:150px minmax(0,1fr) minmax(0,1fr); gap:12px; align-items:center;}
-  .cw-brow.head{font-size:.68rem; text-transform:uppercase; letter-spacing:.08em; color:var(--text-dim); text-shadow:var(--ts);}
-  .cw-bname{display:flex; align-items:center; gap:8px; font-weight:700; text-shadow:var(--ts); min-width:0;}
-  .cw-bname span:last-child{white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-  .cw-bcell{display:flex; align-items:center; gap:8px; min-width:0; padding:4px 6px; border:2px solid var(--edge); border-radius:3px; background:var(--bg-deep);}
-  .cw-bcell select{flex:1; min-width:0; border:none; box-shadow:none; background:transparent; padding:4px 2px; font-size:.85rem; cursor:pointer;}
-  .cw-bcell.empty select{color:var(--text-dim); font-style:italic;}
-  .cw-bcell .spin-mini{background:none; border:none; color:var(--gold); font-size:.95rem; padding:2px 4px; text-shadow:var(--ts);}
-  .cw-bcell .spin-mini:hover{color:#fff;}
-  .cw-bcell .spin-mini:disabled{opacity:.4; cursor:wait;}
+
+  /* kill race: one row per member, most kills first */
+  .br-head{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:12px;}
+  .br-title{flex:1; min-width:160px;}
+  .br-since{font-family:'Pixelify Sans',monospace; font-size:.8rem; color:var(--text-dim); text-shadow:var(--ts); margin-top:2px;}
+  .br-status{display:flex; align-items:center; gap:8px; font-size:.8rem; color:var(--text-dim); text-shadow:var(--ts);}
+  .br-rows{display:flex; flex-direction:column; gap:6px;}
+  .br-row{display:grid; grid-template-columns:34px 150px minmax(0,1fr) 90px 80px; gap:12px; align-items:center; padding:7px 10px; border:2px solid var(--edge); border-radius:3px; background:var(--bg-deep); text-shadow:var(--ts);}
+  .br-row.lead{box-shadow:inset 0 0 0 1px var(--gold), 0 0 14px rgba(255,152,31,.25);}
+  .br-place{font-family:'Pixelify Sans',monospace; font-size:1.05rem; text-align:center; color:var(--text-dim);}
+  .br-name{display:flex; align-items:center; gap:8px; font-weight:700; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .br-bar{height:12px; border:1px solid #000; border-radius:2px; background:#1a1510; overflow:hidden;}
+  .br-bar i{display:block; height:100%; transition:width .6s ease;}
+  .br-kills{text-align:right; font-size:.85rem; color:var(--text-dim);}
+  .br-kills b{font-family:'Pixelify Sans',monospace; font-size:1.15rem; color:var(--yellow); font-weight:400;}
+  .br-kc{text-align:right; font-family:'Pixelify Sans',monospace; font-size:.75rem; color:var(--text-dim);}
+  .cw-hkill{color:var(--text-dim);}
+  .cw-hkill b{color:var(--text); font-weight:600;}
+  .cw-hkill.win b{color:var(--gold);}
 
   .cw-history{display:flex; flex-direction:column;}
   .cw-hrow{display:grid; grid-template-columns:130px 1fr; gap:10px; align-items:start; padding:8px; border-top:1px solid var(--border-dim); font-size:.84rem; text-shadow:var(--ts);}
@@ -396,7 +394,7 @@
   .cw-editor summary{cursor:pointer; color:var(--gold); font-family:'Cinzel',serif; font-weight:700; text-shadow:var(--ts);}
   .cw-editor-cols{display:grid; grid-template-columns:1fr; gap:22px; margin-top:14px;}
   .cw-editor h4{margin:0 0 8px;}
-  .cw-erow{display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,1.2fr) minmax(0,1fr) 26px; gap:6px; margin-bottom:6px;}
+  .cw-erow{display:grid; grid-template-columns:minmax(0,1.2fr) 64px minmax(0,1fr) minmax(0,1.4fr) minmax(0,1fr) 26px; gap:6px; margin-bottom:6px;}
   .cw-erow input{min-width:0; padding:5px 7px; font-size:.82rem;}
   .cw-erow.head{font-size:.68rem; text-transform:uppercase; letter-spacing:.06em; color:var(--text-dim); margin-bottom:4px;}
   .cw-erow .rm{background:none; border:none; color:var(--bad); opacity:.6; font-size:.85rem;}
@@ -414,10 +412,11 @@
     .tile-art img{max-height:140px;}
     .prog-grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr));}
     .prog-hero-rank{font-size:1.5rem;}
-    .cw-brow{grid-template-columns:1fr; gap:6px; padding-bottom:6px; border-bottom:1px solid var(--border-dim);}
-    .cw-brow.head{display:none;}
     .cw-hrow{grid-template-columns:1fr; gap:4px;}
-    .cw-erow{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) 26px;}
+    .cw-erow{grid-template-columns:minmax(0,1fr) 54px minmax(0,1fr) minmax(0,1fr) 26px;}
+    .br-row{grid-template-columns:30px minmax(0,1fr) auto; row-gap:4px;}
+    .br-bar{grid-column:2 / -1; grid-row:2;}
+    .br-kc{display:none;}
     .cw-erow .icon-in{display:none;}
     .cw-ruled ul{grid-template-columns:1fr;}
     .cw-group-body{grid-template-columns:1fr;}
@@ -513,18 +512,15 @@
     <div class="ygoal-grid" id="yearGoalsGrid"></div>
   </section>
 
-  <!-- WEEKLY CONTENT -->
+  <!-- BOSS OF THE WEEK -->
   <section class="page" id="page-content">
-    <div class="page-head"><h2>Weekly Content</h2><button class="back" onclick="go('home')">← Home</button></div>
-    <p class="page-intro">Two wheels for the week: a true-AFK task for when you're at work, and an active or bossing task for proper play time. Pick a name and spin, and it's theirs until Monday. The wheels only show what's viable for that member's levels, so nothing that needs stats they don't have or trains a skill they've already 99'd. You can also hand out or swap tasks by hand on the board below. Under that, the Group Bossing wheel picks one boss or raid for the whole team to do together.</p>
+    <div class="page-head"><h2>Boss of the Week</h2><button class="back" onclick="go('home')">← Home</button></div>
+    <p class="page-intro">Spin for the team's boss of the week. It might be group content for when everyone's online or a solo boss, and it only lands on something enough of the team has the stats for. Once it's picked it's a race: every kill from then until Sunday night counts, pulled live from the hiscores, and whoever has the most by Monday takes the week.</p>
     <div class="cw-week" id="contentWeekLabel"></div>
-    <div class="cw-who"><span>Spinning for</span><div class="player-tabs" id="contentPlayerTabs"></div></div>
-    <div class="cw-stats-note" id="contentStatsNote"></div>
-    <div class="cw-grid" id="contentWheels"></div>
-    <div id="contentGroup" style="margin-top:20px;"></div>
+    <div id="contentGroup"></div>
     <div class="card" style="margin-top:20px;">
-      <h4>This Week's Tasks</h4>
-      <div class="cw-board" id="contentBoard"></div>
+      <h4>Kill Race</h4>
+      <div id="bossRace"></div>
     </div>
     <div class="card">
       <h4>Past Weeks</h4>
@@ -549,7 +545,7 @@ const PAGES = [
   {id:'progress', label:'Progression', desc:'Your own ironman unlock chart. Tick off gear, pets, 99s and milestones to climb the clan ranks.', art:'Infernal cape detail'},
   {id:'bosses', label:'Boss KCs', desc:'Kill counts across the team\'s bossing log, synced straight from the hiscores.', art:'Vorkath'},
   {id:'yeargoals', label:'Yearly Goals', desc:'Pick your own grinds for the year and cross them off as you go.', art:'Quest point cape detail'},
-  {id:'content', label:'Weekly Content', desc:'Spin for your weekly tasks: one AFK pick for while you\'re at work, and one active or bossing pick for proper play time.', art:'Mystery box detail'},
+  {id:'content', label:'Boss of the Week', desc:'Spin for the team\'s boss of the week, then race for the most kills. Kill counts come live from the hiscores.', art:'Mystery box detail'},
 ];
 
 const ICONS = {
@@ -874,12 +870,13 @@ function mergeSection(section, server, local, ids){
   if(section==='content'){
     // dirty ids: 'entries|<wheel>' (the wheel's whole entry list),
     // 'stats|<pid>' (a member's last hiscores levels) and
-    // 'assign|<week>|<pid>|<wheel>' (one member's task on one wheel)
+    // 'group|<week>' (that week's boss). Weeks can also hold the old
+    // per-member AFK/active tasks, which are kept but no longer shown.
     const sc = server.content || {};
     const lc = local.content;
     const merged = { content: { entries: Object.assign({}, sc.entries), stats: Object.assign({}, sc.stats), weeks: Object.assign({}, sc.weeks) } };
     ids.forEach(key=>{
-      const [kind, a, b, c] = key.split('|');
+      const [kind, a] = key.split('|');
       if(kind==='entries'){
         if(lc.entries[a]) merged.content.entries[a] = lc.entries[a];
         else delete merged.content.entries[a];
@@ -893,17 +890,6 @@ function mergeSection(section, server, local, ids){
         const lw = lc.weeks[a] || {};
         const wk = Object.assign({}, merged.content.weeks[a]);
         if(lw.group) wk.group = lw.group; else delete wk.group;
-        merged.content.weeks[a] = wk;
-        return;
-      }
-      if(kind==='assign'){
-        const lw = lc.weeks[a] || {assign:{}};
-        const wk = Object.assign({assign:{}}, merged.content.weeks[a]);
-        wk.assign = Object.assign({}, wk.assign);
-        const row = Object.assign({}, wk.assign[b]);
-        const mine = lw.assign && lw.assign[b] && lw.assign[b][c];
-        if(mine) row[c] = mine; else delete row[c];
-        wk.assign[b] = row;
         merged.content.weeks[a] = wk;
       }
     });
@@ -951,12 +937,11 @@ function homeTileStat(pageId){
   }
   if(pageId==='content'){
     const wk = weekKey();
-    const withTasks = players.filter(p=> CONTENT_WHEELS.some(w=> contentAssigned(wk, p.id, w.id))).length;
-    const group = contentGroupPick(wk);
-    const parts = [];
-    if(group) parts.push(`Team: <b>${escapeHtml(group.name)}</b>`);
-    if(withTasks) parts.push(`<b>${withTasks}/${players.length}</b> members have tasks`);
-    return parts.length ? parts.join(' · ') : 'No tasks spun yet this week';
+    const pick = contentGroupPick(wk);
+    if(!pick) return 'No boss picked yet this week';
+    const rec = bossRaceRecord(wk, pick.entryId);
+    const lead = rec && bossRaceStandings(rec)[0];
+    return `<b>${escapeHtml(pick.name)}</b>` + (lead && lead.kills ? ` · ${escapeHtml(progShortName(lead.p))} leads with <b>${lead.kills.toLocaleString()}</b>` : '');
   }
   return '';
 }
@@ -1893,181 +1878,73 @@ async function syncGimRank(btn){
   }
 }
 
-/* ---------------- WEEKLY CONTENT WHEELS ----------------
-   Two wheels: a true-AFK one for while you're at work (every method gives
-   at least a minute between clicks, from the wiki's AFK skilling guide)
-   and an active one covering bossing and click-intensive skilling. Pick a
-   member and spin, and the result is that member's task for the week;
-   tasks can also be handed out by hand from the board.
+/* ---------------- BOSS OF THE WEEK ----------------
+   One wheel picks a boss for the whole team each week, group content and
+   solo bosses alike, and then it's a race for the most kills of it before
+   Monday. Kill counts come from the hiscores: when a boss is picked the
+   worker snapshots everyone's KC for it, and each member's score is how
+   far past that they've got (/api/boss-race, kept in KV boss-race, which
+   only the worker writes).
 
-   Each member's levels come from the hiscores, and the wheel only shows
-   what's viable for them: requirements met, the skill it trains isn't 99
-   yet, and it hasn't been outgrown by a better method on the same wheel.
-   Weeks run Monday to Sunday in local time, keyed by the Monday's date.
-   An assignment keeps its own copy of the entry, so editing the wheel
-   later doesn't rewrite history. */
-const CONTENT_WHEELS = [
-  {id:'afk', label:'AFK', sub:'True AFK for while you\'re at work: a minute or more between clicks', icon:'Stats icon', colors:['#2f5a6b','#1f3f4c','#3f5a4a']},
-  {id:'active', label:'Active & Bossing', sub:'Bossing and hands-on skilling for proper play time', icon:'Combat icon', colors:['#7a2c1c','#521a10','#6b4a1c']}
-];
-// one pick for the whole team each week, rather than one per member
-const GROUP_WHEEL = {id:'group', label:'Group Bossing', sub:'For when everyone\'s free and online', icon:'Group ironman helm', colors:['#5a3f7a','#3d2a56','#4a4a6b']};
-const ALL_WHEELS = [...CONTENT_WHEELS, GROUP_WHEEL];
+   The wheel only shows bosses enough of the team has the stats for, using
+   each member's hiscores levels. Weeks run Monday to Sunday in local time,
+   keyed by the Monday's date. A pick keeps its own copy of the entry, so
+   editing the wheel later doesn't rewrite history. The wheel's id is still
+   'group' so the picks and edits saved before it became Boss of the Week
+   carry over. */
+const BOSS_WHEEL = {id:'group', label:'Boss of the Week', icon:'Group ironman helm', colors:['#5a3f7a','#3d2a56','#4a4a6b']};
 
-const MELEE = ['Attack','Strength','Defence'];
-// trains: skills it gives XP in (ruled out once they're all 99)
 // req: minimum levels ('Combat' = combat level)
-// outgrow: ruled out once the first trained skill reaches this level
-// afk, xph: longest AFK stretch and xp/hr per the wiki guide (AFK wheel only)
-// note: shown on the result card, for catch-all entries
-function E(name, icon, trains, req, extra){
-  return Object.assign({id:slugify(name), name, icon, trains:[].concat(trains||[]), req:req||{}}, extra||{});
+// hs: the hiscores entries whose kills count (defaults to the name)
+// team: group content only, how many members need the stats for it to go
+// on the wheel; anything without it is a solo boss, which still needs two
+// members with the stats since it's a race
+function E(name, icon, req, hs, extra){
+  return Object.assign({id:slugify(name), name, icon, req:req||{}, hs:hs || [name]}, extra||{});
 }
-const DEFAULT_CONTENT_ENTRIES = {
-  // anything under ~20k xp/h on the wiki guide is left out (guardian
-  // fragments, Duke mining, pedals, the pump and so on), and the AFK combat
-  // spots are one catch-all since they're all much of a muchness
-  afk: [
-    E('Rosewood trees', 'Rosewood logs', 'Woodcutting', {Woodcutting:92}, {afk:'4:35', xph:'85k'}),
-    E('Redwood trees', 'Redwood logs', 'Woodcutting', {Woodcutting:90}, {afk:'4:24', xph:'85k'}),
-    E('Ironwood trees', 'Ironwood logs', 'Woodcutting', {Woodcutting:80}, {afk:'4:00', xph:'100k'}),
-    E('Engorged bloodwood', 'Woodcutting icon', 'Woodcutting', {Woodcutting:77}, {afk:'1:50', xph:'70k'}),
-    E('Magic trees', 'Magic logs', 'Woodcutting', {Woodcutting:75}, {afk:'3:54', xph:'27k', outgrow:80}),
-    E('Camphor trees', 'Camphor logs', 'Woodcutting', {Woodcutting:66}, {afk:'2:00', xph:'70k', outgrow:80}),
-    E('Yew trees', 'Yew logs', 'Woodcutting', {Woodcutting:60}, {afk:'1:54', xph:'47k', outgrow:66}),
-    E('Mahogany trees', 'Mahogany logs', 'Woodcutting', {Woodcutting:50}, {afk:'1:00', xph:'46k', outgrow:66}),
-    E('Maple trees', 'Maple logs', 'Woodcutting', {Woodcutting:45}, {afk:'1:00', xph:'53k', outgrow:60}),
-    E('Shooting stars', 'Stardust 175', 'Mining', {Mining:10}, {afk:'7:00', xph:'31k'}),
-    E('Amethyst', 'Amethyst', 'Mining', {Mining:92}, {afk:'1:57', xph:'24k'}),
-    E('Cooking fish', 'Raw anglerfish', 'Cooking', {}, {afk:'1:07', xph:'310k'}),
-    E('Wealthy citizens', 'Thieving icon', 'Thieving', {Thieving:50}, {afk:'1:32', xph:'58k'}),
-    E('Smithing nails', 'Mithril nails', 'Smithing', {}, {afk:'1:07', xph:'65k'}),
-    E('Cannonballs', 'Steel cannonball', 'Smithing', {Smithing:35}, {afk:'1:02', xph:'31k'}),
-    E('Forester\'s campfire', 'Firemaking icon', 'Firemaking', {}, {afk:'2:31', xph:'239k'}),
-    E('Dark crabs', 'Raw dark crab', 'Fishing', {Fishing:85}, {afk:'7:32', xph:'40k'}),
-    E('Karambwans', 'Raw karambwan', 'Fishing', {Fishing:65}, {afk:'4:13', xph:'40k'}),
-    E('Fly fishing', 'Raw trout', 'Fishing', {Fishing:20}, {afk:'1:57', xph:'50k', outgrow:48}),
-    E('Barbarian fishing', 'Leaping sturgeon', ['Fishing','Agility','Strength'], {Fishing:48, Agility:15, Strength:15}, {afk:'1:57', xph:'57k'}),
-    E('Sacred eels', 'Sacred eel', ['Fishing','Cooking'], {Fishing:87}, {afk:'1:00', xph:'27k'}),
-    E('Infernal eels', 'Infernal eel', 'Fishing', {Fishing:80}, {afk:'1:00', xph:'37k'}),
-    E('Enchanting jewellery', 'Skills necklace', 'Magic', {Magic:7}, {afk:'1:53', xph:'63k'}),
-    E('Plank Make', 'Mahogany plank', 'Magic', {Magic:86}, {afk:'1:30', xph:'86k'}),
-    E('Building the temple', 'Crafting icon', 'Crafting', {Crafting:20}, {afk:'2:00', xph:'22k'}),
-    E('Crewmate salvaging', 'Sailing icon', 'Sailing', {Sailing:40}, {afk:'30:00', xph:'30k', outgrow:64}),
-    E('Merchant shipwrecks', 'Sailing icon', 'Sailing', {Sailing:87}, {afk:'4:00', xph:'85k'}),
-    E('Fremennik shipwrecks', 'Sailing icon', 'Sailing', {Sailing:80}, {afk:'3:38', xph:'80k'}),
-    E('Mercenary shipwrecks', 'Sailing icon', 'Sailing', {Sailing:73}, {afk:'3:15', xph:'70k', outgrow:87}),
-    E('Pirate shipwrecks', 'Sailing icon', 'Sailing', {Sailing:64}, {afk:'2:38', xph:'47k', outgrow:80}),
-    E('Large shipwrecks', 'Sailing icon', 'Sailing', {Sailing:53}, {afk:'2:31', xph:'30k', outgrow:73}),
-    E('Gilded altar', 'Superior dragon bones', 'Prayer', {}, {afk:'1:02', xph:'630k'}),
-    E('Repair kits', 'Construction icon', 'Construction', {}, {afk:'1:02', xph:'261k'}),
-    E('AFK combat', 'Ammonite Crab', ['Attack','Strength','Defence','Ranged','Magic'], {}, {afk:'10:00+', xph:'100k+',
-      note:'Your pick: sand, ammonite or gemstone crabs, NMZ, desert bandits, sulphur naguas, or Maniacal monkeys (melee, chinning or barraging) if you have MM2 done.'})
-  ],
-  active: [
-    E('Vorkath', 'Vorkath\'s head', [], {Combat:100}),
-    E('Zulrah', 'Tanzanite fang', [], {Combat:90}),
-    E('Barrows', 'Dharok\'s helm', [], {Combat:70}),
-    E('God Wars', 'Bandos chestplate', [], {Combat:100}),
-    E('Chambers of Xeric', 'Olmlet', [], {Combat:100}),
-    E('Theatre of Blood', 'Lil\' Zik', [], {Combat:115}),
-    E('Tombs of Amascut', 'Tumeken\'s guardian', [], {Combat:95}),
-    E('DT2 bosses', 'Virtus mask', [], {Combat:115}),
-    E('Corrupted Gauntlet', 'Youngllef', [], {Combat:90}),
-    E('Moons of Peril', 'Eclipse atlatl', [], {Combat:80}),
-    E('Royal Titans', 'Bran', [], {Combat:90}),
-    E('Wildy bosses', 'Callisto cub', [], {Combat:90}),
-    E('Nex', 'Nexling', [], {Combat:115}),
-    E('Phantom Muspah', 'Muphin (ranged)', [], {Combat:105}),
-    E('Fortis Colosseum', 'Dizana\'s quiver', [], {Combat:115}),
-    E('Yama', 'Yami', [], {Combat:115}),
-    E('Doom of Mokhaiotl', 'Dom', [], {Combat:110}),
-    E('Sarachnis', 'Sraracha', [], {Combat:70}),
-    E('Kalphite Queen', 'Kq head', [], {Combat:100}),
-    E('Corporeal Beast', 'Pet dark core', [], {Combat:110}),
-    E('Hueycoatl', 'Huberte', [], {Combat:85}),
-    E('Amoxliatl', 'Moxi', [], {Combat:80}),
-    E('Dagannoth Kings', 'Berserker ring', [], {Combat:100}),
-    E('Giant Mole', 'Mole claw', [], {Combat:60}),
-    E('King Black Dragon', 'Kbd heads', [], {Combat:70}),
-    E('Phosani\'s Nightmare', 'Inquisitor\'s mace', [], {Combat:115}),
-    E('Scurrius', 'Scurry', [], {Combat:40}),
-    E('Fight Caves', 'Fire cape', [], {Combat:80}),
-    E('Inferno', 'Infernal cape', [], {Combat:120}),
-    E('Grotesque Guardians', 'Noon', [], {Slayer:75}),
-    E('Abyssal Sire', 'Abyssal orphan', [], {Slayer:85}),
-    E('Kraken', 'Kraken tentacle', [], {Slayer:87}),
-    E('Cerberus', 'Hellpuppy', [], {Slayer:91}),
-    E('Araxxor', 'Nid', [], {Slayer:92}),
-    E('Thermonuclear Smoke Devil', 'Occult necklace', [], {Slayer:93}),
-    E('Alchemical Hydra', 'Hydra leather', [], {Slayer:95}),
-    E('Slayer tasks', 'Slayer icon', 'Slayer', {}),
-    E('Burst/barrage tasks', 'Ancient staff', 'Magic', {Magic:62}),
-    E('Clue scrolls', 'Clue scroll (hard)', [], {}),
-    E('Green logging', 'Collection log', [], {}),
-    E('Tempoross', 'Tiny tempor', 'Fishing', {Fishing:35}),
-    E('Wintertodt', 'Phoenix', 'Firemaking', {Firemaking:50}),
-    E('Zalcano', 'Smolcano', ['Mining','Smithing'], {Mining:70, Smithing:70}),
-    E('Guardians of the Rift', 'Abyssal protector', 'Runecraft', {Runecraft:27}),
-    E('Lava runes', 'Lava rune', 'Runecraft', {Runecraft:23}),
-    E('Ourania altar', 'Pure essence', 'Runecraft', {}),
-    E('Zeah blood runes', 'Dark essence block', 'Runecraft', {Runecraft:77}),
-    E('True blood altar', 'Blood rune', 'Runecraft', {Runecraft:77}),
-    E('Rooftop agility', 'Graceful hood', 'Agility', {Agility:40}),
-    E('Prifddinas agility', 'Crystal shard 5', 'Agility', {Agility:75}),
-    E('Colossal Wyrm agility', 'Amylase crystal 5', 'Agility', {Agility:50}),
-    E('Hallowed Sepulchre', 'Hallowed mark 25', 'Agility', {Agility:52}),
-    E('Herbiboar', 'Herbi', ['Hunter','Herblore'], {Hunter:80, Herblore:31}),
-    E('Black chinchompas', 'Black chinchompa', 'Hunter', {Hunter:73}),
-    E('Red chinchompas', 'Red chinchompa', 'Hunter', {Hunter:63}, {outgrow:73}),
-    E('Hunter rumours', 'Hunter icon', 'Hunter', {Hunter:46}),
-    E('Motherlode Mine', 'Pay-dirt', 'Mining', {Mining:30}),
-    E('Volcanic Mine', 'Numulite 25', 'Mining', {Mining:50}),
-    E('Gem rocks', 'Uncut ruby', 'Mining', {Mining:40}),
-    E('Blast Furnace', 'Gold bar', 'Smithing', {}),
-    E('Giants\' Foundry', 'Smiths gloves (i)', 'Smithing', {Smithing:15}),
-    E('Mahogany Homes', 'Carpenter\'s helmet', 'Construction', {}),
-    E('Building furniture', 'Teak plank', 'Construction', {Construction:50}),
-    E('Tithe Farm', 'Gricoller\'s can', 'Farming', {Farming:34}),
-    E('Farm runs', 'Farming icon', 'Farming', {}),
-    E('Ardougne knights', 'Coin pouch (man & woman)', 'Thieving', {Thieving:55}),
-    E('Blackjacking', 'Oak blackjack', 'Thieving', {Thieving:45}),
-    E('Pyramid Plunder', 'Pharaoh\'s sceptre (uncharged)', 'Thieving', {Thieving:21}),
-    E('Vyres', 'Blood shard', 'Thieving', {Thieving:82}),
-    E('Elves', 'Crystal shard 5', 'Thieving', {Thieving:85}),
-    E('Aerial fishing', 'Cormorant\'s glove', ['Fishing','Hunter'], {Fishing:43, Hunter:35}),
-    E('Drift net fishing', 'Drift net', ['Fishing','Hunter'], {Fishing:47, Hunter:44}),
-    E('1-tick karambwans', 'Cooked karambwan', 'Cooking', {Cooking:30}),
-    E('Wines', 'Jug of wine', 'Cooking', {Cooking:35}),
-    E('Superglass Make', 'Molten glass', 'Crafting', {Magic:77}),
-    E('Dragonhide bodies', 'Green d\'hide body', 'Crafting', {Crafting:63}),
-    E('Battlestaves', 'Air battlestaff', 'Crafting', {Crafting:66}),
-    E('Darts', 'Rune dart', 'Fletching', {Fletching:10}),
-    E('Potion making', 'Ranarr weed', 'Herblore', {}),
-    E('Chaos altar', 'Dragon bones', 'Prayer', {}),
-    E('Sailing', 'Sailing icon', 'Sailing', {})
-  ],
-  // team: how many members need the stats before it's worth putting on the wheel
-  group: [
-    E('Chambers of Xeric', 'Olmlet', [], {Combat:100}, {team:2}),
-    E('Theatre of Blood', 'Lil\' Zik', [], {Combat:115}, {team:3}),
-    E('ToB entry mode', 'Lil\' Zik', [], {Combat:95}, {team:2}),
-    E('Tombs of Amascut', 'Tumeken\'s guardian', [], {Combat:95}, {team:2}),
-    E('Nex', 'Torva full helm', [], {Combat:115}, {team:3}),
-    E('Bandos', 'Bandos hilt', [], {Combat:95}, {team:2}),
-    E('Saradomin', 'Saradomin hilt', [], {Combat:100}, {team:2}),
-    E('Armadyl', 'Armadyl hilt', [], {Ranged:85}, {team:2}),
-    E('Zamorak', 'Zamorak hilt', [], {Combat:100}, {team:2}),
-    E('Corporeal Beast', 'Pet dark core', [], {Combat:110}, {team:3}),
-    E('The Nightmare', 'Nightmare staff', [], {Combat:110}, {team:3}),
-    E('Wildy bosses', 'Callisto cub', [], {Combat:100}, {team:3}),
-    E('Chaos Elemental', 'Pet chaos elemental', [], {Combat:90}, {team:2}),
-    E('Royal Titans', 'Bran', [], {Combat:90}, {team:2}),
-    E('Hueycoatl', 'Huberte', [], {Combat:85}, {team:2}),
-    E('Dagannoth Kings', 'Berserker ring', [], {Combat:100}, {team:3}),
-    E('Yama duos', 'Yami', [], {Combat:115}, {team:2})
-  ]
-};
+const DEFAULT_BOSS_ENTRIES = [
+  E('Chambers of Xeric', 'Olmlet', {Combat:100}, ['Chambers of Xeric','Chambers of Xeric: Challenge Mode'], {team:2}),
+  E('Theatre of Blood', 'Lil\' Zik', {Combat:115}, ['Theatre of Blood','Theatre of Blood: Hard Mode'], {team:3}),
+  E('Tombs of Amascut', 'Tumeken\'s guardian', {Combat:95}, ['Tombs of Amascut','Tombs of Amascut: Expert Mode'], {team:2}),
+  E('Nex', 'Torva full helm', {Combat:115}, null, {team:3}),
+  E('Bandos', 'Bandos hilt', {Combat:95}, ['General Graardor'], {team:2}),
+  E('Saradomin', 'Saradomin hilt', {Combat:100}, ['Commander Zilyana'], {team:2}),
+  E('Armadyl', 'Armadyl hilt', {Ranged:85}, ['Kree\'Arra'], {team:2}),
+  E('Zamorak', 'Zamorak hilt', {Combat:100}, ['K\'ril Tsutsaroth'], {team:2}),
+  E('Corporeal Beast', 'Pet dark core', {Combat:110}, null, {team:3}),
+  E('The Nightmare', 'Nightmare staff', {Combat:110}, ['Nightmare'], {team:3}),
+  E('Wildy bosses', 'Callisto cub', {Combat:100}, ['Callisto','Venenatis','Vet\'ion'], {team:3}),
+  E('Chaos Elemental', 'Pet chaos elemental', {Combat:90}, null, {team:2}),
+  E('Royal Titans', 'Bran', {Combat:90}, ['The Royal Titans'], {team:2}),
+  E('Hueycoatl', 'Huberte', {Combat:85}, ['The Hueycoatl'], {team:2}),
+  E('Dagannoth Kings', 'Berserker ring', {Combat:100}, ['Dagannoth Prime','Dagannoth Rex','Dagannoth Supreme'], {team:3}),
+  E('Yama', 'Yami', {Combat:115}, null, {team:2}),
+  E('Vorkath', 'Vorkath\'s head', {Combat:100}),
+  E('Zulrah', 'Tanzanite fang', {Combat:90}),
+  E('Barrows', 'Dharok\'s helm', {Combat:70}, ['Barrows Chests']),
+  E('DT2 bosses', 'Virtus mask', {Combat:115}, ['Duke Sucellus','The Leviathan','The Whisperer','Vardorvis']),
+  E('Corrupted Gauntlet', 'Youngllef', {Combat:90}, ['The Corrupted Gauntlet']),
+  E('Moons of Peril', 'Eclipse atlatl', {Combat:80}, ['Lunar Chests']),
+  E('Wildy singles-plus', 'Voidwaker', {Combat:85}, ['Artio','Spindel','Calvar\'ion']),
+  E('Scorpia', 'Scorpia\'s offspring', {Combat:85}),
+  E('Phantom Muspah', 'Muphin (ranged)', {Combat:105}),
+  E('Doom of Mokhaiotl', 'Dom', {Combat:110}),
+  E('Phosani\'s Nightmare', 'Inquisitor\'s mace', {Combat:115}),
+  E('Kalphite Queen', 'Kq head', {Combat:100}),
+  E('Sarachnis', 'Sraracha', {Combat:70}),
+  E('Amoxliatl', 'Moxi', {Combat:80}),
+  E('Giant Mole', 'Mole claw', {Combat:60}),
+  E('King Black Dragon', 'Kbd heads', {Combat:70}),
+  E('Scurrius', 'Scurry', {Combat:40}),
+  E('Brutus', 'Brutus', {Combat:40}),
+  E('Grotesque Guardians', 'Noon', {Slayer:75}),
+  E('Abyssal Sire', 'Abyssal orphan', {Slayer:85}),
+  E('Kraken', 'Kraken tentacle', {Slayer:87}),
+  E('Cerberus', 'Hellpuppy', {Slayer:91}),
+  E('Araxxor', 'Nid', {Slayer:92}),
+  E('Thermonuclear Smoke Devil', 'Occult necklace', {Slayer:93}),
+  E('Alchemical Hydra', 'Hydra leather', {Slayer:95})
+];
 
 function weekKey(date){
   const d = new Date(date || Date.now());
@@ -2084,34 +1961,13 @@ function previousWeekKey(key){
   const [y,m,day] = key.split('-').map(Number);
   return localISO(new Date(y, m-1, day-7));
 }
-function contentEntries(wheelId){
-  return (state.content.entries && state.content.entries[wheelId]) || DEFAULT_CONTENT_ENTRIES[wheelId];
-}
-function contentAssigned(wk, pid, wheelId){
-  const week = (state.content.weeks || {})[wk];
-  return (week && week.assign && week.assign[pid] && week.assign[pid][wheelId]) || null;
-}
-function setContentAssigned(wk, pid, wheelId, entry){
-  const weeks = state.content.weeks || (state.content.weeks = {});
-  const week = weeks[wk] || (weeks[wk] = {});
-  const assign = week.assign || (week.assign = {});
-  const row = assign[pid] || (assign[pid] = {});
-  if(entry){
-    row[wheelId] = {entryId:entry.id, name:entry.name, icon:entry.icon||'', ts:Date.now()};
-    ['afk','xph','note'].forEach(k=>{ if(entry[k]) row[wheelId][k] = entry[k]; });
-  }
-  else delete row[wheelId];
-  saveState('content', `assign|${wk}|${pid}|${wheelId}`);
-}
-function contentPlayer(){
-  const players = activePlayers();
-  if(!players.some(p=> p.id===activePlayer.content)) activePlayer.content = players.length ? players[0].id : null;
-  return players.find(p=> p.id===activePlayer.content) || null;
+function contentEntries(){
+  return (state.content.entries && state.content.entries[BOSS_WHEEL.id]) || DEFAULT_BOSS_ENTRIES;
 }
 
 /* ---- member stats, for ruling out what isn't viable ----
    The last levels pulled from the hiscores are kept in content-data so the
-   wheels can filter straight away; they're refreshed in the background
+   wheel can filter straight away; they're refreshed in the background
    once they're a few hours old. */
 const CONTENT_STATS_MAX_AGE = 6 * 3600 * 1000;
 const contentStatsStatus = {}; // pid -> 'loading' | 'error'
@@ -2136,26 +1992,6 @@ function contentReqShortfall(entry, levels){
   }
   return '';
 }
-function contentRuledOut(entry, levels){
-  if(!levels) return '';
-  const short = contentReqShortfall(entry, levels);
-  if(short) return short;
-  const trains = entry.trains || [];
-  if(trains.length && trains.every(s=> contentLevel(levels, s) >= 99)) return trains.length===1 ? `${trains[0]} is 99` : `${trains.join(', ')} all 99`;
-  if(entry.outgrow && trains.length && contentLevel(levels, trains[0]) >= entry.outgrow) return `outgrown at ${contentLevel(levels, trains[0])} ${trains[0]}`;
-  return '';
-}
-function contentViable(wheelId, pid){
-  const stats = pid && contentStats(pid);
-  const levels = stats && stats.levels;
-  const ok = [], out = [];
-  contentEntries(wheelId).forEach(e=>{
-    const why = contentRuledOut(e, levels);
-    if(why) out.push({e, why}); else ok.push(e);
-  });
-  return {ok, out};
-}
-/* ---- group wheel ---- */
 function contentGroupPick(wk){
   const week = (state.content.weeks || {})[wk];
   return (week && week.group) || null;
@@ -2163,11 +1999,11 @@ function contentGroupPick(wk){
 function setContentGroupPick(wk, entry){
   const weeks = state.content.weeks || (state.content.weeks = {});
   const week = weeks[wk] || (weeks[wk] = {});
-  if(entry) week.group = {entryId:entry.id, name:entry.name, icon:entry.icon||'', ts:Date.now()};
+  if(entry) week.group = {entryId:entry.id, name:entry.name, icon:entry.icon||'', hs:(entry.hs||[entry.name]).slice(), ts:Date.now()};
   else delete week.group;
   saveState('content', 'group|'+wk);
 }
-// which members have the stats for a group entry ('' = ready, else why not);
+// which members have the stats for an entry ('' = ready, else why not);
 // members whose levels haven't loaded count as ready
 function contentGroupReadiness(entry){
   return activePlayers().map(p=>{
@@ -2177,7 +2013,7 @@ function contentGroupReadiness(entry){
 }
 function contentGroupViable(){
   const ok = [], out = [];
-  contentEntries('group').forEach(e=>{
+  contentEntries().forEach(e=>{
     const ready = contentGroupReadiness(e).filter(r=> !r.why).length;
     const team = e.team || 2;
     if(ready >= team) ok.push(e);
@@ -2190,7 +2026,6 @@ async function refreshContentStats(pid){
   const p = state.players.find(x=> x.id===pid);
   if(!p || !p.rsn.trim() || contentStatsStatus[pid]==='loading') return;
   contentStatsStatus[pid] = 'loading';
-  renderContentStatsNote();
   try{
     const res = await fetch('/api/hiscores?player=' + encodeURIComponent(p.rsn));
     const data = await res.json();
@@ -2205,11 +2040,7 @@ async function refreshContentStats(pid){
     contentStatsStatus[pid] = 'error';
   }
   if(document.getElementById('page-content').classList.contains('active')){
-    if(pid===activePlayer.content) CONTENT_WHEELS.forEach(w=>{ if(!wheelSpinning[w.id]) delete wheelRotation[w.id]; });
     if(!wheelSpinning.group) delete wheelRotation.group;
-    renderContentStatsNote();
-    renderContentWheels();
-    renderContentBoard();
     renderContentGroup();
   }
 }
@@ -2227,20 +2058,6 @@ function timeAgo(ts){
   const hrs = Math.round(mins / 60);
   return hrs < 48 ? `${hrs}h ago` : `${Math.round(hrs/24)} days ago`;
 }
-function renderContentStatsNote(){
-  const el = document.getElementById('contentStatsNote');
-  const p = contentPlayer();
-  if(!el || !p) return;
-  const s = contentStats(p.id);
-  const status = contentStatsStatus[p.id];
-  const name = escapeHtml(progShortName(p));
-  let text;
-  if(status==='loading') text = `Pulling ${name}'s levels from the hiscores…`;
-  else if(status==='error' && !s) text = `Couldn't load ${name}'s levels from the hiscores, so the wheels are showing everything.`;
-  else if(s) text = `Wheels filtered to ${name}'s levels from the hiscores, updated ${timeAgo(s.ts)}${status==='error' ? ' (latest refresh failed)' : ''}.`;
-  else text = `No levels for ${name} yet, so the wheels are showing everything.`;
-  el.innerHTML = `${text} <button class="btn ghost small" onclick="refreshContentStats('${p.id}')" ${status==='loading'?'disabled':''}>⟳ Refresh</button>`;
-}
 
 // wheel angles: 0° is the pointer at the top, increasing clockwise
 const wheelRotation = {};
@@ -2248,20 +2065,17 @@ const wheelSpinning = {};
 const spinList = {}; // the slice list a wheel is spinning with, frozen until it stops
 const freshPick = {};
 const ruledOpen = {}; // keeps the "ruled out" list open across re-renders
-function anyWheelSpinning(){ return Object.values(wheelSpinning).some(Boolean); }
-function wheelList(wheelId){
-  if(spinList[wheelId]) return spinList[wheelId];
-  return wheelId==='group' ? contentGroupViable().ok : contentViable(wheelId, activePlayer.content).ok;
+function wheelList(){
+  return spinList.group || contentGroupViable().ok;
 }
 function wheelSliceAt(rotation, n){
   const a = ((360 - (rotation % 360)) % 360 + 360) % 360;
   return Math.floor(a / (360/n)) % n;
 }
-// at rest the wheel shows the selected member's current task under the pointer
-function wheelRestRotation(wheelId){
-  const p = contentPlayer();
-  const pick = wheelId==='group' ? contentGroupPick(weekKey()) : p && contentAssigned(weekKey(), p.id, wheelId);
-  const entries = wheelList(wheelId);
+// at rest the wheel shows this week's pick under the pointer
+function wheelRestRotation(){
+  const pick = contentGroupPick(weekKey());
+  const entries = wheelList();
   const idx = pick ? entries.findIndex(e=> e.id===pick.entryId) : -1;
   if(idx < 0) return 0;
   return 360 - (idx + 0.5) * (360/entries.length);
@@ -2284,7 +2098,7 @@ function wheelSVG(wheel, entries){
     return shape + `<text transform="rotate(${mid-90}) translate(${R-10} 0)" text-anchor="end" dominant-baseline="central" font-size="${fontSize}">${escapeHtml(label)}</text>`;
   }).join('');
   const studs = n > 40 ? '' : entries.map((e,i)=>{ const [x,y] = pt(i*seg, R+5); return `<circle cx="${x}" cy="${y}" r="3" fill="#c9a23f" stroke="#000" stroke-width="1"/>`; }).join('');
-  const rot = wheelRotation[wheel.id] ?? (wheelRotation[wheel.id] = wheelRestRotation(wheel.id));
+  const rot = wheelRotation[wheel.id] ?? (wheelRotation[wheel.id] = wheelRestRotation());
   return `<svg class="cw-wheel" viewBox="-172 -178 344 350" xmlns="http://www.w3.org/2000/svg">
     <circle r="${R+11}" fill="#2a231b" stroke="#000" stroke-width="3"/>
     <circle r="${R+8}" fill="none" stroke="#66573f" stroke-width="1.5"/>
@@ -2301,108 +2115,50 @@ function contentIconHtml(icon, small){
   return `<div class="cw-icon${small?' small':''}${icon?'':' icon-fallback'}">${icon ? `<img src="${wikiImageUrl(icon)}" alt="" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('icon-fallback')">` : ''}</div>`;
 }
 
-function renderContentPlayerTabs(){
-  const sel = contentPlayer();
-  const colors = playerColorMap(activePlayers());
-  const busy = anyWheelSpinning();
-  document.getElementById('contentPlayerTabs').innerHTML = activePlayers().map(p=>
-    `<button class="${sel && sel.id===p.id ? 'active' : ''}" onclick="selectContentPlayer('${p.id}')" ${busy?'disabled':''}><i class="cw-dot" style="background:${colors[p.id]}"></i>${escapeHtml(progShortName(p))}</button>`
-  ).join('') || '<span class="cw-hint">Add team members first</span>';
-  renderContentStatsNote();
-}
-function selectContentPlayer(pid){
-  if(anyWheelSpinning()) return;
-  activePlayer.content = pid;
-  CONTENT_WHEELS.forEach(w=>{ delete wheelRotation[w.id]; });
-  renderContentPlayerTabs();
-  renderContentWheels();
-}
-
-function renderContentWheels(){
-  const wk = weekKey();
-  const p = contentPlayer();
-  const who = p ? escapeHtml(progShortName(p)) : '';
-  document.getElementById('contentWeekLabel').innerHTML = `Week of ${weekLabel(wk)} <span>· resets Monday</span>`;
-  document.getElementById('contentWheels').innerHTML = CONTENT_WHEELS.map(wheel=>{
-    const entries = wheelList(wheel.id);
-    const ruledOut = p ? contentViable(wheel.id, p.id).out : [];
-    const pick = p && contentAssigned(wk, p.id, wheel.id);
-    const spinning = !!wheelSpinning[wheel.id];
-    const actions = !p || !entries.length ? ''
-      : spinning ? `<button class="btn" disabled>Spinning…</button>`
-      : pick ? `<button class="btn ghost" onclick="spinWheel('${wheel.id}')">Re-spin for ${who}</button>`
-      : `<button class="btn" onclick="spinWheel('${wheel.id}')">Spin for ${who}</button>`;
-    const result = spinning || !p ? ''
-      : pick ? `<div class="cw-result${freshPick[wheel.id]?' fresh':''}">
-          ${contentIconHtml(pick.icon)}
-          <div><div class="cw-kicker">${who}'s ${escapeHtml(wheel.label)} task</div><div class="cw-pick-name">${escapeHtml(pick.name)}</div>${pick.afk || pick.xph ? `<div class="cw-afk">${[pick.afk && `Up to ${escapeHtml(pick.afk)} between clicks`, pick.xph && `~${escapeHtml(pick.xph)} xp/hr`].filter(Boolean).join(' · ')}</div>` : ''}${pick.note ? `<div class="cw-note">${escapeHtml(pick.note)}</div>` : ''}</div>
-        </div>`
-      : `<div class="cw-hint">${who} has no ${escapeHtml(wheel.label)} task yet this week.</div>`;
-    const ruled = ruledOut.length
-      ? `<details class="cw-ruled" ${ruledOpen[wheel.id]?'open':''} ontoggle="ruledOpen['${wheel.id}']=this.open"><summary>${entries.length} options for ${who} · ${ruledOut.length} ruled out</summary>
-          <ul>${ruledOut.map(r=>`<li><span>${escapeHtml(r.e.name)}</span><em>${escapeHtml(r.why)}</em></li>`).join('')}</ul>
-        </details>`
-      : (p ? `<div class="cw-ruled-none">${entries.length} options for ${who}</div>` : '');
-    return `<div class="card cw-card">
-      <h3><img src="${wikiImageUrl(wheel.icon)}" alt="" referrerpolicy="no-referrer">${wheel.label}</h3>
-      <div class="cw-sub">${wheel.sub}</div>
-      <div class="cw-wheel-wrap${spinning?' spinning':''}">
-        ${entries.length ? wheelSVG(wheel, entries) : `<div class="cw-wheel-empty">Nothing on this wheel is viable${p?` for ${who}`:''} right now.</div>`}
-      </div>
-      <div class="cw-live" id="wheelLive-${wheel.id}"></div>
-      <div class="cw-actions">${actions}</div>
-      <div style="width:100%">${result}</div>
-      ${ruled}
-    </div>`;
-  }).join('');
-  CONTENT_WHEELS.forEach(w=>{ freshPick[w.id] = false; });
-}
-
 function renderContentGroup(){
   const el = document.getElementById('contentGroup');
   if(!el) return;
-  const wheel = GROUP_WHEEL;
+  const wheel = BOSS_WHEEL;
   const wk = weekKey();
-  const entries = wheelList('group');
+  const entries = wheelList();
   const {ok, out} = contentGroupViable();
   const pick = contentGroupPick(wk);
   const spinning = !!wheelSpinning.group;
   const actions = !entries.length ? ''
     : spinning ? `<button class="btn" disabled>Spinning…</button>`
-    : pick ? `<button class="btn ghost" onclick="spinGroupWheel()">Re-spin for the team</button>${groupDiscordButton(wk, pick)}`
-    : `<button class="btn" onclick="spinGroupWheel()">Spin for the team</button>`;
+    : pick ? `<button class="btn ghost" onclick="spinGroupWheel()">Re-spin</button>${groupDiscordButton(wk, pick)}`
+    : `<button class="btn" onclick="spinGroupWheel()">Spin the wheel</button>`;
   let result = '';
   if(!spinning){
     if(pick){
-      const entry = contentEntries('group').find(e=> e.id===pick.entryId);
+      const entry = contentEntries().find(e=> e.id===pick.entryId);
       const ready = entry ? contentGroupReadiness(entry) : [];
       const chips = ready.map(r=> `<span class="cw-mate${r.why?'':' done'}" title="${r.why ? escapeHtml(r.why) : 'Has the stats for it'}"><i>${r.why?'':'✓'}</i>${escapeHtml(progShortName(r.p))}</span>`).join('');
+      const kind = entry && entry.team ? `Group content · best with ${entry.team}+` : 'Solo boss';
       result = `<div class="cw-result${freshPick.group?' fresh':''}">
         ${contentIconHtml(pick.icon)}
-        <div><div class="cw-kicker">This week's group boss</div><div class="cw-pick-name">${escapeHtml(pick.name)}</div>${entry && entry.team ? `<div class="cw-afk">Best with ${entry.team}+</div>` : ''}</div>
+        <div><div class="cw-kicker">This week's boss</div><div class="cw-pick-name">${escapeHtml(pick.name)}</div><div class="cw-afk">${kind}</div></div>
       </div>
       ${chips ? `<div class="cw-team">${chips}</div>` : ''}`;
     } else {
-      result = `<div class="cw-hint">No group boss picked yet this week.</div>`;
+      result = `<div class="cw-hint">No boss picked yet this week.</div>`;
     }
   }
   const opt = e=> `<option value="${escapeHtml(e.id)}"${pick && pick.entryId===e.id ? ' selected' : ''}>${escapeHtml(e.name)}</option>`;
-  const orphan = pick && !contentEntries('group').some(e=> e.id===pick.entryId) ? `<option value="${escapeHtml(pick.entryId)}" selected>${escapeHtml(pick.name)}</option>` : '';
+  const orphan = pick && !contentEntries().some(e=> e.id===pick.entryId) ? `<option value="${escapeHtml(pick.entryId)}" selected>${escapeHtml(pick.name)}</option>` : '';
   const picker = `<label class="cw-group-pick">Or set it by hand
     <select onchange="assignGroupTask(this.value)" ${spinning?'disabled':''}>
       <option value="">Nothing picked</option>${orphan}${ok.map(opt).join('')}${out.length ? `<optgroup label="Not enough of the team ready">${out.map(r=> opt(r.e)).join('')}</optgroup>` : ''}
     </select></label>`;
   const ruled = out.length
-    ? `<details class="cw-ruled" ${ruledOpen.group?'open':''} ontoggle="ruledOpen.group=this.open"><summary>${entries.length} options for the team · ${out.length} ruled out</summary>
+    ? `<details class="cw-ruled" ${ruledOpen.group?'open':''} ontoggle="ruledOpen.group=this.open"><summary>${entries.length} bosses on the wheel · ${out.length} ruled out</summary>
         <ul>${out.map(r=>`<li><span>${escapeHtml(r.e.name)}</span><em>${escapeHtml(r.why)}</em></li>`).join('')}</ul>
       </details>`
-    : `<div class="cw-ruled-none">${entries.length} options for the team</div>`;
+    : `<div class="cw-ruled-none">${entries.length} bosses on the wheel</div>`;
   el.innerHTML = `<div class="card cw-card cw-group">
-    <h3><img src="${wikiImageUrl(wheel.icon)}" alt="" referrerpolicy="no-referrer">${wheel.label}</h3>
-    <div class="cw-sub">${wheel.sub}. Only shows what enough of the team has the stats for.</div>
     <div class="cw-group-body">
       <div class="cw-wheel-wrap${spinning?' spinning':''}">
-        ${entries.length ? wheelSVG(wheel, entries) : '<div class="cw-wheel-empty">Nothing on this wheel is viable for the team right now.</div>'}
+        ${entries.length ? wheelSVG(wheel, entries) : '<div class="cw-wheel-empty">Nothing on the wheel is viable for the team right now.</div>'}
       </div>
       <div class="cw-group-side">
         <div class="cw-live" id="wheelLive-group"></div>
@@ -2415,7 +2171,7 @@ function renderContentGroup(){
   </div>`;
   freshPick.group = false;
 }
-/* ---- "Send to Discord" for the group pick ----
+/* ---- "Send to Discord" for the pick ----
    The worker builds and posts the message (it pings @everyone), and only
    lets each week's pick go out once; discord-group-sent is its record of
    what was last announced. */
@@ -2435,14 +2191,14 @@ async function sendGroupPickToDiscord(){
   const wk = weekKey();
   const pick = contentGroupPick(wk);
   if(!pick || groupDiscordBusy) return;
-  if(!confirm(`Ping @everyone on Discord with this week's group boss: ${pick.name}?`)) return;
+  if(!confirm(`Ping @everyone on Discord with this week's boss: ${pick.name}?`)) return;
   groupDiscordBusy = true;
   renderContentGroup();
   try{
     // the worker reads the pick from KV, so make sure it's actually saved first
     clearTimeout(saveTimers.content);
     if(dirty.content.size) await saveSection('content');
-    const entry = contentEntries('group').find(e=> e.id===pick.entryId);
+    const entry = contentEntries().find(e=> e.id===pick.entryId);
     const ready = entry ? contentGroupReadiness(entry).filter(r=> !r.why).map(r=> r.p.id) : [];
     const res = await fetch('/api/discord/group-pick', {
       method:'POST',
@@ -2462,60 +2218,135 @@ async function sendGroupPickToDiscord(){
 function assignGroupTask(entryId){
   const wk = weekKey();
   const current = contentGroupPick(wk);
-  if(current && current.entryId===entryId) return;
-  setContentGroupPick(wk, entryId ? contentEntries('group').find(e=> e.id===entryId) : null);
+  // setting an old pick again gives it the hiscores names it needs for a race
+  if(current && current.entryId===entryId && current.hs) return;
+  setContentGroupPick(wk, entryId ? contentEntries().find(e=> e.id===entryId) : null);
   delete wheelRotation.group;
   renderContentGroup();
+  refreshBossRace();
 }
 
-function renderContentBoard(){
-  const wk = weekKey();
-  const colors = playerColorMap(activePlayers());
-  const busy = anyWheelSpinning();
-  const rows = activePlayers().map(p=>{
-    const cells = CONTENT_WHEELS.map(wheel=>{
-      const pick = contentAssigned(wk, p.id, wheel.id);
-      const {ok, out} = contentViable(wheel.id, p.id);
-      const opt = e=> `<option value="${escapeHtml(e.id)}"${pick && pick.entryId===e.id ? ' selected' : ''}>${escapeHtml(e.name)}</option>`;
-      // keep a task that's since been edited off the wheel selectable
-      const orphan = pick && !contentEntries(wheel.id).some(e=> e.id===pick.entryId)
-        ? `<option value="${escapeHtml(pick.entryId)}" selected>${escapeHtml(pick.name)}</option>` : '';
-      const outGroup = out.length ? `<optgroup label="Not viable for ${escapeHtml(progShortName(p))}">${out.map(r=> opt(r.e)).join('')}</optgroup>` : '';
-      return `<div class="cw-bcell${pick?'':' empty'}">
-        ${contentIconHtml(pick && pick.icon, true)}
-        <select onchange="assignContentTask('${p.id}','${wheel.id}',this.value)" ${busy?'disabled':''} aria-label="${escapeHtml(progShortName(p))}'s ${escapeHtml(wheel.label)} task">
-          <option value="">Unassigned</option>${orphan}${ok.map(opt).join('')}${outGroup}
-        </select>
-        <button class="spin-mini" title="Spin the ${escapeHtml(wheel.label)} wheel for ${escapeHtml(progShortName(p))}" onclick="spinWheelFor('${p.id}','${wheel.id}')" ${busy?'disabled':''}>🎲</button>
-      </div>`;
-    }).join('');
-    return `<div class="cw-brow"><div class="cw-bname"><i class="cw-dot" style="background:${colors[p.id]}"></i><span>${escapeHtml(progShortName(p))}</span></div>${cells}</div>`;
+/* ---- the kill race ----
+   bossRace is the worker's boss-race record:
+   {weeks:{<monday>:{entries:{<entryId>:{name, hs, start, base:{pid:kc}, now:{pid:kc}, ts, unmatched?}}}}}
+   Asking /api/boss-race for a week has the worker check the hiscores (and
+   take the starting KCs if the pick is new), so it's polled while the page
+   is open; a cron on the worker keeps it going otherwise. */
+const BOSS_RACE_POLL_MS = 3 * 60 * 1000;
+let bossRace = null;
+let bossRaceChecked = 0;
+let bossRaceStatus = ''; // 'loading' | 'error' | ''
+let bossRaceTimer = null;
+function bossRaceRecord(wk, entryId){
+  const week = bossRace && bossRace.weeks && bossRace.weeks[wk];
+  return (week && week.entries && week.entries[entryId]) || null;
+}
+// members with a starting KC, most kills first
+function bossRaceStandings(rec){
+  return activePlayers().filter(p=> rec.base && rec.base[p.id] != null).map(p=>{
+    const kc = rec.now && rec.now[p.id] != null ? rec.now[p.id] : rec.base[p.id];
+    return {p, kc, kills: Math.max(0, kc - rec.base[p.id])};
+  }).sort((a,b)=> b.kills - a.kills || b.kc - a.kc);
+}
+async function loadBossRace(){
+  const data = await apiGet('boss-race');
+  if(data && !bossRace) bossRace = data;
+}
+async function refreshBossRace(){
+  if(bossRaceStatus==='loading') return;
+  bossRaceStatus = 'loading';
+  renderBossRace();
+  try{
+    // the worker reads the pick from KV, so make sure it's saved first
+    clearTimeout(saveTimers.content);
+    if(dirty.content.size) await saveSection('content');
+    const res = await fetch('/api/boss-race?week=' + weekKey());
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || 'race lookup failed');
+    bossRace = data.race;
+    bossRaceChecked = data.checked || Date.now();
+    bossRaceStatus = '';
+  }catch(e){
+    bossRaceStatus = 'error';
+  }
+  renderBossRace();
+  renderContentHistory();
+}
+function startBossRacePolling(){
+  clearInterval(bossRaceTimer);
+  bossRaceTimer = setInterval(()=>{
+    if(!document.getElementById('page-content').classList.contains('active')) return clearInterval(bossRaceTimer);
+    if(!document.hidden) refreshBossRace();
+  }, BOSS_RACE_POLL_MS);
+}
+function formatRaceStart(ts){
+  const d = new Date(ts);
+  const day = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()];
+  return `${day} ${d.getDate()} ${MONTH_NAMES[d.getMonth()]}, ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+}
+function bossRaceRows(rec, colors){
+  const rows = bossRaceStandings(rec);
+  const top = rows.length ? rows[0].kills : 0;
+  const medals = ['🥇','🥈','🥉'];
+  let place = 0;
+  return rows.map((r,i)=>{
+    if(i>0 && r.kills < rows[i-1].kills) place = i; // ties share a place
+    const medal = r.kills > 0 && place < 3 ? medals[place] : place + 1;
+    return `<div class="br-row${r.kills > 0 && place===0 ? ' lead' : ''}">
+      <span class="br-place">${medal}</span>
+      <span class="br-name"><i class="cw-dot" style="background:${colors[r.p.id]}"></i>${escapeHtml(progShortName(r.p))}</span>
+      <span class="br-bar"><i style="width:${r.kills ? Math.max(3, r.kills/top*100) : 0}%; background:${colors[r.p.id]}"></i></span>
+      <span class="br-kills"><b>${r.kills.toLocaleString()}</b> kill${r.kills===1?'':'s'}</span>
+      <span class="br-kc">${r.kc.toLocaleString()} KC</span>
+    </div>`;
   }).join('');
-  document.getElementById('contentBoard').innerHTML = rows
-    ? `<div class="cw-brow head"><span></span>${CONTENT_WHEELS.map(w=>`<span>${w.label}</span>`).join('')}</div>${rows}`
-    : '<p class="cw-hint">Add team members first.</p>';
+}
+function renderBossRace(){
+  const el = document.getElementById('bossRace');
+  if(!el) return;
+  const wk = weekKey();
+  const pick = contentGroupPick(wk);
+  if(!pick){
+    el.innerHTML = '<p class="cw-hint" style="text-align:left; margin:0;">Spin the wheel and the race starts. Every kill of that boss from then until Sunday night counts.</p>';
+    return;
+  }
+  const rec = bossRaceRecord(wk, pick.entryId);
+  const status = bossRaceStatus==='loading' ? 'Checking the hiscores…'
+    : bossRaceStatus==='error' ? 'Couldn\'t reach the hiscores just now'
+    : bossRaceChecked ? `Checked ${timeAgo(bossRaceChecked)}` : '';
+  const head = `<div class="br-head">
+    ${contentIconHtml(pick.icon)}
+    <div class="br-title"><div class="cw-pick-name">${escapeHtml(pick.name)}</div><div class="br-since">${rec ? `Kills since ${formatRaceStart(rec.start)}`
+      : pick.hs ? 'Taking everyone\'s starting KC…' : 'Picked before the race existed, so no kills are being counted. Set it again to start one.'}</div></div>
+    <div class="br-status">${status} <button class="btn ghost small" onclick="refreshBossRace()" ${bossRaceStatus==='loading'?'disabled':''}>⟳ Refresh</button></div>
+  </div>`;
+  if(!rec){ el.innerHTML = head; return; }
+  const missing = activePlayers().filter(p=> !rec.base || rec.base[p.id]==null);
+  const notes = [];
+  if(rec.unmatched) notes.push(`The hiscores don't have anything called ${(rec.hs||[]).map(escapeHtml).join(' / ')}, so no kills can be counted. Fix the hiscores name in the wheel editor and pick it again.`);
+  else if(missing.length) notes.push(`No starting KC for ${missing.map(p=> escapeHtml(progShortName(p))).join(', ')} yet. They'll join from the next check.`);
+  el.innerHTML = head + `<div class="br-rows">${bossRaceRows(rec, playerColorMap(activePlayers()))}</div>`
+    + notes.map(n=> `<p class="cw-hint" style="text-align:left; margin:10px 0 0;">${n}</p>`).join('');
 }
 
 function renderContentHistory(){
   const current = weekKey();
-  const players = activePlayers();
-  const weeks = Object.keys(state.content.weeks || {}).filter(k=> k < current && (contentGroupPick(k) ||
-    players.some(p=> CONTENT_WHEELS.some(w=> contentAssigned(k, p.id, w.id))))).sort().reverse();
-  const taskHtml = t=> `${t.icon?`<img src="${wikiImageUrl(t.icon)}" alt="" referrerpolicy="no-referrer" onerror="this.style.display='none'">`:''}<span>${escapeHtml(t.name)}</span>`;
+  const weeks = Object.keys(state.content.weeks || {}).filter(k=> k < current && contentGroupPick(k)).sort().reverse();
   document.getElementById('contentHistory').innerHTML = weeks.slice(0, 16).map(k=>{
-    const members = players.map(p=>{
-      const tasks = CONTENT_WHEELS.map(w=> contentAssigned(k, p.id, w.id)).filter(Boolean);
-      if(!tasks.length) return '';
-      return `<div class="cw-hmember"><b>${escapeHtml(progShortName(p))}</b>${tasks.map(t=>
-        taskHtml(t)).join('<span class="none">·</span>')}</div>`;
-    }).join('');
-    const group = contentGroupPick(k);
-    const team = group ? `<div class="cw-hmember cw-hteam"><b>Team</b>${taskHtml(group)}</div>` : '';
-    return `<div class="cw-hrow"><div class="when">${weekLabel(k)}</div><div class="cw-hmembers">${team}${members}</div></div>`;
-  }).join('') || '<p style="margin:0; color:var(--text-dim); font-size:.85rem;">Nothing yet. Once a week ends, everyone\'s tasks from it show up here.</p>';
+    const pick = contentGroupPick(k);
+    const rec = bossRaceRecord(k, pick.entryId);
+    const rows = rec ? bossRaceStandings(rec).filter(r=> r.kills > 0) : [];
+    const result = !rec ? '<span class="none">No race that week</span>'
+      : !rows.length ? '<span class="none">Nobody got a kill</span>'
+      : rows.map((r,i)=> `<span class="cw-hkill${i===0 || r.kills===rows[0].kills ? ' win' : ''}">${i===0 || r.kills===rows[0].kills ? '🏆 ' : ''}<b>${escapeHtml(progShortName(r.p))}</b> ${r.kills.toLocaleString()}</span>`).join('');
+    return `<div class="cw-hrow"><div class="when">${weekLabel(k)}</div><div class="cw-hmembers">
+      <div class="cw-hmember">${pick.icon?`<img src="${wikiImageUrl(pick.icon)}" alt="" referrerpolicy="no-referrer" onerror="this.style.display='none'">`:''}<span>${escapeHtml(pick.name)}</span></div>
+      ${result}
+    </div></div>`;
+  }).join('') || '<p style="margin:0; color:var(--text-dim); font-size:.85rem;">Nothing yet. Once a week ends, its boss and the final kill counts show up here.</p>';
 }
 
-// requirements are edited as plain text, e.g. "Woodcutting 90, Sailing 62"
+// requirements are edited as plain text, e.g. "Combat 100, Slayer 91"
 function formatContentReq(req){
   return Object.entries(req || {}).map(([s,l])=> `${s} ${l}`).join(', ');
 }
@@ -2537,117 +2368,85 @@ function parseContentReq(text){
   });
   return req;
 }
-function parseContentTrains(text){
-  return text.split(',').map(contentSkillName).filter(s=> s && s!=='Combat');
-}
 
 function renderContentEditor(){
-  document.getElementById('contentEditorCols').innerHTML = ALL_WHEELS.map(wheel=>{
-    const isGroup = wheel.id==='group';
-    const rows = contentEntries(wheel.id).map((e,i)=>`<div class="cw-erow">
-      <input value="${escapeHtml(e.name)}" onchange="editContentEntry('${wheel.id}',${i},'name',this.value)" placeholder="Name">
-      ${isGroup
-        ? `<input type="number" min="1" max="5" value="${e.team||2}" onchange="editContentEntry('${wheel.id}',${i},'team',this.value)" placeholder="Min team">`
-        : `<input value="${escapeHtml((e.trains||[]).join(', '))}" onchange="editContentEntry('${wheel.id}',${i},'trains',this.value)" placeholder="Trains (e.g. Mining)">`}
-      <input value="${escapeHtml(formatContentReq(e.req))}" onchange="editContentEntry('${wheel.id}',${i},'req',this.value)" placeholder="Needs (e.g. Mining 72)">
-      <input class="icon-in" value="${escapeHtml(e.icon||'')}" onchange="editContentEntry('${wheel.id}',${i},'icon',this.value)" placeholder="Wiki icon file">
-      <button class="rm" title="Remove" onclick="removeContentEntry('${wheel.id}',${i})">✕</button>
-    </div>`).join('');
-    return `<div>
-      <h4>${wheel.label} <span class="mono" style="color:var(--text-dim); font-size:.8rem;">(${contentEntries(wheel.id).length})</span></h4>
-      <div class="cw-erow head"><span>Name</span><span>${isGroup ? 'Min team' : 'Trains'}</span><span>Needs</span><span class="icon-in">Icon (wiki file)</span><span></span></div>
-      ${rows}
-      <div class="row" style="margin-top:10px;">
-        <button class="btn small" onclick="addContentEntry('${wheel.id}')">+ Add entry</button>
-        <button class="btn ghost small" onclick="resetContentEntries('${wheel.id}')">Reset to defaults</button>
-      </div>
-    </div>`;
-  }).join('');
+  const list = contentEntries();
+  const rows = list.map((e,i)=>`<div class="cw-erow">
+    <input value="${escapeHtml(e.name)}" onchange="editContentEntry(${i},'name',this.value)" placeholder="Name">
+    <input type="number" min="1" max="5" value="${e.team||''}" onchange="editContentEntry(${i},'team',this.value)" placeholder="Solo">
+    <input value="${escapeHtml(formatContentReq(e.req))}" onchange="editContentEntry(${i},'req',this.value)" placeholder="Needs (e.g. Combat 100)">
+    <input value="${escapeHtml((e.hs||[e.name]).join(', '))}" onchange="editContentEntry(${i},'hs',this.value)" placeholder="Hiscores name(s)">
+    <input class="icon-in" value="${escapeHtml(e.icon||'')}" onchange="editContentEntry(${i},'icon',this.value)" placeholder="Wiki icon file">
+    <button class="rm" title="Remove" onclick="removeContentEntry(${i})">✕</button>
+  </div>`).join('');
+  document.getElementById('contentEditorCols').innerHTML = `<div>
+    <h4>${BOSS_WHEEL.label} <span class="mono" style="color:var(--text-dim); font-size:.8rem;">(${list.length})</span></h4>
+    <p class="cw-hint" style="text-align:left; margin:0 0 10px;">Leave the team size blank for a solo boss. The hiscores names are what the race counts kills from, exactly as the hiscores spell them; list more than one with commas to add their kills together.</p>
+    <div class="cw-erow head"><span>Name</span><span>Team</span><span>Needs</span><span>Hiscores</span><span class="icon-in">Icon (wiki file)</span><span></span></div>
+    ${rows}
+    <div class="row" style="margin-top:10px;">
+      <button class="btn small" onclick="addContentEntry()">+ Add boss</button>
+      <button class="btn ghost small" onclick="resetContentEntries()">Reset to defaults</button>
+    </div>
+  </div>`;
 }
 
 function renderContent(){
-  renderContentPlayerTabs();
-  renderContentWheels();
-  renderContentBoard();
+  document.getElementById('contentWeekLabel').innerHTML = `Week of ${weekLabel(weekKey())} <span>· resets Monday</span>`;
   renderContentGroup();
+  renderBossRace();
   renderContentHistory();
   renderContentEditor();
   refreshStaleContentStats();
   loadGroupDiscordSent();
-}
-
-function assignContentTask(pid, wheelId, entryId){
-  const wk = weekKey();
-  const current = contentAssigned(wk, pid, wheelId);
-  if(current && current.entryId===entryId) return;
-  const entry = entryId ? contentEntries(wheelId).find(e=> e.id===entryId) : null;
-  setContentAssigned(wk, pid, wheelId, entry);
-  if(pid===activePlayer.content) delete wheelRotation[wheelId];
-  renderContentWheels();
-  renderContentBoard();
+  refreshBossRace();
+  startBossRacePolling();
 }
 
 // the first edit copies the defaults into saved state, so from then on the
 // wheel is whatever the clan has made it
-function editableEntries(wheelId){
+function editableEntries(){
   if(!state.content.entries) state.content.entries = {};
-  if(!state.content.entries[wheelId]) state.content.entries[wheelId] = JSON.parse(JSON.stringify(DEFAULT_CONTENT_ENTRIES[wheelId]));
-  return state.content.entries[wheelId];
+  if(!state.content.entries[BOSS_WHEEL.id]) state.content.entries[BOSS_WHEEL.id] = JSON.parse(JSON.stringify(DEFAULT_BOSS_ENTRIES));
+  return state.content.entries[BOSS_WHEEL.id];
 }
-function contentEntriesChanged(wheelId, rerenderEditor){
-  if(!wheelSpinning[wheelId]) delete wheelRotation[wheelId];
-  saveState('content', 'entries|'+wheelId);
-  renderContentWheels();
-  renderContentBoard();
+function contentEntriesChanged(rerenderEditor){
+  if(!wheelSpinning.group) delete wheelRotation.group;
+  saveState('content', 'entries|'+BOSS_WHEEL.id);
+  renderContentGroup();
   if(rerenderEditor) renderContentEditor();
 }
-function editContentEntry(wheelId, i, field, value){
-  if(wheelSpinning[wheelId]) return renderContentEditor();
-  const list = editableEntries(wheelId);
-  const e = list[i];
+function editContentEntry(i, field, value){
+  if(wheelSpinning.group) return renderContentEditor();
+  const e = editableEntries()[i];
   if(!e) return;
   if(field==='req') e.req = parseContentReq(value);
-  else if(field==='trains') e.trains = parseContentTrains(value);
-  else if(field==='team') e.team = Math.max(1, Math.min(5, parseInt(value, 10) || 2));
+  else if(field==='hs'){ e.hs = value.split(',').map(s=> s.trim()).filter(Boolean); if(!e.hs.length) e.hs = [e.name]; }
+  else if(field==='team'){ const n = parseInt(value, 10); if(n > 0) e.team = Math.min(5, n); else delete e.team; }
   else e[field] = value.trim();
   if(field==='name' && !e.name) e.name = 'Untitled';
-  contentEntriesChanged(wheelId, field==='req' || field==='trains' || field==='team'); // show the cleaned-up text
+  contentEntriesChanged(field!=='icon'); // show the cleaned-up text
 }
-function addContentEntry(wheelId){
-  if(wheelSpinning[wheelId]) return;
-  editableEntries(wheelId).push({id: 'e' + Date.now().toString(36), name:'New entry', icon:'', trains:[], req:{}});
-  contentEntriesChanged(wheelId, true);
+function addContentEntry(){
+  if(wheelSpinning.group) return;
+  editableEntries().push({id: 'e' + Date.now().toString(36), name:'New boss', icon:'', req:{}, hs:['New boss']});
+  contentEntriesChanged(true);
 }
-function removeContentEntry(wheelId, i){
-  if(wheelSpinning[wheelId]) return;
-  editableEntries(wheelId).splice(i, 1);
-  contentEntriesChanged(wheelId, true);
+function removeContentEntry(i){
+  if(wheelSpinning.group) return;
+  editableEntries().splice(i, 1);
+  contentEntriesChanged(true);
 }
-function resetContentEntries(wheelId){
-  if(wheelSpinning[wheelId]) return;
-  if(!confirm('Put the ' + CONTENT_WHEELS.find(w=>w.id===wheelId).label + ' wheel back to its default entries?')) return;
-  state.content.entries[wheelId] = JSON.parse(JSON.stringify(DEFAULT_CONTENT_ENTRIES[wheelId]));
-  contentEntriesChanged(wheelId, true);
+function resetContentEntries(){
+  if(wheelSpinning.group) return;
+  if(!confirm('Put the wheel back to its default bosses?')) return;
+  state.content.entries[BOSS_WHEEL.id] = JSON.parse(JSON.stringify(DEFAULT_BOSS_ENTRIES));
+  contentEntriesChanged(true);
 }
 
 function playSpinTick(){ playTone(1150, 0.03, 'square', 0.025); }
 function playSpinWin(){
   [523, 659, 784, 1047].forEach((f,i)=> setTimeout(()=> playTone(f, 0.18, 'triangle', 0.07), i*90));
-}
-
-// the dice on the board: switch to that member, bring the wheel into view, spin
-function spinWheelFor(pid, wheelId){
-  if(anyWheelSpinning()) return;
-  selectContentPlayer(pid);
-  document.getElementById('contentWheels').scrollIntoView({behavior:'smooth', block:'start'});
-  setTimeout(()=> spinWheel(wheelId), 350);
-}
-
-function renderContentSpinState(){
-  renderContentPlayerTabs();
-  renderContentWheels();
-  renderContentBoard();
-  renderContentGroup();
 }
 
 // picks a random slice (skipping `avoid` ids if there's any choice), spins
@@ -2666,7 +2465,7 @@ async function animateWheel(wheelId, entries, avoid){
 
   wheelSpinning[wheelId] = true;
   spinList[wheelId] = entries;
-  renderContentSpinState();
+  renderContentGroup();
   const duration = 5200;
   const t0 = performance.now();
   let lastSlice = -1;
@@ -2676,7 +2475,7 @@ async function animateWheel(wheelId, entries, avoid){
       const eased = 1 - Math.pow(1 - t, 4);
       const rot = start + (end - start) * eased;
       wheelRotation[wheelId] = rot;
-      // looked up each frame: another wheel finishing re-renders the cards
+      // looked up each frame, since a stats refresh can re-render the card
       const g = document.getElementById('wheelRot-'+wheelId);
       const live = document.getElementById('wheelLive-'+wheelId);
       if(g) g.setAttribute('transform', `rotate(${rot})`);
@@ -2698,37 +2497,25 @@ async function animateWheel(wheelId, entries, avoid){
   return entries[wheelSliceAt(end, n)];
 }
 
-async function spinWheel(wheelId){
-  const p = contentPlayer();
-  if(wheelSpinning[wheelId] || !p) return;
-  const pid = p.id;
-  const wk = weekKey();
-  const entries = contentViable(wheelId, pid).ok;
-  if(!entries.length) return;
-  // don't hand someone last week's task, or the one they're re-spinning away from
-  const avoid = new Set();
-  const lastWeek = contentAssigned(previousWeekKey(wk), pid, wheelId);
-  if(lastWeek) avoid.add(lastWeek.entryId);
-  const current = contentAssigned(wk, pid, wheelId);
-  if(current) avoid.add(current.entryId);
-  const landed = await animateWheel(wheelId, entries, avoid);
-  setContentAssigned(wk, pid, wheelId, landed);
-  renderContentSpinState();
-}
-
 async function spinGroupWheel(){
   if(wheelSpinning.group) return;
   const wk = weekKey();
   const entries = contentGroupViable().ok;
   if(!entries.length) return;
+  // don't land on last week's boss, or the one being re-spun away from
   const avoid = new Set();
   const lastWeek = contentGroupPick(previousWeekKey(wk));
   if(lastWeek) avoid.add(lastWeek.entryId);
   const current = contentGroupPick(wk);
   if(current) avoid.add(current.entryId);
+  const rec = current && bossRaceRecord(wk, current.entryId);
+  if(rec && bossRaceStandings(rec).some(r=> r.kills > 0)
+    && !confirm(`Re-spin? The ${current.name} race already has kills on it (they come back if you set it back by hand).`)) return;
   const landed = await animateWheel('group', entries, avoid);
   setContentGroupPick(wk, landed);
-  renderContentSpinState();
+  renderContentGroup();
+  renderBossRace();
+  refreshBossRace();
 }
 
 /* ---------------- UI SOUNDS (dashboard-style hover/click blips) ----------------
@@ -2782,6 +2569,7 @@ async function init(){
   renderBirthdayBanner();
   await loadState();
   buildHomeTiles();
+  loadBossRace().then(()=>{ if(document.getElementById('page-home').classList.contains('active')) buildHomeTiles(); });
   renderGimRank();
   renderBosses();
 

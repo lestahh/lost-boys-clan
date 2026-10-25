@@ -13,8 +13,8 @@
     }
   ],
   "triggers": {
-    // explicitly empty so deploying removes the old Monday availability-digest
-    // cron (leaving the key out would keep whatever's already scheduled)
-    "crons": []
+    // keeps the Boss of the Week kill race checking the hiscores when
+    // nobody has the page open, and catches the last kills of the week
+    "crons": ["*/15 * * * *"]
   }
 }
