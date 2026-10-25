@@ -2369,7 +2369,7 @@ function renderContentGroup(){
   const spinning = !!wheelSpinning.group;
   const actions = !entries.length ? ''
     : spinning ? `<button class="btn" disabled>Spinning…</button>`
-    : pick ? `<button class="btn ghost" onclick="spinGroupWheel()">Re-spin for the team</button>`
+    : pick ? `<button class="btn ghost" onclick="spinGroupWheel()">Re-spin for the team</button>${groupDiscordButton(wk, pick)}`
     : `<button class="btn" onclick="spinGroupWheel()">Spin for the team</button>`;
   let result = '';
   if(!spinning){
@@ -2415,6 +2415,50 @@ function renderContentGroup(){
   </div>`;
   freshPick.group = false;
 }
+/* ---- "Send to Discord" for the group pick ----
+   The worker builds and posts the message (it pings @everyone), and only
+   lets each week's pick go out once; discord-group-sent is its record of
+   what was last announced. */
+let groupDiscordSent = null;
+let groupDiscordBusy = false;
+function groupDiscordButton(wk, pick){
+  if(groupDiscordSent && groupDiscordSent.week===wk && groupDiscordSent.entryId===pick.entryId){
+    return `<button class="btn" disabled style="cursor:default">✓ Sent to Discord</button>`;
+  }
+  return `<button class="btn" onclick="sendGroupPickToDiscord()" ${groupDiscordBusy?'disabled':''}>${groupDiscordBusy?'Sending…':'📣 Send to Discord'}</button>`;
+}
+async function loadGroupDiscordSent(){
+  groupDiscordSent = await apiGet('discord-group-sent');
+  renderContentGroup();
+}
+async function sendGroupPickToDiscord(){
+  const wk = weekKey();
+  const pick = contentGroupPick(wk);
+  if(!pick || groupDiscordBusy) return;
+  if(!confirm(`Ping @everyone on Discord with this week's group boss: ${pick.name}?`)) return;
+  groupDiscordBusy = true;
+  renderContentGroup();
+  try{
+    // the worker reads the pick from KV, so make sure it's actually saved first
+    clearTimeout(saveTimers.content);
+    if(dirty.content.size) await saveSection('content');
+    const entry = contentEntries('group').find(e=> e.id===pick.entryId);
+    const ready = entry ? contentGroupReadiness(entry).filter(r=> !r.why).map(r=> r.p.id) : [];
+    const res = await fetch('/api/discord/group-pick', {
+      method:'POST',
+      headers:{'content-type':'application/json'},
+      body: JSON.stringify({week:wk, ready, team: entry && entry.team})
+    });
+    const data = await res.json().catch(()=> ({}));
+    if(data.sent) groupDiscordSent = data.sent;
+    if(!data.ok && !data.already) alert(data.error || 'Couldn\'t send it to Discord.');
+  }catch(e){
+    alert('Couldn\'t reach the server to send it to Discord.');
+  }
+  groupDiscordBusy = false;
+  renderContentGroup();
+}
+
 function assignGroupTask(entryId){
   const wk = weekKey();
   const current = contentGroupPick(wk);
@@ -2529,6 +2573,7 @@ function renderContent(){
   renderContentHistory();
   renderContentEditor();
   refreshStaleContentStats();
+  loadGroupDiscordSent();
 }
 
 function assignContentTask(pid, wheelId, entryId){

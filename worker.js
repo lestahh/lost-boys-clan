@@ -15,6 +15,10 @@ export default {
       return handleGimRank(request);
     }
 
+    if (url.pathname === '/api/discord/group-pick' && request.method === 'POST') {
+      return handleGroupPickAnnounce(request, env);
+    }
+
     if (url.pathname === '/api/dink' && request.method === 'POST') {
       return handleDinkWebhook(request, env);
     }
@@ -52,6 +56,12 @@ async function handleDataPost(request, env) {
   }
   if (!env.CLAN_KV) {
     return json({ error: 'CLAN_KV namespace is not bound to this project yet' }, 500);
+  }
+
+  // the Discord announce bookkeeping is the worker's alone, so the page
+  // can't clear it to re-ping everyone
+  if (key === GROUP_PICK_SENT_KEY) {
+    return json({ error: 'read-only key' }, 403);
   }
 
   const body = await request.text();
@@ -118,6 +128,98 @@ async function notifyRankChange(newBodyText, env) {
   } catch (e) {
     console.error('rank notify: failed — ' + e.message);
   }
+}
+
+/* ---------------- Discord "group boss" announcements ----------------
+   The Weekly Content page's Group Bossing wheel has a "Send to Discord"
+   button. The message is built here from the pick saved in content-data
+   rather than from anything the page sends, since it pings @everyone, and
+   each week's pick can only be announced once (with a cooldown between
+   posts) so the button can't be used to spam the channel. Uses its own
+   DISCORD_GROUP_WEBHOOK secret. */
+
+const GROUP_PICK_SENT_KEY = 'discord-group-sent';
+const GROUP_PICK_COOLDOWN_MS = 60 * 1000;
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+async function handleGroupPickAnnounce(request, env) {
+  if (!env.DISCORD_GROUP_WEBHOOK) {
+    return json({ ok: false, error: 'The Discord webhook isn\'t set up on the server yet.' }, 500);
+  }
+  if (!env.CLAN_KV) {
+    return json({ ok: false, error: 'CLAN_KV namespace is not bound to this project yet' }, 500);
+  }
+
+  let body;
+  try { body = await request.json(); } catch (e) { body = {}; }
+  const week = String(body.week || '');
+  // weeks are keyed by their Monday (in the clicker's local time), so allow
+  // a little slack either side of now for timezones
+  const weekStart = /^\d{4}-\d{2}-\d{2}$/.test(week) ? Date.parse(week + 'T00:00:00Z') : NaN;
+  if (isNaN(weekStart) || Math.abs(Date.now() - (weekStart + 3.5 * 86400000)) > 5 * 86400000) {
+    return json({ ok: false, error: 'That isn\'t this week.' }, 400);
+  }
+
+  const content = (await env.CLAN_KV.get('content-data', { type: 'json' })) || {};
+  const pick = content.content && content.content.weeks && content.content.weeks[week] && content.content.weeks[week].group;
+  if (!pick || !pick.name) {
+    return json({ ok: false, error: 'No group boss has been picked for this week yet.' }, 400);
+  }
+
+  const sent = (await env.CLAN_KV.get(GROUP_PICK_SENT_KEY, { type: 'json' })) || {};
+  if (sent.week === week && sent.entryId === pick.entryId) {
+    return json({ ok: false, already: true, error: 'This pick has already been sent to Discord.', sent });
+  }
+  if (sent.ts && Date.now() - sent.ts < GROUP_PICK_COOLDOWN_MS) {
+    return json({ ok: false, error: 'Something was just sent. Give it a minute before sending again.' }, 429);
+  }
+
+  // who's ready comes from the page (it has the levels), but only as player
+  // ids, which are turned into names from the saved roster
+  const roster = ((await env.CLAN_KV.get('players-data', { type: 'json' })) || {}).players || [];
+  const name = p => String(p.rsn || '').replace(/^GIM\s*/i, '').trim();
+  const readyIds = Array.isArray(body.ready) ? body.ready.map(String) : [];
+  const ready = roster.filter(p => readyIds.includes(p.id) && name(p)).map(name);
+  const team = Math.max(1, Math.min(5, parseInt(body.team, 10) || 0));
+
+  const [y, m, d] = week.split('-').map(Number);
+  const start = new Date(Date.UTC(y, m - 1, d)), end = new Date(Date.UTC(y, m - 1, d + 6));
+  const weekLabel = start.getUTCDate() + ' ' + MONTHS[start.getUTCMonth()] + ' – ' + end.getUTCDate() + ' ' + MONTHS[end.getUTCMonth()];
+  const icon = pick.icon ? 'https://oldschool.runescape.wiki/images/' + encodeURIComponent(pick.icon.replace(/ /g, '_')) + '.png' : null;
+  const site = new URL(request.url).origin;
+
+  const fields = [];
+  if (ready.length) fields.push({ name: 'Ready for it', value: ready.join(', '), inline: true });
+  if (team) fields.push({ name: 'Best with', value: team + '+', inline: true });
+
+  const payload = {
+    content: '@everyone :game_die: **The Wheel Has Decided!!**',
+    allowed_mentions: { parse: ['everyone'] },
+    embeds: [{
+      title: pick.name,
+      url: site,
+      description: 'If we\'re free as a group this week, the content is **' + pick.name + '**!',
+      color: 0x8a4fc9,
+      thumbnail: icon ? { url: icon } : undefined,
+      fields,
+      footer: { text: 'Lost Boys Clan · Week of ' + weekLabel }
+    }]
+  };
+
+  const res = await fetch(env.DISCORD_GROUP_WEBHOOK, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    console.error('group pick announce: post failed — ' + res.status + ' ' + text);
+    return json({ ok: false, error: 'Discord didn\'t accept the message (status ' + res.status + ').' }, 502);
+  }
+
+  const record = { week, entryId: pick.entryId, name: pick.name, ts: Date.now() };
+  await env.CLAN_KV.put(GROUP_PICK_SENT_KEY, JSON.stringify(record));
+  return json({ ok: true, sent: record });
 }
 
 /* ---------------- OSRS hiscores proxy ---------------- */
