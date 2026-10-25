@@ -318,6 +318,20 @@
   .cw-who{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:10px;}
   .cw-stats-note{display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:.84rem; color:var(--text-dim); text-shadow:var(--ts); margin-bottom:18px;}
   .cw-afk{font-family:'Pixelify Sans',monospace; font-size:.8rem; color:var(--yellow); text-shadow:var(--ts); margin-top:3px;}
+  .cw-group-body{display:grid; grid-template-columns:minmax(0,520px) minmax(0,1fr); gap:24px; align-items:center; width:100%;}
+  .cw-group-side{display:flex; flex-direction:column; gap:12px; align-items:stretch;}
+  .cw-group-side .cw-live, .cw-group-side .cw-hint{text-align:left;}
+  .cw-group-side .cw-actions{justify-content:flex-start;}
+  .cw-group-pick{display:flex; flex-direction:column; gap:4px; font-size:.75rem; text-transform:uppercase; letter-spacing:.06em; color:var(--text-dim); text-shadow:var(--ts);}
+  .cw-group-pick select{text-transform:none; letter-spacing:0; font-size:.88rem;}
+  .cw-group .cw-ruled summary, .cw-group .cw-ruled-none{text-align:left;}
+  .cw-team{display:flex; flex-wrap:wrap; gap:6px;}
+  .cw-mate{display:flex; align-items:center; gap:6px; padding:4px 10px 4px 6px; font-size:.8rem; color:var(--text-dim); text-shadow:var(--ts); cursor:default;
+    background:linear-gradient(180deg, #3b3227, #2a231b); border:2px solid var(--edge); border-radius:3px; box-shadow:inset 0 1px 0 #5a4c39;}
+  .cw-mate i{width:14px; height:14px; border:1px solid #000; border-radius:2px; background:#1a1510; display:flex; align-items:center; justify-content:center; font-style:normal; font-size:.6rem; color:#062006; font-weight:900;}
+  .cw-mate.done{color:var(--text); box-shadow:inset 0 1px 0 #5a4c39, 0 0 0 1px var(--good);}
+  .cw-mate.done i{background:var(--good);}
+  .cw-hteam b{color:var(--gold);}
   .cw-note{font-size:.84rem; color:var(--text); text-shadow:var(--ts); margin-top:4px; line-height:1.35;}
   .cw-ruled{width:100%; font-size:.8rem; color:var(--text-dim); text-shadow:var(--ts);}
   .cw-ruled summary{cursor:pointer; text-align:center; font-family:'Pixelify Sans',monospace;}
@@ -406,6 +420,7 @@
     .cw-erow{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) 26px;}
     .cw-erow .icon-in{display:none;}
     .cw-ruled ul{grid-template-columns:1fr;}
+    .cw-group-body{grid-template-columns:1fr;}
   }
 </style>
 </head>
@@ -501,11 +516,12 @@
   <!-- WEEKLY CONTENT -->
   <section class="page" id="page-content">
     <div class="page-head"><h2>Weekly Content</h2><button class="back" onclick="go('home')">← Home</button></div>
-    <p class="page-intro">Two wheels for the week: a true-AFK task for when you're at work, and an active or bossing task for proper play time. Pick a name and spin, and it's theirs until Monday. The wheels only show what's viable for that member's levels, so nothing that needs stats they don't have or trains a skill they've already 99'd. You can also hand out or swap tasks by hand on the board below.</p>
+    <p class="page-intro">Two wheels for the week: a true-AFK task for when you're at work, and an active or bossing task for proper play time. Pick a name and spin, and it's theirs until Monday. The wheels only show what's viable for that member's levels, so nothing that needs stats they don't have or trains a skill they've already 99'd. You can also hand out or swap tasks by hand on the board below. Under that, the Group Bossing wheel picks one boss or raid for the whole team to do together.</p>
     <div class="cw-week" id="contentWeekLabel"></div>
     <div class="cw-who"><span>Spinning for</span><div class="player-tabs" id="contentPlayerTabs"></div></div>
     <div class="cw-stats-note" id="contentStatsNote"></div>
     <div class="cw-grid" id="contentWheels"></div>
+    <div id="contentGroup" style="margin-top:20px;"></div>
     <div class="card" style="margin-top:20px;">
       <h4>This Week's Tasks</h4>
       <div class="cw-board" id="contentBoard"></div>
@@ -873,6 +889,13 @@ function mergeSection(section, server, local, ids){
         if(lc.stats && lc.stats[a]) merged.content.stats[a] = lc.stats[a];
         return;
       }
+      if(kind==='group'){
+        const lw = lc.weeks[a] || {};
+        const wk = Object.assign({}, merged.content.weeks[a]);
+        if(lw.group) wk.group = lw.group; else delete wk.group;
+        merged.content.weeks[a] = wk;
+        return;
+      }
       if(kind==='assign'){
         const lw = lc.weeks[a] || {assign:{}};
         const wk = Object.assign({assign:{}}, merged.content.weeks[a]);
@@ -929,7 +952,11 @@ function homeTileStat(pageId){
   if(pageId==='content'){
     const wk = weekKey();
     const withTasks = players.filter(p=> CONTENT_WHEELS.some(w=> contentAssigned(wk, p.id, w.id))).length;
-    return withTasks ? `<b>${withTasks}/${players.length}</b> members have tasks this week` : 'No tasks spun yet this week';
+    const group = contentGroupPick(wk);
+    const parts = [];
+    if(group) parts.push(`Team: <b>${escapeHtml(group.name)}</b>`);
+    if(withTasks) parts.push(`<b>${withTasks}/${players.length}</b> members have tasks`);
+    return parts.length ? parts.join(' · ') : 'No tasks spun yet this week';
   }
   return '';
 }
@@ -1883,6 +1910,9 @@ const CONTENT_WHEELS = [
   {id:'afk', label:'AFK', sub:'True AFK for while you\'re at work: a minute or more between clicks', icon:'Stats icon', colors:['#2f5a6b','#1f3f4c','#3f5a4a']},
   {id:'active', label:'Active & Bossing', sub:'Bossing and hands-on skilling for proper play time', icon:'Combat icon', colors:['#7a2c1c','#521a10','#6b4a1c']}
 ];
+// one pick for the whole team each week, rather than one per member
+const GROUP_WHEEL = {id:'group', label:'Group Bossing', sub:'For when everyone\'s free and online', icon:'Group ironman helm', colors:['#5a3f7a','#3d2a56','#4a4a6b']};
+const ALL_WHEELS = [...CONTENT_WHEELS, GROUP_WHEEL];
 
 const MELEE = ['Attack','Strength','Defence'];
 // trains: skills it gives XP in (ruled out once they're all 99)
@@ -2016,6 +2046,26 @@ const DEFAULT_CONTENT_ENTRIES = {
     E('Potion making', 'Ranarr weed', 'Herblore', {}),
     E('Chaos altar', 'Dragon bones', 'Prayer', {}),
     E('Sailing', 'Sailing icon', 'Sailing', {})
+  ],
+  // team: how many members need the stats before it's worth putting on the wheel
+  group: [
+    E('Chambers of Xeric', 'Olmlet', [], {Combat:100}, {team:2}),
+    E('Theatre of Blood', 'Lil\' Zik', [], {Combat:115}, {team:3}),
+    E('ToB entry mode', 'Lil\' Zik', [], {Combat:95}, {team:2}),
+    E('Tombs of Amascut', 'Tumeken\'s guardian', [], {Combat:95}, {team:2}),
+    E('Nex', 'Torva full helm', [], {Combat:115}, {team:3}),
+    E('Bandos', 'Bandos hilt', [], {Combat:95}, {team:2}),
+    E('Saradomin', 'Saradomin hilt', [], {Combat:100}, {team:2}),
+    E('Armadyl', 'Armadyl hilt', [], {Ranged:85}, {team:2}),
+    E('Zamorak', 'Zamorak hilt', [], {Combat:100}, {team:2}),
+    E('Corporeal Beast', 'Pet dark core', [], {Combat:110}, {team:3}),
+    E('The Nightmare', 'Nightmare staff', [], {Combat:110}, {team:3}),
+    E('Wildy bosses', 'Callisto cub', [], {Combat:100}, {team:3}),
+    E('Chaos Elemental', 'Pet chaos elemental', [], {Combat:90}, {team:2}),
+    E('Royal Titans', 'Bran', [], {Combat:90}, {team:2}),
+    E('Hueycoatl', 'Huberte', [], {Combat:85}, {team:2}),
+    E('Dagannoth Kings', 'Berserker ring', [], {Combat:100}, {team:3}),
+    E('Yama duos', 'Yami', [], {Combat:115}, {team:2})
   ]
 };
 
@@ -2080,11 +2130,16 @@ function contentLevel(levels, skill){
   return Math.max(1, levels[skill] || 1);
 }
 // why an entry isn't viable for these levels, or '' if it is
-function contentRuledOut(entry, levels){
-  if(!levels) return '';
+function contentReqShortfall(entry, levels){
   for(const [skill, lvl] of Object.entries(entry.req || {})){
     if(contentLevel(levels, skill) < lvl) return `needs ${lvl} ${skill}`;
   }
+  return '';
+}
+function contentRuledOut(entry, levels){
+  if(!levels) return '';
+  const short = contentReqShortfall(entry, levels);
+  if(short) return short;
   const trains = entry.trains || [];
   if(trains.length && trains.every(s=> contentLevel(levels, s) >= 99)) return trains.length===1 ? `${trains[0]} is 99` : `${trains.join(', ')} all 99`;
   if(entry.outgrow && trains.length && contentLevel(levels, trains[0]) >= entry.outgrow) return `outgrown at ${contentLevel(levels, trains[0])} ${trains[0]}`;
@@ -2100,6 +2155,37 @@ function contentViable(wheelId, pid){
   });
   return {ok, out};
 }
+/* ---- group wheel ---- */
+function contentGroupPick(wk){
+  const week = (state.content.weeks || {})[wk];
+  return (week && week.group) || null;
+}
+function setContentGroupPick(wk, entry){
+  const weeks = state.content.weeks || (state.content.weeks = {});
+  const week = weeks[wk] || (weeks[wk] = {});
+  if(entry) week.group = {entryId:entry.id, name:entry.name, icon:entry.icon||'', ts:Date.now()};
+  else delete week.group;
+  saveState('content', 'group|'+wk);
+}
+// which members have the stats for a group entry ('' = ready, else why not);
+// members whose levels haven't loaded count as ready
+function contentGroupReadiness(entry){
+  return activePlayers().map(p=>{
+    const s = contentStats(p.id);
+    return {p, why: s ? contentReqShortfall(entry, s.levels) : ''};
+  });
+}
+function contentGroupViable(){
+  const ok = [], out = [];
+  contentEntries('group').forEach(e=>{
+    const ready = contentGroupReadiness(e).filter(r=> !r.why).length;
+    const team = e.team || 2;
+    if(ready >= team) ok.push(e);
+    else out.push({e, why: `${ready} of ${team} ready (${formatContentReq(e.req)})`});
+  });
+  return {ok, out};
+}
+
 async function refreshContentStats(pid){
   const p = state.players.find(x=> x.id===pid);
   if(!p || !p.rsn.trim() || contentStatsStatus[pid]==='loading') return;
@@ -2120,9 +2206,11 @@ async function refreshContentStats(pid){
   }
   if(document.getElementById('page-content').classList.contains('active')){
     if(pid===activePlayer.content) CONTENT_WHEELS.forEach(w=>{ if(!wheelSpinning[w.id]) delete wheelRotation[w.id]; });
+    if(!wheelSpinning.group) delete wheelRotation.group;
     renderContentStatsNote();
     renderContentWheels();
     renderContentBoard();
+    renderContentGroup();
   }
 }
 // one at a time, so a page open doesn't fire five hiscores lookups at once
@@ -2162,7 +2250,8 @@ const freshPick = {};
 const ruledOpen = {}; // keeps the "ruled out" list open across re-renders
 function anyWheelSpinning(){ return Object.values(wheelSpinning).some(Boolean); }
 function wheelList(wheelId){
-  return spinList[wheelId] || contentViable(wheelId, activePlayer.content).ok;
+  if(spinList[wheelId]) return spinList[wheelId];
+  return wheelId==='group' ? contentGroupViable().ok : contentViable(wheelId, activePlayer.content).ok;
 }
 function wheelSliceAt(rotation, n){
   const a = ((360 - (rotation % 360)) % 360 + 360) % 360;
@@ -2171,7 +2260,7 @@ function wheelSliceAt(rotation, n){
 // at rest the wheel shows the selected member's current task under the pointer
 function wheelRestRotation(wheelId){
   const p = contentPlayer();
-  const pick = p && contentAssigned(weekKey(), p.id, wheelId);
+  const pick = wheelId==='group' ? contentGroupPick(weekKey()) : p && contentAssigned(weekKey(), p.id, wheelId);
   const entries = wheelList(wheelId);
   const idx = pick ? entries.findIndex(e=> e.id===pick.entryId) : -1;
   if(idx < 0) return 0;
@@ -2269,6 +2358,72 @@ function renderContentWheels(){
   CONTENT_WHEELS.forEach(w=>{ freshPick[w.id] = false; });
 }
 
+function renderContentGroup(){
+  const el = document.getElementById('contentGroup');
+  if(!el) return;
+  const wheel = GROUP_WHEEL;
+  const wk = weekKey();
+  const entries = wheelList('group');
+  const {ok, out} = contentGroupViable();
+  const pick = contentGroupPick(wk);
+  const spinning = !!wheelSpinning.group;
+  const actions = !entries.length ? ''
+    : spinning ? `<button class="btn" disabled>Spinning…</button>`
+    : pick ? `<button class="btn ghost" onclick="spinGroupWheel()">Re-spin for the team</button>`
+    : `<button class="btn" onclick="spinGroupWheel()">Spin for the team</button>`;
+  let result = '';
+  if(!spinning){
+    if(pick){
+      const entry = contentEntries('group').find(e=> e.id===pick.entryId);
+      const ready = entry ? contentGroupReadiness(entry) : [];
+      const chips = ready.map(r=> `<span class="cw-mate${r.why?'':' done'}" title="${r.why ? escapeHtml(r.why) : 'Has the stats for it'}"><i>${r.why?'':'✓'}</i>${escapeHtml(progShortName(r.p))}</span>`).join('');
+      result = `<div class="cw-result${freshPick.group?' fresh':''}">
+        ${contentIconHtml(pick.icon)}
+        <div><div class="cw-kicker">This week's group boss</div><div class="cw-pick-name">${escapeHtml(pick.name)}</div>${entry && entry.team ? `<div class="cw-afk">Best with ${entry.team}+</div>` : ''}</div>
+      </div>
+      ${chips ? `<div class="cw-team">${chips}</div>` : ''}`;
+    } else {
+      result = `<div class="cw-hint">No group boss picked yet this week.</div>`;
+    }
+  }
+  const opt = e=> `<option value="${escapeHtml(e.id)}"${pick && pick.entryId===e.id ? ' selected' : ''}>${escapeHtml(e.name)}</option>`;
+  const orphan = pick && !contentEntries('group').some(e=> e.id===pick.entryId) ? `<option value="${escapeHtml(pick.entryId)}" selected>${escapeHtml(pick.name)}</option>` : '';
+  const picker = `<label class="cw-group-pick">Or set it by hand
+    <select onchange="assignGroupTask(this.value)" ${spinning?'disabled':''}>
+      <option value="">Nothing picked</option>${orphan}${ok.map(opt).join('')}${out.length ? `<optgroup label="Not enough of the team ready">${out.map(r=> opt(r.e)).join('')}</optgroup>` : ''}
+    </select></label>`;
+  const ruled = out.length
+    ? `<details class="cw-ruled" ${ruledOpen.group?'open':''} ontoggle="ruledOpen.group=this.open"><summary>${entries.length} options for the team · ${out.length} ruled out</summary>
+        <ul>${out.map(r=>`<li><span>${escapeHtml(r.e.name)}</span><em>${escapeHtml(r.why)}</em></li>`).join('')}</ul>
+      </details>`
+    : `<div class="cw-ruled-none">${entries.length} options for the team</div>`;
+  el.innerHTML = `<div class="card cw-card cw-group">
+    <h3><img src="${wikiImageUrl(wheel.icon)}" alt="" referrerpolicy="no-referrer">${wheel.label}</h3>
+    <div class="cw-sub">${wheel.sub}. Only shows what enough of the team has the stats for.</div>
+    <div class="cw-group-body">
+      <div class="cw-wheel-wrap${spinning?' spinning':''}">
+        ${entries.length ? wheelSVG(wheel, entries) : '<div class="cw-wheel-empty">Nothing on this wheel is viable for the team right now.</div>'}
+      </div>
+      <div class="cw-group-side">
+        <div class="cw-live" id="wheelLive-group"></div>
+        <div class="cw-actions">${actions}</div>
+        ${result}
+        ${picker}
+        ${ruled}
+      </div>
+    </div>
+  </div>`;
+  freshPick.group = false;
+}
+function assignGroupTask(entryId){
+  const wk = weekKey();
+  const current = contentGroupPick(wk);
+  if(current && current.entryId===entryId) return;
+  setContentGroupPick(wk, entryId ? contentEntries('group').find(e=> e.id===entryId) : null);
+  delete wheelRotation.group;
+  renderContentGroup();
+}
+
 function renderContentBoard(){
   const wk = weekKey();
   const colors = playerColorMap(activePlayers());
@@ -2300,16 +2455,19 @@ function renderContentBoard(){
 function renderContentHistory(){
   const current = weekKey();
   const players = activePlayers();
-  const weeks = Object.keys(state.content.weeks || {}).filter(k=> k < current &&
-    players.some(p=> CONTENT_WHEELS.some(w=> contentAssigned(k, p.id, w.id)))).sort().reverse();
+  const weeks = Object.keys(state.content.weeks || {}).filter(k=> k < current && (contentGroupPick(k) ||
+    players.some(p=> CONTENT_WHEELS.some(w=> contentAssigned(k, p.id, w.id))))).sort().reverse();
+  const taskHtml = t=> `${t.icon?`<img src="${wikiImageUrl(t.icon)}" alt="" referrerpolicy="no-referrer" onerror="this.style.display='none'">`:''}<span>${escapeHtml(t.name)}</span>`;
   document.getElementById('contentHistory').innerHTML = weeks.slice(0, 16).map(k=>{
     const members = players.map(p=>{
       const tasks = CONTENT_WHEELS.map(w=> contentAssigned(k, p.id, w.id)).filter(Boolean);
       if(!tasks.length) return '';
       return `<div class="cw-hmember"><b>${escapeHtml(progShortName(p))}</b>${tasks.map(t=>
-        `${t.icon?`<img src="${wikiImageUrl(t.icon)}" alt="" referrerpolicy="no-referrer" onerror="this.style.display='none'">`:''}<span>${escapeHtml(t.name)}</span>`).join('<span class="none">·</span>')}</div>`;
+        taskHtml(t)).join('<span class="none">·</span>')}</div>`;
     }).join('');
-    return `<div class="cw-hrow"><div class="when">${weekLabel(k)}</div><div class="cw-hmembers">${members}</div></div>`;
+    const group = contentGroupPick(k);
+    const team = group ? `<div class="cw-hmember cw-hteam"><b>Team</b>${taskHtml(group)}</div>` : '';
+    return `<div class="cw-hrow"><div class="when">${weekLabel(k)}</div><div class="cw-hmembers">${team}${members}</div></div>`;
   }).join('') || '<p style="margin:0; color:var(--text-dim); font-size:.85rem;">Nothing yet. Once a week ends, everyone\'s tasks from it show up here.</p>';
 }
 
@@ -2340,17 +2498,20 @@ function parseContentTrains(text){
 }
 
 function renderContentEditor(){
-  document.getElementById('contentEditorCols').innerHTML = CONTENT_WHEELS.map(wheel=>{
+  document.getElementById('contentEditorCols').innerHTML = ALL_WHEELS.map(wheel=>{
+    const isGroup = wheel.id==='group';
     const rows = contentEntries(wheel.id).map((e,i)=>`<div class="cw-erow">
       <input value="${escapeHtml(e.name)}" onchange="editContentEntry('${wheel.id}',${i},'name',this.value)" placeholder="Name">
-      <input value="${escapeHtml((e.trains||[]).join(', '))}" onchange="editContentEntry('${wheel.id}',${i},'trains',this.value)" placeholder="Trains (e.g. Mining)">
+      ${isGroup
+        ? `<input type="number" min="1" max="5" value="${e.team||2}" onchange="editContentEntry('${wheel.id}',${i},'team',this.value)" placeholder="Min team">`
+        : `<input value="${escapeHtml((e.trains||[]).join(', '))}" onchange="editContentEntry('${wheel.id}',${i},'trains',this.value)" placeholder="Trains (e.g. Mining)">`}
       <input value="${escapeHtml(formatContentReq(e.req))}" onchange="editContentEntry('${wheel.id}',${i},'req',this.value)" placeholder="Needs (e.g. Mining 72)">
       <input class="icon-in" value="${escapeHtml(e.icon||'')}" onchange="editContentEntry('${wheel.id}',${i},'icon',this.value)" placeholder="Wiki icon file">
       <button class="rm" title="Remove" onclick="removeContentEntry('${wheel.id}',${i})">✕</button>
     </div>`).join('');
     return `<div>
       <h4>${wheel.label} <span class="mono" style="color:var(--text-dim); font-size:.8rem;">(${contentEntries(wheel.id).length})</span></h4>
-      <div class="cw-erow head"><span>Name</span><span>Trains</span><span>Needs</span><span class="icon-in">Icon (wiki file)</span><span></span></div>
+      <div class="cw-erow head"><span>Name</span><span>${isGroup ? 'Min team' : 'Trains'}</span><span>Needs</span><span class="icon-in">Icon (wiki file)</span><span></span></div>
       ${rows}
       <div class="row" style="margin-top:10px;">
         <button class="btn small" onclick="addContentEntry('${wheel.id}')">+ Add entry</button>
@@ -2364,6 +2525,7 @@ function renderContent(){
   renderContentPlayerTabs();
   renderContentWheels();
   renderContentBoard();
+  renderContentGroup();
   renderContentHistory();
   renderContentEditor();
   refreshStaleContentStats();
@@ -2401,9 +2563,10 @@ function editContentEntry(wheelId, i, field, value){
   if(!e) return;
   if(field==='req') e.req = parseContentReq(value);
   else if(field==='trains') e.trains = parseContentTrains(value);
+  else if(field==='team') e.team = Math.max(1, Math.min(5, parseInt(value, 10) || 2));
   else e[field] = value.trim();
   if(field==='name' && !e.name) e.name = 'Untitled';
-  contentEntriesChanged(wheelId, field==='req' || field==='trains'); // show the cleaned-up text
+  contentEntriesChanged(wheelId, field==='req' || field==='trains' || field==='team'); // show the cleaned-up text
 }
 function addContentEntry(wheelId){
   if(wheelSpinning[wheelId]) return;
@@ -2435,20 +2598,16 @@ function spinWheelFor(pid, wheelId){
   setTimeout(()=> spinWheel(wheelId), 350);
 }
 
-async function spinWheel(wheelId){
-  const p = contentPlayer();
-  if(wheelSpinning[wheelId] || !p) return;
-  const pid = p.id;
-  const wk = weekKey();
-  const entries = contentViable(wheelId, pid).ok;
-  if(!entries.length) return;
+function renderContentSpinState(){
+  renderContentPlayerTabs();
+  renderContentWheels();
+  renderContentBoard();
+  renderContentGroup();
+}
 
-  // don't hand someone last week's task, or the one they're re-spinning away from, if there's any choice
-  const avoid = new Set();
-  const lastWeek = contentAssigned(previousWeekKey(wk), pid, wheelId);
-  if(lastWeek) avoid.add(lastWeek.entryId);
-  const current = contentAssigned(wk, pid, wheelId);
-  if(current) avoid.add(current.entryId);
+// picks a random slice (skipping `avoid` ids if there's any choice), spins
+// the wheel onto it, and resolves with the entry it landed on
+async function animateWheel(wheelId, entries, avoid){
   let pool = entries.map((e,i)=>i).filter(i=> !avoid.has(entries[i].id));
   if(!pool.length) pool = entries.map((e,i)=>i);
   const target = pool[Math.floor(Math.random()*pool.length)];
@@ -2462,9 +2621,7 @@ async function spinWheel(wheelId){
 
   wheelSpinning[wheelId] = true;
   spinList[wheelId] = entries;
-  renderContentPlayerTabs();
-  renderContentWheels();
-  renderContentBoard();
+  renderContentSpinState();
   const duration = 5200;
   const t0 = performance.now();
   let lastSlice = -1;
@@ -2474,7 +2631,7 @@ async function spinWheel(wheelId){
       const eased = 1 - Math.pow(1 - t, 4);
       const rot = start + (end - start) * eased;
       wheelRotation[wheelId] = rot;
-      // looked up each frame: the other wheel finishing re-renders both cards
+      // looked up each frame: another wheel finishing re-renders the cards
       const g = document.getElementById('wheelRot-'+wheelId);
       const live = document.getElementById('wheelLive-'+wheelId);
       if(g) g.setAttribute('transform', `rotate(${rot})`);
@@ -2489,15 +2646,44 @@ async function spinWheel(wheelId){
     };
     requestAnimationFrame(frame);
   });
-
-  setContentAssigned(wk, pid, wheelId, entries[wheelSliceAt(end, n)]);
   wheelSpinning[wheelId] = false;
   delete spinList[wheelId];
   freshPick[wheelId] = true;
   playSpinWin();
-  renderContentPlayerTabs();
-  renderContentWheels();
-  renderContentBoard();
+  return entries[wheelSliceAt(end, n)];
+}
+
+async function spinWheel(wheelId){
+  const p = contentPlayer();
+  if(wheelSpinning[wheelId] || !p) return;
+  const pid = p.id;
+  const wk = weekKey();
+  const entries = contentViable(wheelId, pid).ok;
+  if(!entries.length) return;
+  // don't hand someone last week's task, or the one they're re-spinning away from
+  const avoid = new Set();
+  const lastWeek = contentAssigned(previousWeekKey(wk), pid, wheelId);
+  if(lastWeek) avoid.add(lastWeek.entryId);
+  const current = contentAssigned(wk, pid, wheelId);
+  if(current) avoid.add(current.entryId);
+  const landed = await animateWheel(wheelId, entries, avoid);
+  setContentAssigned(wk, pid, wheelId, landed);
+  renderContentSpinState();
+}
+
+async function spinGroupWheel(){
+  if(wheelSpinning.group) return;
+  const wk = weekKey();
+  const entries = contentGroupViable().ok;
+  if(!entries.length) return;
+  const avoid = new Set();
+  const lastWeek = contentGroupPick(previousWeekKey(wk));
+  if(lastWeek) avoid.add(lastWeek.entryId);
+  const current = contentGroupPick(wk);
+  if(current) avoid.add(current.entryId);
+  const landed = await animateWheel('group', entries, avoid);
+  setContentGroupPick(wk, landed);
+  renderContentSpinState();
 }
 
 /* ---------------- UI SOUNDS (dashboard-style hover/click blips) ----------------
